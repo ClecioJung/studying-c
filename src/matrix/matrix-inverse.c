@@ -23,6 +23,11 @@ int main(void) {
     printf("A * matrix_inverse(A) =\n");
     Matrix mul = mul_matrices(A, inv);
     print_matrix(mul);
+    Matrix identity = identity_matrix(A.rows);
+    if (matrices_are_equal(mul, identity)) {
+        printf("This equals to the identity matrix!\nSo, we calculated the inverse matrix corectly!\n");
+    }
+    free_matrix(&identity);
     free_matrix(&A);
     free_matrix(&inv);
     free_matrix(&mul);

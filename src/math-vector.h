@@ -68,12 +68,14 @@ void free_vector(Vector *const vector);
 Vector random_vector(const size_t len, const data_type min, const data_type max);
 Vector copy_vector(const Vector vector);
 void print_vector(const Vector vector);
+Vector scale_vector(const data_type scalar, const Vector vector);
 data_type dot_product(const Vector a, const Vector b);
 Vector cross_product(const Vector a, const Vector b);
 data_type euclidean_norm(const Vector x);
 data_type vector_max(const Vector x);
 Vector sum_vectors(const Vector a, const Vector b);
 Vector sub_vectors(const Vector a, const Vector b);
+bool vectors_are_equal(const Vector a, const Vector b);
 
 // Sorting functions
 bool vector_is_sorted(const Vector vec);
@@ -97,14 +99,22 @@ Matrix init_matrix(const size_t rows, const size_t cols, const data_type value);
 Matrix identity_matrix(const size_t rows);
 Matrix copy_matrix(const Matrix matrix);
 void print_matrix(const Matrix matrix);
+Matrix scale_matrix(const data_type scalar, const Matrix A);
 Matrix mul_matrices(const Matrix A, const Matrix B);
+Matrix mul_3_matrices(const Matrix A, const Matrix B, const Matrix C);
 Vector mul_matrix_vector(const Matrix A, const Vector b);
 Matrix matrix_transpose(const Matrix A);
+Matrix matrix_symmetric(const Matrix A);
+Matrix matrix_skew_symmetric(const Matrix A);
+data_type trace(const Matrix A);
 data_type determinant(const Matrix A);
 void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
 void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
 Matrix matrix_inverse(const Matrix A);
 Matrix pseudo_inverse(const Matrix A);
+Matrix sum_matrices(const Matrix A, const Matrix B);
+Matrix sub_matrices(const Matrix A, const Matrix B);
+bool matrices_are_equal(const Matrix A, const Matrix B);
 
 // Methods for solving linear systems
 Vector back_substitution(const Matrix A, const Vector b);
@@ -286,6 +296,17 @@ void print_vector(const Vector vector) {
     printf("\n");
 }
 
+// Remember to free the vector after calling this function!
+Vector scale_vector(const data_type scalar, const Vector vector) {
+    Vector new_vec = alloc_vector(vector.len);
+    if (new_vec.data != NULL) {
+        for (size_t i = 0; i < vector.len; i++) {
+            new_vec.data[i] = scalar * vector.data[i];
+        }
+    }
+    return new_vec;
+}
+
 data_type dot_product(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return 0.0;  // Invalid operation
@@ -351,6 +372,18 @@ Vector sub_vectors(const Vector a, const Vector b) {
         }
     }
     return new_vec;
+}
+
+bool vectors_are_equal(const Vector a, const Vector b) {
+    if (a.len != b.len) {
+        return false;
+    }
+    for (size_t i = 0; i < a.len; i++) {
+        if (!are_close(a.data[i], b.data[i], PRECISION)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool vector_is_sorted(const Vector vec) {
@@ -678,6 +711,19 @@ void print_matrix(const Matrix matrix) {
     printf("\n");
 }
 
+// Remember to free the vector after calling this function!
+Matrix scale_matrix(const data_type scalar, const Matrix A) {
+    Matrix result = alloc_matrix(A.rows, A.cols);
+    if (result.data != NULL) {
+        for (size_t i = 0; i < A.rows; i++) {
+            for (size_t j = 0; j < A.cols; j++) {
+                result.data[i][j] = scalar * A.data[i][j];
+            }
+        }
+    }
+    return result;
+}
+
 // Remember to free the returned matrix after calling this function!
 Matrix mul_matrices(const Matrix A, const Matrix B) {
     if (A.cols != B.rows) {
@@ -693,6 +739,17 @@ Matrix mul_matrices(const Matrix A, const Matrix B) {
             }
         }
     }
+    return result;
+}
+
+// Remember to free the returned matrix after calling this function!
+Matrix mul_3_matrices(const Matrix A, const Matrix B, const Matrix C) {
+    if ((A.cols != B.rows) || (B.cols != C.rows)) {
+        return (Matrix){0};  // Invalid operation
+    }
+    Matrix mul = mul_matrices(A, B);
+    Matrix result = mul_matrices(mul, C);
+    free_matrix(&mul);
     return result;
 }
 
@@ -723,6 +780,49 @@ Matrix matrix_transpose(const Matrix A) {
         }
     }
     return transpose;
+}
+
+// Remember to free the returned matrix after calling this function!
+Matrix matrix_symmetric(const Matrix A) {
+    if (A.rows != A.cols) {
+        return (Matrix){0};  // Invalid operation
+    }
+    Matrix sym = alloc_matrix(A.rows, A.cols);
+    if (sym.data != NULL) {
+        for (size_t i = 0; i < A.rows; i++) {
+            for (size_t j = 0; j < A.cols; j++) {
+                sym.data[i][j] = (A.data[i][j] + A.data[j][i])/2.0;
+            }
+        }
+    }
+    return sym;
+}
+
+// Remember to free the returned matrix after calling this function!
+Matrix matrix_skew_symmetric(const Matrix A) {
+    if (A.rows != A.cols) {
+        return (Matrix){0};  // Invalid operation
+    }
+    Matrix skew = alloc_matrix(A.rows, A.cols);
+    if (skew.data != NULL) {
+        for (size_t i = 0; i < A.rows; i++) {
+            for (size_t j = 0; j < A.cols; j++) {
+                skew.data[i][j] = (A.data[i][j] - A.data[j][i])/2.0;
+            }
+        }
+    }
+    return skew;
+}
+
+data_type trace(const Matrix A) {
+    if (A.rows != A.cols) {
+        return 0.0;  // Invalid operation
+    }
+    data_type trace = 0.0;
+    for (size_t i = 0; i < A.rows; i++) {
+        trace += A.data[i][i];
+    }
+    return trace;
 }
 
 data_type determinant(const Matrix A) {
@@ -869,6 +969,52 @@ Matrix pseudo_inverse(const Matrix A) {
     free_matrix(&inv);
     free_matrix(&transpose);
     return pseudo_inv;
+}
+
+// Remember to free the returned matrix after calling this function!
+Matrix sum_matrices(const Matrix A, const Matrix B) {
+    if ((A.rows != B.rows) || (A.cols != B.cols)) {
+        return (Matrix){0};  // Invalid operation
+    }
+    Matrix result = alloc_matrix(A.rows, A.cols);
+    if (result.data != NULL) {
+        for (size_t i = 0; i < A.rows; i++) {
+            for (size_t j = 0; j < A.cols; j++) {
+                result.data[i][j] = A.data[i][j] + B.data[i][j];
+            }
+        }
+    }
+    return result;
+}
+
+// Remember to free the returned matrix after calling this function!
+Matrix sub_matrices(const Matrix A, const Matrix B) {
+    if ((A.rows != B.rows) || (A.cols != B.cols)) {
+        return (Matrix){0};  // Invalid operation
+    }
+    Matrix result = alloc_matrix(A.rows, A.cols);
+    if (result.data != NULL) {
+        for (size_t i = 0; i < A.rows; i++) {
+            for (size_t j = 0; j < A.cols; j++) {
+                result.data[i][j] = A.data[i][j] - B.data[i][j];
+            }
+        }
+    }
+    return result;
+}
+
+bool matrices_are_equal(const Matrix A, const Matrix B) {
+    if ((A.rows != B.rows) || (A.cols != B.cols)) {
+        return false;
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < A.cols; j++) {
+            if (!are_close(A.data[i][j], B.data[i][j], PRECISION)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 // Remember to free the returned vector after calling this function!

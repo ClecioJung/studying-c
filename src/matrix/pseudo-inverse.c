@@ -23,6 +23,13 @@ int main(void) {
     printf("A * pseudo_inverse(A) =\n");
     Matrix mul_right = mul_matrices(A, pseudo_inv);
     print_matrix(mul_right);
+    printf("A * pseudo_inverse(A) * A =\n");
+    Matrix mul = mul_3_matrices(A, pseudo_inv, A);
+    print_matrix(mul);
+    if (matrices_are_equal(mul, A)) {
+        printf("This equals to the A matrix!\nSo, we calculated the pseudo-inverse matrix corectly!\n");
+    }
+    free_matrix(&mul);
     free_matrix(&A);
     free_matrix(&pseudo_inv);
     free_matrix(&mul_left);

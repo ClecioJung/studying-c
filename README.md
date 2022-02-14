@@ -37,14 +37,18 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Square root](https://en.wikipedia.org/wiki/Square_root);
     - [Exponential](https://en.wikipedia.org/wiki/Exponential_function);
 - Implemented operations with [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)):
-    - Sum/subtraction of vectors;
+    - Sum/subtraction of vectors and multiplication by scalars;
     - [Dot product](https://en.wikipedia.org/wiki/Dot_product);
     - [Cross product](https://en.wikipedia.org/wiki/Cross_product);
     - [Euclidean norm](https://en.wikipedia.org/wiki/Euclidean_space#Euclidean_norm);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
-    - Multiplication of matrices and between matrices and vectors;
+    - Sum/subtraction of matrices and multiplication by scalars;
+    - Multiplication between matrices, and matrices by vectors;
+    - [Trace](https://en.wikipedia.org/wiki/Trace_(linear_algebra));
     - [Determinant](https://en.wikipedia.org/wiki/Determinant);
     - [Transpose matrix](https://en.wikipedia.org/wiki/Transpose);
+    - [Symmetric matrix](https://en.wikipedia.org/wiki/Symmetric_matrix);
+    - [Skew-symmetric matrix](https://en.wikipedia.org/wiki/Skew-symmetric_matrix);
     - [LU decomposition](https://en.wikipedia.org/wiki/LU_decomposition);
     - [LU Crout decomposition](https://en.wikipedia.org/wiki/Crout_matrix_decomposition);
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
@@ -121,6 +125,8 @@ $ ./integration
 $ ./ode
 $ ./square-root
 $ ./exponential
+$ ./trace
+$ ./matrix-symmetric
 ```
 
 In order to check if there is any memory leak, run the following commands (it is necessary to have `valgrind` installed):
