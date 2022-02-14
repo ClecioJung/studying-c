@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define MATRIX_IMPLEMENTATION
+#define MATH_VECTOR_IMPLEMENTATION
 #include "../math-vector.h"
 
 typedef size_t (*Search_Fn)(const Vector, const data_type);

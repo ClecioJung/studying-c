@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define MATRIX_IMPLEMENTATION
+#define MATH_VECTOR_IMPLEMENTATION
 #include "../math-vector.h"
 
 data_type pi_Gregory_leibniz(void) {

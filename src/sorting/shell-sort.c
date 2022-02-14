@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#define MATRIX_IMPLEMENTATION
+#define MATH_VECTOR_IMPLEMENTATION
 #include "../math-vector.h"
 
 int main(void) {

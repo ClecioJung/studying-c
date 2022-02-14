@@ -1,9 +1,31 @@
+// MIT License
+
+// Copyright (c) 2022 CLECIO JUNG <clecio.jung@gmail.com>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 //------------------------------------------------------------------------------
 // HEADER
 //------------------------------------------------------------------------------
 
-#ifndef __MATRIX_H
-#define __MATRIX_H
+#ifndef __MATH_VECTOR_H
+#define __MATH_VECTOR_H
 
 #include <math.h>
 #include <stdbool.h>
@@ -103,13 +125,13 @@ data_type linear_regression(const Vector x, const Vector y, data_type *const a, 
 Vector polynomial_regression(const Vector x, const Vector y, const size_t order);
 data_type compute_polynomial(const Vector coefficients, const data_type x);
 
-#endif  // __MATRIX_H
+#endif  // __MATH_VECTOR_H
 
 //------------------------------------------------------------------------------
 // IMPLEMENTATION
 //------------------------------------------------------------------------------
 
-#ifdef MATRIX_IMPLEMENTATION
+#ifdef MATH_VECTOR_IMPLEMENTATION
 
 void swap(data_type *const a, data_type *const b) {
     if ((a != NULL) && (b != NULL)) {
@@ -1196,8 +1218,30 @@ data_type compute_polynomial(const Vector coefficients, const data_type x) {
     return y;
 }
 
-#endif  // MATRIX_IMPLEMENTATION
+#endif  // MATH_VECTOR_IMPLEMENTATION
 
 //------------------------------------------------------------------------------
 // END
 //------------------------------------------------------------------------------
+
+// MIT License
+
+// Copyright (c) 2022 CLECIO JUNG <clecio.jung@gmail.com>
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
