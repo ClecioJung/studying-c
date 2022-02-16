@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(3, 3);
+    Matrix A = matrix_alloc(3, 3);
     printf("Matrix A:\n");
     A.data[0][0] = 9.0;
     A.data[0][1] = -18.0;
@@ -16,22 +16,22 @@ int main(void) {
     A.data[2][0] = 30.0;
     A.data[2][1] = -90.0;
     A.data[2][2] = 60.0;
-    print_matrix(A);
+    matrix_print(A);
     printf("Symmetric matrix:\n");
     Matrix sym = matrix_symmetric(A);
-    print_matrix(sym);
+    matrix_print(sym);
     printf("Skew-symmetric matrix:\n");
     Matrix skew = matrix_skew_symmetric(A);
-    print_matrix(skew);
+    matrix_print(skew);
     printf("Sum of the previous matrices:\n");
-    Matrix sum = sum_matrices(sym, skew);
-    print_matrix(sum);
-    if (matrices_are_equal(sum, A)) {
+    Matrix sum = matrix_sum(sym, skew);
+    matrix_print(sum);
+    if (matrix_are_equal(sum, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the Symmetric and Skew-symmetric matrices corectly!\n");
     }
-    free_matrix(&A);
-    free_matrix(&sym);
-    free_matrix(&skew);
-    free_matrix(&sum);
+    matrix_dealloc(&A);
+    matrix_dealloc(&sym);
+    matrix_dealloc(&skew);
+    matrix_dealloc(&sum);
     return EXIT_SUCCESS;
 }

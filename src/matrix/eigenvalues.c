@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(4, 4);
+    Matrix A = matrix_alloc(4, 4);
     printf("Matrix A:\n");
     A.data[0][0] = 1.0;
     A.data[0][1] = 1.0;
@@ -23,11 +23,11 @@ int main(void) {
     A.data[3][1] = 16.0;
     A.data[3][2] = 4.0;
     A.data[3][3] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     printf("Eigenvalues:\n");
     Vector eig = eigenvalues(A);
-    print_vector(eig);
-    free_matrix(&A);
-    free_vector(&eig);
+    vector_print(eig);
+    matrix_dealloc(&A);
+    vector_dealloc(&eig);
     return EXIT_SUCCESS;
 }

@@ -5,8 +5,8 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(4, 4);
-    Vector b = alloc_vector(4);
+    Matrix A = matrix_alloc(4, 4);
+    Vector b = vector_alloc(4);
     printf("Matrix A:\n");
     A.data[0][0] = 10.0;
     A.data[0][1] = -2.0;
@@ -24,18 +24,18 @@ int main(void) {
     A.data[3][1] = -1.0;
     A.data[3][2] = -2.0;
     A.data[3][3] = 10.0;
-    print_matrix(A);
+    matrix_print(A);
     printf("Vector b:\n");
     b.data[0] = 3.0;
     b.data[1] = 15.0;
     b.data[2] = 27.0;
     b.data[3] = -9.0;
-    print_vector(b);
+    vector_print(b);
     printf("Vector x:\n");
     Vector x = gaussian_elimination(A, b);
-    print_vector(x);
-    free_vector(&x);
-    free_vector(&b);
-    free_matrix(&A);
+    vector_print(x);
+    vector_dealloc(&x);
+    vector_dealloc(&b);
+    matrix_dealloc(&A);
     return EXIT_SUCCESS;
 }

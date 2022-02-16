@@ -5,8 +5,8 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Vector x = alloc_vector(3);
-    Vector y = alloc_vector(3);
+    Vector x = vector_alloc(3);
+    Vector y = vector_alloc(3);
     x.data[0] = 0.0;
     x.data[1] = 1.0;
     x.data[2] = 2.0;
@@ -19,7 +19,7 @@ int main(void) {
     printf("a: %g\n", a);
     printf("b: %g\n", b);
     printf("correlation coefficient (r): %g\n", r);
-    free_vector(&x);
-    free_vector(&y);
+    vector_dealloc(&x);
+    vector_dealloc(&y);
     return EXIT_SUCCESS;
 }

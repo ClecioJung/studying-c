@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(4, 4);
+    Matrix A = matrix_alloc(4, 4);
     printf("Matrix A:\n");
     A.data[0][0] = 1.0;
     A.data[0][1] = 1.0;
@@ -23,25 +23,25 @@ int main(void) {
     A.data[3][1] = 16.0;
     A.data[3][2] = 4.0;
     A.data[3][3] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     Matrix Q, R;
     qr_decomposition(A, &Q, &R);
     printf("Matrix Q:\n");
-    print_matrix(Q);
+    matrix_print(Q);
     printf("Matrix R:\n");
-    print_matrix(R);
+    matrix_print(R);
     if (matrix_is_orthogonal(Q)) {
         printf("The matrix Q is orthogonal!\n\n");
     }
     printf("Q * R =\n");
-    Matrix mul = mul_matrices(Q, R);
-    print_matrix(mul);
-    if (matrices_are_equal(mul, A)) {
+    Matrix mul = matrix_mul(Q, R);
+    matrix_print(mul);
+    if (matrix_are_equal(mul, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the QR decomposition corectly!\n");
     }
-    free_matrix(&A);
-    free_matrix(&Q);
-    free_matrix(&R);
-    free_matrix(&mul);
+    matrix_dealloc(&A);
+    matrix_dealloc(&Q);
+    matrix_dealloc(&R);
+    matrix_dealloc(&mul);
     return EXIT_SUCCESS;
 }

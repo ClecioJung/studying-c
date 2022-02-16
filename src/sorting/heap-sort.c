@@ -5,9 +5,9 @@
 
 int main(void) {
     const size_t len = 30;
-    Vector vec = random_vector(len, 0.0, 10.0 * len);
+    Vector vec = vector_random(len, 0.0, 10.0 * len);
     heap_sort(vec);
-    print_vector(vec);
-    free_vector(&vec);
+    vector_print(vec);
+    vector_dealloc(&vec);
     return EXIT_SUCCESS;
 }

@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(4, 4);
+    Matrix A = matrix_alloc(4, 4);
     printf("Matrix A:\n");
     A.data[0][0] = 1.0;
     A.data[0][1] = 1.0;
@@ -23,13 +23,13 @@ int main(void) {
     A.data[3][1] = 16.0;
     A.data[3][2] = 4.0;
     A.data[3][3] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     Vector vec = (Vector){0};
     data_type eig = power_method(A, &vec);
     printf("Greatest eigenvalue: %g\n", eig);
     printf("Eigenvector:\n");
-    print_vector(vec);
-    free_matrix(&A);
-    free_vector(&vec);
+    vector_print(vec);
+    matrix_dealloc(&A);
+    vector_dealloc(&vec);
     return EXIT_SUCCESS;
 }

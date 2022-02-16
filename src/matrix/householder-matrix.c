@@ -5,18 +5,18 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Vector v = alloc_vector(2);
+    Vector v = vector_alloc(2);
     v.data[0] = 1.0;
     v.data[1] = 2.0;
     printf("Vector v:\n");
-    print_vector(v);
+    vector_print(v);
     Matrix H = householder_matrix(v);
     printf("Matrix H:\n");
-    print_matrix(H);
+    matrix_print(H);
     if (matrix_is_orthogonal(H)) {
         printf("The matrix H is orthogonal!\n");
     }
-    free_matrix(&H);
-    free_vector(&v);
+    matrix_dealloc(&H);
+    vector_dealloc(&v);
     return EXIT_SUCCESS;
 }

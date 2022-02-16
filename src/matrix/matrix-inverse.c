@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(3, 3);
+    Matrix A = matrix_alloc(3, 3);
     printf("Matrix A:\n");
     A.data[0][0] = 9.0;
     A.data[0][1] = -18.0;
@@ -16,20 +16,20 @@ int main(void) {
     A.data[2][0] = 30.0;
     A.data[2][1] = -90.0;
     A.data[2][2] = 60.0;
-    print_matrix(A);
+    matrix_print(A);
     printf("Inverse matrix:\n");
     Matrix inv = matrix_inverse(A);
-    print_matrix(inv);
+    matrix_print(inv);
     printf("A * matrix_inverse(A) =\n");
-    Matrix mul = mul_matrices(A, inv);
-    print_matrix(mul);
-    Matrix identity = identity_matrix(A.rows);
-    if (matrices_are_equal(mul, identity)) {
+    Matrix mul = matrix_mul(A, inv);
+    matrix_print(mul);
+    Matrix identity = matrix_identity(A.rows);
+    if (matrix_are_equal(mul, identity)) {
         printf("This equals to the identity matrix!\nSo, we calculated the inverse matrix corectly!\n");
     }
-    free_matrix(&identity);
-    free_matrix(&A);
-    free_matrix(&inv);
-    free_matrix(&mul);
+    matrix_dealloc(&identity);
+    matrix_dealloc(&A);
+    matrix_dealloc(&inv);
+    matrix_dealloc(&mul);
     return EXIT_SUCCESS;
 }

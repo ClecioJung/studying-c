@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(4, 4);
+    Matrix A = matrix_alloc(4, 4);
     printf("Matrix A:\n");
     A.data[0][0] = 1.0;
     A.data[0][1] = 1.0;
@@ -23,27 +23,27 @@ int main(void) {
     A.data[3][1] = 16.0;
     A.data[3][2] = 4.0;
     A.data[3][3] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     Matrix U, T;
     schur_decomposition(A, &U, &T);
     printf("Matrix U:\n");
-    print_matrix(U);
+    matrix_print(U);
     printf("Matrix T:\n");
-    print_matrix(T);
+    matrix_print(T);
     if (matrix_is_orthogonal(U)) {
         printf("The matrix U is orthogonal!\n\n");
     }
     printf("U * T * U^T =\n");
     Matrix transposeU = matrix_transpose(U);
-    Matrix mul = mul_3_matrices(U, T, transposeU);
-    print_matrix(mul);
-    if (matrices_are_equal(mul, A)) {
+    Matrix mul = matrix_mul_three(U, T, transposeU);
+    matrix_print(mul);
+    if (matrix_are_equal(mul, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the Schur decomposition corectly!\n");
     }
-    free_matrix(&A);
-    free_matrix(&U);
-    free_matrix(&T);
-    free_matrix(&transposeU);
-    free_matrix(&mul);
+    matrix_dealloc(&A);
+    matrix_dealloc(&U);
+    matrix_dealloc(&T);
+    matrix_dealloc(&transposeU);
+    matrix_dealloc(&mul);
     return EXIT_SUCCESS;
 }

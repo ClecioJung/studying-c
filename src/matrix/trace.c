@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(3, 3);
+    Matrix A = matrix_alloc(3, 3);
     printf("Matrix A:\n");
     A.data[0][0] = 2.0;
     A.data[0][1] = 3.0;
@@ -16,8 +16,8 @@ int main(void) {
     A.data[2][0] = 2.0;
     A.data[2][1] = -3.0;
     A.data[2][2] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     printf("Trace: %g\n", trace(A));
-    free_matrix(&A);
+    matrix_dealloc(&A);
     return EXIT_SUCCESS;
 }

@@ -26,9 +26,9 @@ void free_array(Dynamic_Array *const array) {
 }
 
 void print_array(Dynamic_Array *const array) {
-    printf("Array length: %ld, capacity: %ld\n", array->length, array->capacity);
+    printf("Array length: %zu, capacity: %zu\n", array->length, array->capacity);
     for (size_t i = 0; i < array->length; i++) {
-        printf("[%03ld]: %d\n", i, array->values[i]);
+        printf("[%zu]: %d\n", i, array->values[i]);
     }
     printf("\n");
 }
@@ -119,7 +119,7 @@ int main(void) {
     print_array(&array);
 
     printf("Value at index 5: %d\n", value_at(&array, 5));
-    printf("Find value 10 at position %ld\n", find_in_array(&array, 10));
+    printf("Find value 10 at position %zu\n", find_in_array(&array, 10));
 
     printf("\nArray after delete element at position 2:\n");
     delete_at(&array, 2);

@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(4, 4);
+    Matrix A = matrix_alloc(4, 4);
     printf("Matrix A:\n");
     A.data[0][0] = 1.0;
     A.data[0][1] = 1.0;
@@ -23,27 +23,27 @@ int main(void) {
     A.data[3][1] = 16.0;
     A.data[3][2] = 4.0;
     A.data[3][3] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     Matrix U, H;
     upper_hessenberg_matrix(A, &U, &H);
     printf("Matrix U:\n");
-    print_matrix(U);
+    matrix_print(U);
     printf("Matrix H:\n");
-    print_matrix(H);
+    matrix_print(H);
     if (matrix_is_orthogonal(U)) {
         printf("The matrix U is orthogonal!\n\n");
     }
     printf("U * H * U^T =\n");
     Matrix transposeU = matrix_transpose(U);
-    Matrix mul = mul_3_matrices(U, H, transposeU);
-    print_matrix(mul);
-    if (matrices_are_equal(mul, A)) {
+    Matrix mul = matrix_mul_three(U, H, transposeU);
+    matrix_print(mul);
+    if (matrix_are_equal(mul, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the upper Hessenberg matrix corectly!\n");
     }
-    free_matrix(&A);
-    free_matrix(&U);
-    free_matrix(&H);
-    free_matrix(&transposeU);
-    free_matrix(&mul);
+    matrix_dealloc(&A);
+    matrix_dealloc(&U);
+    matrix_dealloc(&H);
+    matrix_dealloc(&transposeU);
+    matrix_dealloc(&mul);
     return EXIT_SUCCESS;
 }

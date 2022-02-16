@@ -31,10 +31,10 @@ size_t dec_buf_index(size_t index) {
 }
 
 void print_buf(Circular_Buffer *const buf) {
-    printf("Start: %ld, end: %ld\n", buf->start, buf->end);
+    printf("Start: %zu, end: %zu\n", buf->start, buf->end);
     size_t index = buf->start;
     while (index != buf->end) {
-        printf("[%03ld]: %d\n", index, buf->values[index]);
+        printf("[%zu]: %d\n", index, buf->values[index]);
         index = inc_buf_index(index);
     }
     printf("\n");

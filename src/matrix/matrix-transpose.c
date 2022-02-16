@@ -5,7 +5,7 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Matrix A = alloc_matrix(3, 4);
+    Matrix A = matrix_alloc(3, 4);
     printf("Matrix A:\n");
     A.data[0][0] = 9.0;
     A.data[0][1] = -18.0;
@@ -19,11 +19,11 @@ int main(void) {
     A.data[2][1] = -90.0;
     A.data[2][2] = 60.0;
     A.data[2][3] = 1.0;
-    print_matrix(A);
+    matrix_print(A);
     printf("Transpose matrix:\n");
     Matrix transpose = matrix_transpose(A);
-    print_matrix(transpose);
-    free_matrix(&A);
-    free_matrix(&transpose);
+    matrix_print(transpose);
+    matrix_dealloc(&A);
+    matrix_dealloc(&transpose);
     return EXIT_SUCCESS;
 }

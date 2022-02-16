@@ -5,13 +5,13 @@
 #include "../math-vector.h"
 
 int main(void) {
-    Vector a = alloc_vector(3);
+    Vector a = vector_alloc(3);
     printf("Vector a:\n");
     a.data[0] = 4.0;
     a.data[1] = 3.0;
     a.data[2] = 0.0;
-    print_vector(a);
+    vector_print(a);
     printf("Euclidean norm: %g\n", euclidean_norm(a));
-    free_vector(&a);
+    vector_dealloc(&a);
     return EXIT_SUCCESS;
 }

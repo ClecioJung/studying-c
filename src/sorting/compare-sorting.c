@@ -7,7 +7,7 @@
 typedef void (*Sorting_Fn)(const Vector);
 
 void test_algorithm(const Vector vec, const char *const algorithm, const Sorting_Fn sorting_fn) {
-    Vector copied_vec = copy_vector(vec);
+    Vector copied_vec = vector_copy(vec);
     struct timeval stop, start;
     gettimeofday(&start, NULL);
     sorting_fn(copied_vec);
@@ -18,12 +18,12 @@ void test_algorithm(const Vector vec, const char *const algorithm, const Sorting
     } else {
         printf("%s: Couldn't sort the provided vector!\n", algorithm);
     }
-    free_vector(&copied_vec);
+    vector_dealloc(&copied_vec);
 }
 
 int main(void) {
     const size_t len = 100000;
-    Vector vec = random_vector(len, 0.0, 10.0 * len);
+    Vector vec = vector_random(len, 0.0, 10.0 * len);
     test_algorithm(vec, "buble-sort", bubble_sort);
     test_algorithm(vec, "select-sort", select_sort);
     test_algorithm(vec, "insert-sort", insert_sort);
@@ -31,6 +31,6 @@ int main(void) {
     test_algorithm(vec, "merge-sort", merge_sort);
     test_algorithm(vec, "heap-sort", heap_sort);
     test_algorithm(vec, "quicksort", quicksort);
-    free_vector(&vec);
+    vector_dealloc(&vec);
     return EXIT_SUCCESS;
 }

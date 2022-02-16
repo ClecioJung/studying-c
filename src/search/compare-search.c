@@ -19,10 +19,10 @@ void test_algorithm(const Vector vec, const char *const algorithm, const Search_
 
 int main(void) {
     const size_t len = 10000000;
-    Vector vec = random_vector(len, 0.0, (data_type)len);
+    Vector vec = vector_random(len, 0.0, (data_type)len);
     quicksort(vec);
     test_algorithm(vec, "sequential-search", sequential_search);
     test_algorithm(vec, "binary-search", binary_search);
-    free_vector(&vec);
+    vector_dealloc(&vec);
     return EXIT_SUCCESS;
 }
