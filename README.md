@@ -56,6 +56,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Hessenberg matrix computation](https://en.wikipedia.org/wiki/Hessenberg_matrix);
     - [Schur decomposition](https://en.wikipedia.org/wiki/Schur_decomposition) using the [QR algorithm](https://en.wikipedia.org/wiki/QR_algorithm);
     - [Eigenvalues computation](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors);
+    - Greatest eigenvalue computation (and its eigenvector) using the [power method](https://en.wikipedia.org/wiki/Power_iteration);
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
     - [Pseudo-inverse matrix](https://en.wikipedia.org/wiki/Generalized_inverse);
 - Implemented algorithm for solving [systems of linear equations](https://en.wikipedia.org/wiki/System_of_linear_equations):
@@ -137,6 +138,7 @@ $ ./householder-matrix
 $ ./upper-hessenberg-matrix
 $ ./schur-decomposition
 $ ./eigenvalues
+$ ./power-method
 ```
 
 In order to check if there is any memory leak, run the following commands (it is necessary to have `valgrind` installed):

@@ -71,6 +71,7 @@ FUNC_DEF Vector alloc_vector(const size_t len);
 FUNC_DEF void free_vector(Vector *const vector);
 FUNC_DEF Vector realloc_vector(Vector *const vector, const size_t len);
 FUNC_DEF Vector random_vector(const size_t len, const data_type min, const data_type max);
+FUNC_DEF void vector_replace(Vector *const vector, const Vector equals);
 FUNC_DEF Vector copy_vector(const Vector vector);
 FUNC_DEF void print_vector(const Vector vector);
 FUNC_DEF Vector scale_vector(const data_type scalar, const Vector vector);
@@ -123,6 +124,7 @@ FUNC_DEF Matrix householder_matrix(const Vector vec);
 FUNC_DEF void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H);
 FUNC_DEF void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T);
 FUNC_DEF Vector eigenvalues(const Matrix A);
+FUNC_DEF data_type power_method(const Matrix A, Vector *const vec);
 FUNC_DEF Matrix matrix_inverse(const Matrix A);
 FUNC_DEF Matrix pseudo_inverse(const Matrix A);
 FUNC_DEF Matrix sum_matrices(const Matrix A, const Matrix B);
@@ -302,6 +304,12 @@ FUNC_DEF Vector init_vector(const size_t len, const data_type value) {
         }
     }
     return vector;
+}
+
+FUNC_DEF void vector_replace(Vector *const vector, const Vector equals) {
+    free_vector(vector);
+    vector->data = equals.data;
+    vector->len = equals.len;
 }
 
 // Remember to free the returned vector after calling this function!
@@ -1121,6 +1129,39 @@ Vector eigenvalues(const Matrix A) {
     }
     free_matrix(&U);
     free_matrix(&T);
+    return eig;
+}
+
+// Remember to free vec after calling this function!
+FUNC_DEF data_type power_method(const Matrix A, Vector *const vec) {
+    if ((A.rows != A.cols) || (vec == NULL)) {
+        return NAN;  // Invalid operation
+    }
+    *vec = random_vector(A.rows, 0.0, 1.0);
+    if ((vec->data == NULL)) {
+    power_method_safe_exit:
+        free_vector(vec);
+        return NAN;
+    }
+    data_type eig = 0.0;
+    for (size_t i = 0; i < MAX_ITERATIONS; i++) {
+        Vector previous_vec = (Vector){
+            .data = vec->data,
+            .len = vec->len,
+        };
+        *vec = mul_matrix_vector(A, *vec);
+        eig = euclidean_norm(*vec);
+        vector_replace(vec, scale_vector((1.0 / eig), *vec));
+        if ((vec->data == NULL) || (previous_vec.data == NULL)) {
+            free_vector(&previous_vec);
+            goto power_method_safe_exit;
+        }
+        const data_type error = max_diff_vectors(*vec, previous_vec);
+        free_vector(&previous_vec);
+        if (error < PRECISION) {
+            break;
+        }
+    }
     return eig;
 }
 

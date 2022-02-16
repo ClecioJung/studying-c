@@ -52,3 +52,4 @@ householder-matrix
 upper-hessenberg-matrix
 schur-decomposition
 eigenvalues
+power-method
