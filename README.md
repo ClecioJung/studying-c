@@ -51,6 +51,11 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Skew-symmetric matrix](https://en.wikipedia.org/wiki/Skew-symmetric_matrix);
     - [LU decomposition](https://en.wikipedia.org/wiki/LU_decomposition);
     - [LU Crout decomposition](https://en.wikipedia.org/wiki/Crout_matrix_decomposition);
+    - [QR decomposition](https://en.wikipedia.org/wiki/QR_decomposition);
+    - [Householder matrix computation](https://en.wikipedia.org/wiki/Householder_transformation#Householder_matrix);
+    - [Hessenberg matrix computation](https://en.wikipedia.org/wiki/Hessenberg_matrix);
+    - [Schur decomposition](https://en.wikipedia.org/wiki/Schur_decomposition) using the [QR algorithm](https://en.wikipedia.org/wiki/QR_algorithm);
+    - [Eigenvalues computation](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors);
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
     - [Pseudo-inverse matrix](https://en.wikipedia.org/wiki/Generalized_inverse);
 - Implemented algorithm for solving [systems of linear equations](https://en.wikipedia.org/wiki/System_of_linear_equations):
@@ -127,6 +132,11 @@ $ ./square-root
 $ ./exponential
 $ ./trace
 $ ./matrix-symmetric
+$ ./qr-decomposition
+$ ./householder-matrix
+$ ./upper-hessenberg-matrix
+$ ./schur-decomposition
+$ ./eigenvalues
 ```
 
 In order to check if there is any memory leak, run the following commands (it is necessary to have `valgrind` installed):

@@ -6,7 +6,7 @@
 
 int main(void) {
     Matrix A = alloc_matrix(3, 3);
-    printf("Matrix A: \n");
+    printf("Matrix A:\n");
     A.data[0][0] = 2.0;
     A.data[0][1] = 3.0;
     A.data[0][2] = -1.0;

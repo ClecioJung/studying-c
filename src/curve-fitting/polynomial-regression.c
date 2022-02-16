@@ -18,7 +18,7 @@ int main(void) {
     y.data[2] = 9.1;
     y.data[3] = 12.3;
     y.data[4] = 15.1;
-    printf("Polynomial regression resulted in: \n");
+    printf("Polynomial regression resulted in:\n");
     Vector pol = polynomial_regression(x, y, 2);
     print_vector(pol);
     for (size_t i = 0; i < x.len; i++) {

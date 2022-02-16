@@ -34,8 +34,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifndef FUNC_DEF
+#define FUNC_DEF static inline
+#endif  // FUNC_DEF
+
 #define MAX_ITERATIONS 10000
-#define PRECISION 1e-10
+#define PRECISION 1e-9
 
 typedef double data_type;
 
@@ -51,89 +55,100 @@ typedef struct {
 } Matrix;
 
 // Scalar functions
-void swap(data_type *const a, data_type *const b);
-uint64_t factorial(uint64_t value);
-bool are_close(const data_type a, const data_type b, const data_type delta);
-data_type maximum(const data_type a, const data_type b);
-data_type minimum(const data_type a, const data_type b);
-data_type generate_random_data_type(const data_type min, const data_type max);
-data_type square_root(const data_type value);
-data_type power(const data_type base, uint64_t expoent);
-data_type exponential(const data_type value);
+FUNC_DEF void swap(data_type *const a, data_type *const b);
+FUNC_DEF uint64_t factorial(uint64_t value);
+FUNC_DEF bool are_close(const data_type a, const data_type b, const data_type delta);
+FUNC_DEF data_type maximum(const data_type a, const data_type b);
+FUNC_DEF data_type minimum(const data_type a, const data_type b);
+FUNC_DEF data_type sign(const data_type value);
+FUNC_DEF data_type generate_random_data_type(const data_type min, const data_type max);
+FUNC_DEF data_type square_root(const data_type value);
+FUNC_DEF data_type power(const data_type base, uint64_t expoent);
+FUNC_DEF data_type exponential(const data_type value);
 
 // Vector functions
-Vector alloc_vector(const size_t len);
-Vector realloc_vector(Vector *const vector, const size_t len);
-void free_vector(Vector *const vector);
-Vector random_vector(const size_t len, const data_type min, const data_type max);
-Vector copy_vector(const Vector vector);
-void print_vector(const Vector vector);
-Vector scale_vector(const data_type scalar, const Vector vector);
-data_type dot_product(const Vector a, const Vector b);
-Vector cross_product(const Vector a, const Vector b);
-data_type euclidean_norm(const Vector x);
-data_type vector_max(const Vector x);
-Vector sum_vectors(const Vector a, const Vector b);
-Vector sub_vectors(const Vector a, const Vector b);
-bool vectors_are_equal(const Vector a, const Vector b);
+FUNC_DEF Vector alloc_vector(const size_t len);
+FUNC_DEF void free_vector(Vector *const vector);
+FUNC_DEF Vector realloc_vector(Vector *const vector, const size_t len);
+FUNC_DEF Vector random_vector(const size_t len, const data_type min, const data_type max);
+FUNC_DEF Vector copy_vector(const Vector vector);
+FUNC_DEF void print_vector(const Vector vector);
+FUNC_DEF Vector scale_vector(const data_type scalar, const Vector vector);
+FUNC_DEF data_type dot_product(const Vector a, const Vector b);
+FUNC_DEF Vector cross_product(const Vector a, const Vector b);
+FUNC_DEF data_type euclidean_norm(const Vector x);
+FUNC_DEF data_type vector_max(const Vector x);
+FUNC_DEF Vector sum_vectors(const Vector a, const Vector b);
+FUNC_DEF Vector sub_vectors(const Vector a, const Vector b);
+FUNC_DEF data_type max_diff_vectors(Vector x, Vector previous_x);
+FUNC_DEF bool vectors_are_equal(const Vector a, const Vector b);
 
 // Sorting functions
-bool vector_is_sorted(const Vector vec);
-void bubble_sort(const Vector vec);
-void select_sort(const Vector vec);
-void insert_sort(const Vector vec);
-void shell_sort(const Vector vec);
-void heap_sort(const Vector vec);
-void merge_sort(const Vector vec);
-void quicksort(const Vector vec);
+FUNC_DEF bool vector_is_sorted(const Vector vec);
+FUNC_DEF void bubble_sort(const Vector vec);
+FUNC_DEF void select_sort(const Vector vec);
+FUNC_DEF void insert_sort(const Vector vec);
+FUNC_DEF void shell_sort(const Vector vec);
+FUNC_DEF void heap_sort(const Vector vec);
+FUNC_DEF void merge_sort(const Vector vec);
+FUNC_DEF void quicksort(const Vector vec);
 
 // Search functions
-size_t sequential_search(const Vector vec, const data_type value);
-size_t binary_search(const Vector vec, const data_type value);
+FUNC_DEF size_t sequential_search(const Vector vec, const data_type value);
+FUNC_DEF size_t binary_search(const Vector vec, const data_type value);
 
 // Matrix functions
-Matrix alloc_matrix(const size_t rows, const size_t cols);
-void free_matrix(Matrix *const matrix);
-Matrix random_matrix(const size_t rows, const size_t cols, const data_type min, const data_type max);
-Matrix init_matrix(const size_t rows, const size_t cols, const data_type value);
-Matrix identity_matrix(const size_t rows);
-Matrix copy_matrix(const Matrix matrix);
-void print_matrix(const Matrix matrix);
-Matrix scale_matrix(const data_type scalar, const Matrix A);
-Matrix mul_matrices(const Matrix A, const Matrix B);
-Matrix mul_3_matrices(const Matrix A, const Matrix B, const Matrix C);
-Vector mul_matrix_vector(const Matrix A, const Vector b);
-Matrix matrix_transpose(const Matrix A);
-Matrix matrix_symmetric(const Matrix A);
-Matrix matrix_skew_symmetric(const Matrix A);
-data_type trace(const Matrix A);
-data_type determinant(const Matrix A);
-void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
-void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
-Matrix matrix_inverse(const Matrix A);
-Matrix pseudo_inverse(const Matrix A);
-Matrix sum_matrices(const Matrix A, const Matrix B);
-Matrix sub_matrices(const Matrix A, const Matrix B);
-bool matrices_are_equal(const Matrix A, const Matrix B);
+FUNC_DEF Matrix alloc_matrix(const size_t rows, const size_t cols);
+FUNC_DEF void free_matrix(Matrix *const matrix);
+FUNC_DEF Matrix random_matrix(const size_t rows, const size_t cols, const data_type min, const data_type max);
+FUNC_DEF Matrix init_matrix(const size_t rows, const size_t cols, const data_type value);
+FUNC_DEF Matrix identity_matrix(const size_t rows);
+FUNC_DEF Matrix copy_matrix(const Matrix matrix);
+FUNC_DEF void matrix_replace(Matrix *const matrix, const Matrix equals);
+FUNC_DEF void print_matrix(const Matrix matrix);
+FUNC_DEF Vector vector_from_matrix_column(const Matrix A, const size_t col);
+FUNC_DEF Matrix scale_matrix(const data_type scalar, const Matrix A);
+FUNC_DEF Matrix mul_matrices(const Matrix A, const Matrix B);
+FUNC_DEF Matrix mul_3_matrices(const Matrix A, const Matrix B, const Matrix C);
+FUNC_DEF Vector mul_matrix_vector(const Matrix A, const Vector b);
+FUNC_DEF Matrix matrix_transpose(const Matrix A);
+FUNC_DEF Matrix matrix_symmetric(const Matrix A);
+FUNC_DEF Matrix matrix_skew_symmetric(const Matrix A);
+FUNC_DEF data_type trace(const Matrix A);
+FUNC_DEF data_type determinant(const Matrix A);
+FUNC_DEF void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
+FUNC_DEF void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
+FUNC_DEF void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R);
+FUNC_DEF Matrix householder_matrix(const Vector vec);
+FUNC_DEF void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H);
+FUNC_DEF void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T);
+FUNC_DEF Vector eigenvalues(const Matrix A);
+FUNC_DEF Matrix matrix_inverse(const Matrix A);
+FUNC_DEF Matrix pseudo_inverse(const Matrix A);
+FUNC_DEF Matrix sum_matrices(const Matrix A, const Matrix B);
+FUNC_DEF Matrix sub_matrices(const Matrix A, const Matrix B);
+FUNC_DEF data_type max_diff_matrices(const Matrix A, const Matrix previous_A);
+FUNC_DEF bool matrices_are_equal(const Matrix A, const Matrix B);
+FUNC_DEF bool matrix_is_orthogonal(const Matrix A);
+FUNC_DEF bool matrix_is_upper_triangular(const Matrix A);
 
 // Methods for solving linear systems
-Vector back_substitution(const Matrix A, const Vector b);
-Vector forward_substitution(const Matrix A, const Vector b);
-Vector gaussian_elimination(const Matrix A, const Vector b);
-Vector gauss_jordan(const Matrix A, const Vector b);
-Vector lu_solving(const Matrix A, const Vector b);
-data_type get_max_diff(Vector x, Vector previous_x);
-Vector jacobi_method(const Matrix A, const Vector b);
-Vector gauss_seidel(const Matrix A, const Vector b);
-bool columns_condition(const Matrix A);
-bool rows_condition(const Matrix A);
-bool sassenfeld_condition(const Matrix A);
+FUNC_DEF Vector back_substitution(const Matrix A, const Vector b);
+FUNC_DEF Vector forward_substitution(const Matrix A, const Vector b);
+FUNC_DEF Vector gaussian_elimination(const Matrix A, const Vector b);
+FUNC_DEF Vector gauss_jordan(const Matrix A, const Vector b);
+FUNC_DEF Vector lu_solving(const Matrix A, const Vector b);
+FUNC_DEF Vector jacobi_method(const Matrix A, const Vector b);
+FUNC_DEF Vector gauss_seidel(const Matrix A, const Vector b);
+FUNC_DEF bool columns_condition(const Matrix A);
+FUNC_DEF bool rows_condition(const Matrix A);
+FUNC_DEF bool sassenfeld_condition(const Matrix A);
 
 // Curve fitting functions
-data_type lagrange_interpolation(const Vector x, const Vector y, const data_type value);
-data_type linear_regression(const Vector x, const Vector y, data_type *const a, data_type *const b);
-Vector polynomial_regression(const Vector x, const Vector y, const size_t order);
-data_type compute_polynomial(const Vector coefficients, const data_type x);
+FUNC_DEF data_type lagrange_interpolation(const Vector x, const Vector y, const data_type value);
+FUNC_DEF data_type linear_regression(const Vector x, const Vector y, data_type *const a, data_type *const b);
+FUNC_DEF Vector polynomial_regression(const Vector x, const Vector y, const size_t order);
+FUNC_DEF data_type compute_polynomial(const Vector coefficients, const data_type x);
 
 #endif  // __MATH_VECTOR_H
 
@@ -143,7 +158,7 @@ data_type compute_polynomial(const Vector coefficients, const data_type x);
 
 #ifdef MATH_VECTOR_IMPLEMENTATION
 
-void swap(data_type *const a, data_type *const b) {
+FUNC_DEF void swap(data_type *const a, data_type *const b) {
     if ((a != NULL) && (b != NULL)) {
         const data_type temp = *a;
         *a = *b;
@@ -151,7 +166,7 @@ void swap(data_type *const a, data_type *const b) {
     }
 }
 
-uint64_t factorial(uint64_t value) {
+FUNC_DEF uint64_t factorial(uint64_t value) {
     uint64_t result = 1;
     while (value > 1) {
         result = result * value;
@@ -160,26 +175,30 @@ uint64_t factorial(uint64_t value) {
     return result;
 }
 
-bool are_close(const data_type a, const data_type b, const data_type delta) {
+FUNC_DEF bool are_close(const data_type a, const data_type b, const data_type delta) {
     return (fabs(a - b) < delta);
 }
 
-data_type maximum(const data_type a, const data_type b) {
+FUNC_DEF data_type maximum(const data_type a, const data_type b) {
     return ((a > b) ? a : b);
 }
 
-data_type minimum(const data_type a, const data_type b) {
+FUNC_DEF data_type minimum(const data_type a, const data_type b) {
     return ((a < b) ? a : b);
 }
 
-data_type generate_random_data_type(const data_type min, const data_type max) {
+FUNC_DEF data_type sign(const data_type value) {
+    return ((value > 0) ? 1.0 : -1.0);
+}
+
+FUNC_DEF data_type generate_random_data_type(const data_type min, const data_type max) {
     const data_type rand_unitary = ((data_type)rand()) / ((data_type)RAND_MAX);
     return rand_unitary * (max - min) + min;
 }
 
 // My own square root function, so I don't need to link with -lm,
 // avoiding any dependencies
-data_type square_root(const data_type value) {
+FUNC_DEF data_type square_root(const data_type value) {
     if (fabs(value) < PRECISION) {
         return 0.0;  // square_root(0) = 0
     } else if (value < 0) {
@@ -200,7 +219,7 @@ data_type square_root(const data_type value) {
 
 // My own power function, so I don't need to link with -lm,
 // avoiding any dependencies
-data_type power(const data_type base, uint64_t expoent) {
+FUNC_DEF data_type power(const data_type base, uint64_t expoent) {
     data_type result = 1.0;
     while (expoent != 0) {
         result *= base;
@@ -211,7 +230,7 @@ data_type power(const data_type base, uint64_t expoent) {
 
 // My own exponential function, so I don't need to link with -lm,
 // avoiding any dependencies
-data_type exponential(const data_type value) {
+FUNC_DEF data_type exponential(const data_type value) {
     data_type term = 1.0;
     data_type result = 1.0;
     for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
@@ -224,8 +243,11 @@ data_type exponential(const data_type value) {
     return result;
 }
 
-// Remember to free the vector after calling this function!
-Vector alloc_vector(const size_t len) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector alloc_vector(const size_t len) {
+    if (len == 0) {
+        return (Vector){0};
+    }
     Vector vector = (Vector){
         .data = (data_type *)malloc(len * sizeof(data_type)),
         .len = len,
@@ -236,17 +258,7 @@ Vector alloc_vector(const size_t len) {
     return vector;
 }
 
-// Remember to free the vector after calling this function!
-Vector realloc_vector(Vector *const vector, const size_t len) {
-    data_type *new_data = (data_type *)realloc(vector->data, len * sizeof(data_type));
-    if (new_data != NULL) {
-        vector->len = len;
-        vector->data = new_data;
-    }
-    return *vector;
-}
-
-void free_vector(Vector *const vector) {
+FUNC_DEF void free_vector(Vector *const vector) {
     if (vector == NULL) {
         return;
     }
@@ -255,8 +267,22 @@ void free_vector(Vector *const vector) {
     vector->len = 0;
 }
 
-// Remember to free the vector after calling this function!
-Vector random_vector(const size_t len, const data_type min, const data_type max) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector realloc_vector(Vector *const vector, const size_t len) {
+    if (len != 0) {
+        data_type *new_data = (data_type *)realloc(vector->data, len * sizeof(data_type));
+        if (new_data != NULL) {
+            vector->len = len;
+            vector->data = new_data;
+        }
+    } else {
+        free_vector(vector);
+    }
+    return *vector;
+}
+
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector random_vector(const size_t len, const data_type min, const data_type max) {
     Vector vector = alloc_vector(len);
     if (vector.data != NULL) {
         srand(time(NULL));
@@ -267,8 +293,8 @@ Vector random_vector(const size_t len, const data_type min, const data_type max)
     return vector;
 }
 
-// Remember to free the vector after calling this function!
-Vector init_vector(const size_t len, const data_type value) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector init_vector(const size_t len, const data_type value) {
     Vector vector = alloc_vector(len);
     if (vector.data != NULL) {
         for (size_t i = 0; i < len; i++) {
@@ -278,8 +304,8 @@ Vector init_vector(const size_t len, const data_type value) {
     return vector;
 }
 
-// Remember to free the vector after calling this function!
-Vector copy_vector(const Vector vector) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector copy_vector(const Vector vector) {
     Vector new_vec = alloc_vector(vector.len);
     if (new_vec.data != NULL) {
         for (size_t i = 0; i < vector.len; i++) {
@@ -289,15 +315,16 @@ Vector copy_vector(const Vector vector) {
     return new_vec;
 }
 
-void print_vector(const Vector vector) {
+FUNC_DEF void print_vector(const Vector vector) {
     for (size_t i = 0; i < vector.len; i++) {
-        printf("[%03ld]: %g\n", i, vector.data[i]);
+        const data_type value = fabs(vector.data[i]) > PRECISION ? vector.data[i] : 0.0;
+        printf("[%03ld]: %g\n", i, value);
     }
     printf("\n");
 }
 
-// Remember to free the vector after calling this function!
-Vector scale_vector(const data_type scalar, const Vector vector) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector scale_vector(const data_type scalar, const Vector vector) {
     Vector new_vec = alloc_vector(vector.len);
     if (new_vec.data != NULL) {
         for (size_t i = 0; i < vector.len; i++) {
@@ -307,7 +334,7 @@ Vector scale_vector(const data_type scalar, const Vector vector) {
     return new_vec;
 }
 
-data_type dot_product(const Vector a, const Vector b) {
+FUNC_DEF data_type dot_product(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return 0.0;  // Invalid operation
     }
@@ -318,8 +345,8 @@ data_type dot_product(const Vector a, const Vector b) {
     return result;
 }
 
-// Remember to free the vector after calling this function!
-Vector cross_product(const Vector a, const Vector b) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector cross_product(const Vector a, const Vector b) {
     if ((a.len != 3) || (b.len != 3)) {
         return (Vector){0};  // Invalid operation
     }
@@ -330,7 +357,7 @@ Vector cross_product(const Vector a, const Vector b) {
     return result;
 }
 
-data_type euclidean_norm(const Vector x) {
+FUNC_DEF data_type euclidean_norm(const Vector x) {
     data_type value = 0.0;
     for (size_t i = 0; i < x.len; i++) {
         value += x.data[i] * x.data[i];
@@ -338,7 +365,7 @@ data_type euclidean_norm(const Vector x) {
     return square_root(value);
 }
 
-data_type vector_max(const Vector x) {
+FUNC_DEF data_type vector_max(const Vector x) {
     data_type value = 0.0;
     for (size_t i = 0; i < x.len; i++) {
         value = maximum(value, x.data[i]);
@@ -346,8 +373,8 @@ data_type vector_max(const Vector x) {
     return value;
 }
 
-// Remember to free the vector after calling this function!
-Vector sum_vectors(const Vector a, const Vector b) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector sum_vectors(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return (Vector){0};  // Invalid operation
     }
@@ -360,8 +387,8 @@ Vector sum_vectors(const Vector a, const Vector b) {
     return new_vec;
 }
 
-// Remember to free the vector after calling this function!
-Vector sub_vectors(const Vector a, const Vector b) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector sub_vectors(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return (Vector){0};  // Invalid operation
     }
@@ -374,7 +401,18 @@ Vector sub_vectors(const Vector a, const Vector b) {
     return new_vec;
 }
 
-bool vectors_are_equal(const Vector a, const Vector b) {
+FUNC_DEF data_type max_diff_vectors(const Vector x, const Vector previous_x) {
+    if (x.len != previous_x.len) {
+        return INFINITY;  // Invalid operation
+    }
+    data_type error = 0.0;
+    for (size_t i = 0; i < x.len; i++) {
+        error = maximum(fabs(x.data[i] - previous_x.data[i]), error);
+    }
+    return error;
+}
+
+FUNC_DEF bool vectors_are_equal(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return false;
     }
@@ -386,7 +424,7 @@ bool vectors_are_equal(const Vector a, const Vector b) {
     return true;
 }
 
-bool vector_is_sorted(const Vector vec) {
+FUNC_DEF bool vector_is_sorted(const Vector vec) {
     for (size_t i = 0; (i + 1) < vec.len; i++) {
         if (vec.data[i] > vec.data[i + 1]) {
             return false;
@@ -395,7 +433,7 @@ bool vector_is_sorted(const Vector vec) {
     return true;
 }
 
-void bubble_sort(const Vector vec) {
+FUNC_DEF void bubble_sort(const Vector vec) {
     for (size_t i = 1; i < vec.len; i++) {
         for (size_t j = (vec.len - 1); j >= i; j--) {
             if (vec.data[j - 1] > vec.data[j]) {
@@ -405,7 +443,7 @@ void bubble_sort(const Vector vec) {
     }
 }
 
-void select_sort(const Vector vec) {
+FUNC_DEF void select_sort(const Vector vec) {
     for (size_t i = 0; (i + 1) < vec.len; i++) {
         size_t k = i;
         data_type temp = vec.data[i];
@@ -422,7 +460,7 @@ void select_sort(const Vector vec) {
     }
 }
 
-void insert_sort(const Vector vec) {
+FUNC_DEF void insert_sort(const Vector vec) {
     for (size_t i = 1; i < vec.len; i++) {
         const data_type temp = vec.data[i];
         size_t j = (i - 1);
@@ -434,7 +472,7 @@ void insert_sort(const Vector vec) {
     }
 }
 
-void shell_sort(const Vector vec) {
+FUNC_DEF void shell_sort(const Vector vec) {
     // Ciura gap sequence
     static const size_t gaps[] = {701, 301, 132, 57, 23, 10, 4, 1};
     static const size_t gap_len = sizeof(gaps) / sizeof(gaps[0]);
@@ -454,7 +492,7 @@ void shell_sort(const Vector vec) {
 }
 
 // Heapify a subtree rooted with node in array at index
-void heapify(data_type *const array, const size_t len, const size_t index) {
+FUNC_DEF void heapify(data_type *const array, const size_t len, const size_t index) {
     size_t largest = index;
     const size_t left = 2 * index + 1;
     const size_t right = 2 * index + 2;
@@ -473,7 +511,7 @@ void heapify(data_type *const array, const size_t len, const size_t index) {
         heapify(array, len, largest);
     }
 }
-void heap_sort(const Vector vec) {
+FUNC_DEF void heap_sort(const Vector vec) {
     // Build heap (rearrange array)
     for (size_t i = vec.len / 2 - 1; i < vec.len; i--) {
         heapify(vec.data, vec.len, i);
@@ -487,7 +525,7 @@ void heap_sort(const Vector vec) {
 }
 
 // Merge two subarrays L and M into A
-void merge(data_type *const array, const size_t p, const size_t q, const size_t r) {
+FUNC_DEF void merge(data_type *const array, const size_t p, const size_t q, const size_t r) {
     // Create L <- A[p..q] and M <- A[q+1..r]
     const size_t n1 = q - p + 1;
     const size_t n2 = r - q;
@@ -528,7 +566,7 @@ void merge(data_type *const array, const size_t p, const size_t q, const size_t 
     }
 }
 // Divide the array into two subarrays, sort them and merge them
-void split_and_sort(data_type *const array, const size_t left, const size_t right) {
+FUNC_DEF void split_and_sort(data_type *const array, const size_t left, const size_t right) {
     if (left < right) {
         data_type middle = left + (right - left) / 2;
         split_and_sort(array, left, middle);
@@ -536,13 +574,13 @@ void split_and_sort(data_type *const array, const size_t left, const size_t righ
         merge(array, left, middle, right);
     }
 }
-void merge_sort(const Vector vec) {
+FUNC_DEF void merge_sort(const Vector vec) {
     if (vec.len > 0) {
         split_and_sort(vec.data, 0, vec.len - 1);
     }
 }
 
-void qs(data_type *const array, const size_t left, const size_t right) {
+FUNC_DEF void qs(data_type *const array, const size_t left, const size_t right) {
     const data_type middle = array[(left + right) / 2];
     size_t i = left;
     size_t j = right;
@@ -568,13 +606,13 @@ void qs(data_type *const array, const size_t left, const size_t right) {
         qs(array, i, right);
     }
 }
-void quicksort(const Vector vec) {
+FUNC_DEF void quicksort(const Vector vec) {
     if (vec.len > 0) {
         qs(vec.data, 0, vec.len - 1);
     }
 }
 
-size_t sequential_search(const Vector vec, const data_type value) {
+FUNC_DEF size_t sequential_search(const Vector vec, const data_type value) {
     size_t closest_index = 0;
     for (size_t i = 0; i < vec.len; i++) {
         if (vec.data[i] == value) {
@@ -587,7 +625,7 @@ size_t sequential_search(const Vector vec, const data_type value) {
 }
 
 // It works only with ordered arrays
-size_t binary_search(const Vector vec, const data_type value) {
+FUNC_DEF size_t binary_search(const Vector vec, const data_type value) {
     size_t middle = vec.len;
     size_t low = 0;
     size_t high = vec.len - 1;
@@ -605,7 +643,10 @@ size_t binary_search(const Vector vec, const data_type value) {
 }
 
 // Remember to free the matrix after calling this function!
-Matrix alloc_matrix(const size_t rows, const size_t cols) {
+FUNC_DEF Matrix alloc_matrix(const size_t rows, const size_t cols) {
+    if ((rows == 0) || (cols == 0)) {
+        return (Matrix){0};
+    }
     Matrix matrix = (Matrix){
         .data = (data_type **)malloc(rows * sizeof(data_type *)),
         .rows = rows,
@@ -629,7 +670,7 @@ Matrix alloc_matrix(const size_t rows, const size_t cols) {
     return matrix;
 }
 
-void free_matrix(Matrix *const matrix) {
+FUNC_DEF void free_matrix(Matrix *const matrix) {
     if (matrix == NULL) {
         return;
     }
@@ -643,7 +684,7 @@ void free_matrix(Matrix *const matrix) {
 }
 
 // Remember to free the matrix after calling this function!
-Matrix random_matrix(const size_t rows, const size_t cols, const data_type min, const data_type max) {
+FUNC_DEF Matrix random_matrix(const size_t rows, const size_t cols, const data_type min, const data_type max) {
     Matrix matrix = alloc_matrix(rows, cols);
     if (matrix.data != NULL) {
         srand(time(NULL));
@@ -657,7 +698,7 @@ Matrix random_matrix(const size_t rows, const size_t cols, const data_type min, 
 }
 
 // Remember to free the matrix after calling this function!
-Matrix init_matrix(const size_t rows, const size_t cols, const data_type value) {
+FUNC_DEF Matrix init_matrix(const size_t rows, const size_t cols, const data_type value) {
     Matrix matrix = alloc_matrix(rows, cols);
     if (matrix.data != NULL) {
         for (size_t i = 0; i < rows; i++) {
@@ -670,7 +711,7 @@ Matrix init_matrix(const size_t rows, const size_t cols, const data_type value) 
 }
 
 // Remember to free the matrix after calling this function!
-Matrix identity_matrix(const size_t rows) {
+FUNC_DEF Matrix identity_matrix(const size_t rows) {
     Matrix matrix = alloc_matrix(rows, rows);
     if (matrix.data != NULL) {
         for (size_t i = 0; i < rows; i++) {
@@ -683,7 +724,7 @@ Matrix identity_matrix(const size_t rows) {
 }
 
 // Remember to free the matrix after calling this function!
-Matrix copy_matrix(const Matrix matrix) {
+FUNC_DEF Matrix copy_matrix(const Matrix matrix) {
     Matrix new_matrix = alloc_matrix(matrix.rows, matrix.cols);
     if (new_matrix.data != NULL) {
         for (size_t i = 0; i < matrix.rows; i++) {
@@ -695,7 +736,14 @@ Matrix copy_matrix(const Matrix matrix) {
     return new_matrix;
 }
 
-void print_matrix(const Matrix matrix) {
+FUNC_DEF void matrix_replace(Matrix *const matrix, const Matrix equals) {
+    free_matrix(matrix);
+    matrix->data = equals.data;
+    matrix->rows = equals.rows;
+    matrix->cols = equals.cols;
+}
+
+FUNC_DEF void print_matrix(const Matrix matrix) {
     printf("%*s", 2, "");
     for (size_t j = 0; j < matrix.cols; j++) {
         printf("%*s[%03ld] ", 5, "", j);
@@ -704,15 +752,30 @@ void print_matrix(const Matrix matrix) {
     for (size_t i = 0; i < matrix.rows; i++) {
         printf("[%03ld]: ", i);
         for (size_t j = 0; j < matrix.cols; j++) {
-            printf("%-10g ", matrix.data[i][j]);
+            const data_type value = fabs(matrix.data[i][j]) > PRECISION ? matrix.data[i][j] : 0.0;
+            printf("%-10g ", value);
         }
         printf("\n");
     }
     printf("\n");
 }
 
-// Remember to free the vector after calling this function!
-Matrix scale_matrix(const data_type scalar, const Matrix A) {
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Vector vector_from_matrix_column(const Matrix A, const size_t col) {
+    if (col >= A.cols) {
+        return (Vector){0};  // Invalid operation
+    }
+    Vector vec = alloc_vector(A.rows);
+    if (vec.data != NULL) {
+        for (size_t i = 0; i < vec.len; i++) {
+            vec.data[i] = A.data[i][col];
+        }
+    }
+    return vec;
+}
+
+// Remember to free the returned vector after calling this function!
+FUNC_DEF Matrix scale_matrix(const data_type scalar, const Matrix A) {
     Matrix result = alloc_matrix(A.rows, A.cols);
     if (result.data != NULL) {
         for (size_t i = 0; i < A.rows; i++) {
@@ -725,7 +788,7 @@ Matrix scale_matrix(const data_type scalar, const Matrix A) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix mul_matrices(const Matrix A, const Matrix B) {
+FUNC_DEF Matrix mul_matrices(const Matrix A, const Matrix B) {
     if (A.cols != B.rows) {
         return (Matrix){0};  // Invalid operation
     }
@@ -743,18 +806,17 @@ Matrix mul_matrices(const Matrix A, const Matrix B) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix mul_3_matrices(const Matrix A, const Matrix B, const Matrix C) {
+FUNC_DEF Matrix mul_3_matrices(const Matrix A, const Matrix B, const Matrix C) {
     if ((A.cols != B.rows) || (B.cols != C.rows)) {
         return (Matrix){0};  // Invalid operation
     }
-    Matrix mul = mul_matrices(A, B);
-    Matrix result = mul_matrices(mul, C);
-    free_matrix(&mul);
+    Matrix result = mul_matrices(A, B);
+    matrix_replace(&result, mul_matrices(result, C));
     return result;
 }
 
 // Remember to free the returned vector after calling this function!
-Vector mul_matrix_vector(const Matrix A, const Vector b) {
+FUNC_DEF Vector mul_matrix_vector(const Matrix A, const Vector b) {
     if (A.cols != b.len) {
         return (Vector){0};  // Invalid operation
     }
@@ -770,7 +832,7 @@ Vector mul_matrix_vector(const Matrix A, const Vector b) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix matrix_transpose(const Matrix A) {
+FUNC_DEF Matrix matrix_transpose(const Matrix A) {
     Matrix transpose = alloc_matrix(A.cols, A.rows);
     if (transpose.data != NULL) {
         for (size_t i = 0; i < A.rows; i++) {
@@ -783,7 +845,7 @@ Matrix matrix_transpose(const Matrix A) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix matrix_symmetric(const Matrix A) {
+FUNC_DEF Matrix matrix_symmetric(const Matrix A) {
     if (A.rows != A.cols) {
         return (Matrix){0};  // Invalid operation
     }
@@ -791,7 +853,7 @@ Matrix matrix_symmetric(const Matrix A) {
     if (sym.data != NULL) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                sym.data[i][j] = (A.data[i][j] + A.data[j][i])/2.0;
+                sym.data[i][j] = (A.data[i][j] + A.data[j][i]) / 2.0;
             }
         }
     }
@@ -799,7 +861,7 @@ Matrix matrix_symmetric(const Matrix A) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix matrix_skew_symmetric(const Matrix A) {
+FUNC_DEF Matrix matrix_skew_symmetric(const Matrix A) {
     if (A.rows != A.cols) {
         return (Matrix){0};  // Invalid operation
     }
@@ -807,14 +869,14 @@ Matrix matrix_skew_symmetric(const Matrix A) {
     if (skew.data != NULL) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                skew.data[i][j] = (A.data[i][j] - A.data[j][i])/2.0;
+                skew.data[i][j] = (A.data[i][j] - A.data[j][i]) / 2.0;
             }
         }
     }
     return skew;
 }
 
-data_type trace(const Matrix A) {
+FUNC_DEF data_type trace(const Matrix A) {
     if (A.rows != A.cols) {
         return 0.0;  // Invalid operation
     }
@@ -825,7 +887,7 @@ data_type trace(const Matrix A) {
     return trace;
 }
 
-data_type determinant(const Matrix A) {
+FUNC_DEF data_type determinant(const Matrix A) {
     if (A.rows != A.cols) {
         return 0.0;  // Invalid operation
     }
@@ -851,8 +913,8 @@ data_type determinant(const Matrix A) {
 }
 
 // Remember to free L and U matrices after calling this function!
-void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
-    if ((A.rows != A.cols) || L == NULL || U == NULL) {
+FUNC_DEF void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
+    if ((A.rows != A.cols) || (L == NULL) || (U == NULL)) {
         return;  // Invalid operation
     }
     *L = identity_matrix(A.rows);
@@ -874,8 +936,8 @@ void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
 }
 
 // Remember to free L and U matrices after calling this function!
-void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
-    if ((A.rows != A.cols) || L == NULL || U == NULL) {
+FUNC_DEF void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
+    if ((A.rows != A.cols) || (L == NULL) || (U == NULL)) {
         return;  // Invalid operation
     }
     // Crout Decomposition
@@ -905,8 +967,165 @@ void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
     }
 }
 
+// Remember to free Q and R matrices after calling this function!
+FUNC_DEF void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R) {
+    if ((A.rows != A.cols) || (Q == NULL) || (R == NULL)) {
+        return;  // Invalid operation
+    }
+    *Q = copy_matrix(A);
+    *R = init_matrix(A.rows, A.cols, 0.0);
+    if ((Q->data == NULL) || (R->data == NULL)) {
+    qr_decomposition_safe_exit:
+        free_matrix(Q);
+        free_matrix(R);
+        return;
+    }
+    for (size_t i = 0; i < A.cols; i++) {
+        Vector ai = vector_from_matrix_column(A, i);
+        if (ai.data == NULL) {
+            goto qr_decomposition_safe_exit;
+        }
+        // Gram-Schmidt process
+        for (size_t j = 0; j < i; j++) {
+            Vector qj = vector_from_matrix_column(*Q, j);
+            if (qj.data == NULL) {
+                free_vector(&ai);
+                goto qr_decomposition_safe_exit;
+            }
+            R->data[j][i] = dot_product(qj, ai);
+            for (size_t k = 0; k < A.rows; k++) {
+                Q->data[k][i] -= R->data[j][i] * qj.data[k];
+            }
+            free_vector(&qj);
+        }
+        free_vector(&ai);
+        Vector qi = vector_from_matrix_column(*Q, i);
+        if (qi.data == NULL) {
+            goto qr_decomposition_safe_exit;
+        }
+        R->data[i][i] = euclidean_norm(qi);
+        for (size_t k = 0; k < A.rows; k++) {
+            Q->data[k][i] = qi.data[k] / R->data[i][i];
+        }
+        free_vector(&qi);
+    }
+}
+
 // Remember to free the returned matrix after calling this function!
-Matrix matrix_inverse(const Matrix A) {
+FUNC_DEF Matrix householder_matrix(const Vector vec) {
+    Matrix matrix = identity_matrix(vec.len);
+    data_type norm_squared = 0.0;
+    for (size_t i = 0; i < vec.len; i++) {
+        norm_squared += vec.data[i] * vec.data[i];
+    }
+    for (size_t i = 0; i < matrix.rows; i++) {
+        for (size_t j = 0; j < matrix.cols; j++) {
+            matrix.data[i][j] -= (2.0 * vec.data[i] * vec.data[j]) / norm_squared;
+        }
+    }
+    return matrix;
+}
+
+// Remember to free the matrices U and H after calling this function!
+// Decomposition A = U * H * U^T,
+// with H in upper Hessenberg form and U orthogonal
+FUNC_DEF void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H) {
+    if ((A.rows != A.cols) || (U == NULL) || (H == NULL)) {
+        return;  // Invalid operation
+    }
+    *U = identity_matrix(A.rows);
+    *H = copy_matrix(A);
+    if ((H->data == NULL) || (U->data == NULL)) {
+    hessenberg_matrix_safe_exit:
+        free_matrix(H);
+        free_matrix(U);
+        return;
+    }
+    for (size_t i = 1; (i + 1) < A.rows; i++) {
+        Vector v = alloc_vector(H->rows - i);
+        for (size_t j = 0; j < v.len; j++) {
+            v.data[j] = H->data[i + j][i - 1];
+        }
+        v.data[0] += sign(v.data[0]) * euclidean_norm(v);
+        Matrix householder = householder_matrix(v);
+        free_vector(&v);
+        if (householder.data == NULL) {
+            goto hessenberg_matrix_safe_exit;
+        }
+        Matrix P = identity_matrix(H->rows);
+        if (P.data == NULL) {
+            free_matrix(&householder);
+            goto hessenberg_matrix_safe_exit;
+        }
+        const size_t offset = H->rows - householder.rows;
+        for (size_t i = offset; i < P.rows; i++) {
+            for (size_t j = offset; j < P.cols; j++) {
+                P.data[i][j] = householder.data[i - offset][j - offset];
+            }
+        }
+        free_matrix(&householder);
+        matrix_replace(H, mul_3_matrices(P, *H, P));
+        matrix_replace(U, mul_matrices(*U, P));
+        free_matrix(&P);
+        if ((H->data == NULL) || (U->data == NULL)) {
+            goto hessenberg_matrix_safe_exit;
+        }
+    }
+}
+
+// Remember to free the matrices U and T after calling this function!
+FUNC_DEF void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T) {
+    if ((A.rows != A.cols) || (U == NULL) || (T == NULL)) {
+        return;  // Invalid operation
+    }
+    upper_hessenberg_matrix(A, U, T);
+    if ((U->data == NULL) || (T->data == NULL)) {
+    schur_decomposition_safe_exit:
+        free_matrix(U);
+        free_matrix(T);
+        return;
+    }
+    // QR algorithm
+    for (size_t i = 0; i < MAX_ITERATIONS; i++) {
+        Matrix Q = (Matrix){0};
+        Matrix R = (Matrix){0};
+        qr_decomposition(*T, &Q, &R);
+        if ((R.data == NULL) || (Q.data == NULL)) {
+            free_matrix(&Q);
+            free_matrix(&R);
+            goto schur_decomposition_safe_exit;
+        }
+        matrix_replace(T, mul_matrices(R, Q));
+        matrix_replace(U, mul_matrices(*U, Q));
+        free_matrix(&Q);
+        free_matrix(&R);
+        if ((U->data == NULL) || (T->data == NULL)) {
+            goto schur_decomposition_safe_exit;
+        }
+        if (matrix_is_upper_triangular(*T)) {
+            break;
+        }
+    }
+}
+
+// Remember to free the returned vector after calling this function!
+Vector eigenvalues(const Matrix A) {
+    Matrix U = (Matrix){0};
+    Matrix T = (Matrix){0};
+    schur_decomposition(A, &U, &T);
+    Vector eig = alloc_vector(T.rows);
+    if ((eig.data != NULL) && (matrix_is_upper_triangular(T))) {
+        for (size_t i = 0; i < T.rows; i++) {
+            eig.data[i] = T.data[i][i];
+        }
+    }
+    free_matrix(&U);
+    free_matrix(&T);
+    return eig;
+}
+
+// Remember to free the returned matrix after calling this function!
+FUNC_DEF Matrix matrix_inverse(const Matrix A) {
     if (A.rows != A.cols) {
         return (Matrix){0};  // Invalid operation
     }
@@ -949,7 +1168,7 @@ Matrix matrix_inverse(const Matrix A) {
     return inv;
 }
 
-Matrix pseudo_inverse(const Matrix A) {
+FUNC_DEF Matrix pseudo_inverse(const Matrix A) {
     Matrix pseudo_inv, mul, inv;
     Matrix transpose = matrix_transpose(A);
     if (A.rows > A.cols) {
@@ -972,7 +1191,7 @@ Matrix pseudo_inverse(const Matrix A) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix sum_matrices(const Matrix A, const Matrix B) {
+FUNC_DEF Matrix sum_matrices(const Matrix A, const Matrix B) {
     if ((A.rows != B.rows) || (A.cols != B.cols)) {
         return (Matrix){0};  // Invalid operation
     }
@@ -988,7 +1207,7 @@ Matrix sum_matrices(const Matrix A, const Matrix B) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix sub_matrices(const Matrix A, const Matrix B) {
+FUNC_DEF Matrix sub_matrices(const Matrix A, const Matrix B) {
     if ((A.rows != B.rows) || (A.cols != B.cols)) {
         return (Matrix){0};  // Invalid operation
     }
@@ -1003,7 +1222,20 @@ Matrix sub_matrices(const Matrix A, const Matrix B) {
     return result;
 }
 
-bool matrices_are_equal(const Matrix A, const Matrix B) {
+FUNC_DEF data_type max_diff_matrices(const Matrix A, const Matrix previous_A) {
+    if ((A.rows != previous_A.rows) || (A.cols != previous_A.cols)) {
+        return INFINITY;  // Invalid operation
+    }
+    data_type error = 0.0;
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < A.cols; j++) {
+            error = maximum(fabs(A.data[i][j] - previous_A.data[i][j]), error);
+        }
+    }
+    return error;
+}
+
+FUNC_DEF bool matrices_are_equal(const Matrix A, const Matrix B) {
     if ((A.rows != B.rows) || (A.cols != B.cols)) {
         return false;
     }
@@ -1017,8 +1249,35 @@ bool matrices_are_equal(const Matrix A, const Matrix B) {
     return true;
 }
 
+FUNC_DEF bool matrix_is_orthogonal(const Matrix A) {
+    if (A.rows != A.cols) {
+        return false;
+    }
+    Matrix transpose = matrix_transpose(A);
+    Matrix mul = mul_matrices(transpose, A);
+    Matrix identity = identity_matrix(A.rows);
+    const bool are_equal = matrices_are_equal(mul, identity);
+    free_matrix(&transpose);
+    free_matrix(&mul);
+    free_matrix(&identity);
+    return are_equal;
+}
+
+FUNC_DEF bool matrix_is_upper_triangular(const Matrix A) {
+    if (A.rows != A.cols) {
+        return false;  // Invalid operation
+    }
+    data_type error = 0.0;
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < i; j++) {
+            error = maximum(error, fabs(A.data[i][j]));
+        }
+    }
+    return (error < PRECISION);
+}
+
 // Remember to free the returned vector after calling this function!
-Vector back_substitution(const Matrix A, const Vector b) {
+FUNC_DEF Vector back_substitution(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1036,7 +1295,7 @@ Vector back_substitution(const Matrix A, const Vector b) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector forward_substitution(const Matrix A, const Vector b) {
+FUNC_DEF Vector forward_substitution(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1054,7 +1313,7 @@ Vector forward_substitution(const Matrix A, const Vector b) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector gaussian_elimination(const Matrix A, const Vector b) {
+FUNC_DEF Vector gaussian_elimination(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1075,13 +1334,9 @@ Vector gaussian_elimination(const Matrix A, const Vector b) {
         }
         if (r != k) {
             for (size_t i = k; i < A_copied.rows; i++) {
-                w = A_copied.data[k][i];
-                A_copied.data[k][i] = A_copied.data[r][i];
-                A_copied.data[r][i] = w;
+                swap(&A_copied.data[k][i], &A_copied.data[r][i]);
             }
-            w = b_copied.data[k];
-            b_copied.data[k] = b_copied.data[r];
-            b_copied.data[r] = w;
+            swap(&b_copied.data[k], &b_copied.data[r]);
         }
     }
     // Gaussian elimination
@@ -1101,7 +1356,7 @@ Vector gaussian_elimination(const Matrix A, const Vector b) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector gauss_jordan(const Matrix A, const Vector b) {
+FUNC_DEF Vector gauss_jordan(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1112,8 +1367,8 @@ Vector gauss_jordan(const Matrix A, const Vector b) {
     }
     for (size_t k = 0; k < A_copied.rows; k++) {
         for (size_t i = 0; i < A_copied.rows; i++) {
-            data_type m = A_copied.data[i][k] / A_copied.data[k][k];
-            data_type p = A_copied.data[k][k];
+            const data_type m = A_copied.data[i][k] / A_copied.data[k][k];
+            const data_type p = A_copied.data[k][k];
             if (i == k) {
                 for (size_t j = k; j < A_copied.cols; j++) {
                     A_copied.data[i][j] /= p;
@@ -1132,7 +1387,7 @@ Vector gauss_jordan(const Matrix A, const Vector b) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector lu_solving(const Matrix A, const Vector b) {
+FUNC_DEF Vector lu_solving(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1151,19 +1406,8 @@ Vector lu_solving(const Matrix A, const Vector b) {
     return x;
 }
 
-data_type get_max_diff(const Vector x, const Vector previous_x) {
-    if (x.len != previous_x.len) {
-        return INFINITY;  // Invalid operation
-    }
-    data_type error = 0.0;
-    for (size_t i = 0; i < x.len; i++) {
-        error = maximum(fabs(x.data[i] - previous_x.data[i]), error);
-    }
-    return error;
-}
-
 // Remember to free the returned vector after calling this function!
-Vector jacobi_method(const Matrix A, const Vector b) {
+FUNC_DEF Vector jacobi_method(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1184,7 +1428,7 @@ Vector jacobi_method(const Matrix A, const Vector b) {
                 }
                 x.data[i] = sum / A.data[i][i];
             }
-            const data_type error = get_max_diff(x, previous_x);
+            const data_type error = max_diff_vectors(x, previous_x);
             free_vector(&previous_x);
             if (error < PRECISION) {
                 break;
@@ -1195,7 +1439,7 @@ Vector jacobi_method(const Matrix A, const Vector b) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector gauss_seidel(const Matrix A, const Vector b) {
+FUNC_DEF Vector gauss_seidel(const Matrix A, const Vector b) {
     if ((A.rows != A.cols) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
@@ -1216,7 +1460,7 @@ Vector gauss_seidel(const Matrix A, const Vector b) {
                 }
                 x.data[i] = sum / A.data[i][i];
             }
-            const data_type error = get_max_diff(x, previous_x);
+            const data_type error = max_diff_vectors(x, previous_x);
             free_vector(&previous_x);
             if (error < PRECISION) {
                 break;
@@ -1226,7 +1470,7 @@ Vector gauss_seidel(const Matrix A, const Vector b) {
     return x;
 }
 
-bool columns_condition(const Matrix A) {
+FUNC_DEF bool columns_condition(const Matrix A) {
     if (A.rows != A.cols) {
         return false;  // Invalid operation
     }
@@ -1244,7 +1488,7 @@ bool columns_condition(const Matrix A) {
     return true;
 }
 
-bool rows_condition(const Matrix A) {
+FUNC_DEF bool rows_condition(const Matrix A) {
     if (A.rows != A.cols) {
         return false;  // Invalid operation
     }
@@ -1262,7 +1506,7 @@ bool rows_condition(const Matrix A) {
     return true;
 }
 
-bool sassenfeld_condition(const Matrix A) {
+FUNC_DEF bool sassenfeld_condition(const Matrix A) {
     if (A.rows != A.cols) {
         return false;  // Invalid operation
     }
@@ -1287,7 +1531,7 @@ bool sassenfeld_condition(const Matrix A) {
     return condition;
 }
 
-data_type lagrange_interpolation(const Vector x, const Vector y, const data_type value) {
+FUNC_DEF data_type lagrange_interpolation(const Vector x, const Vector y, const data_type value) {
     if (x.len != y.len) {
         return 0.0;  // Invalid operation
     }
@@ -1304,7 +1548,7 @@ data_type lagrange_interpolation(const Vector x, const Vector y, const data_type
     return sum;
 }
 
-data_type linear_regression(const Vector x, const Vector y, data_type *const a, data_type *const b) {
+FUNC_DEF data_type linear_regression(const Vector x, const Vector y, data_type *const a, data_type *const b) {
     if ((x.len != y.len) || (a == NULL) || (b == NULL)) {
         return 0.0;  // Invalid operation
     }
@@ -1325,7 +1569,7 @@ data_type linear_regression(const Vector x, const Vector y, data_type *const a, 
 }
 
 // Remember to free the returned vector after calling this function!
-Vector polynomial_regression(const Vector x, const Vector y, const size_t order) {
+FUNC_DEF Vector polynomial_regression(const Vector x, const Vector y, const size_t order) {
     if ((x.len != y.len) || (x.len < (order + 1))) {
         return (Vector){0};  // Invalid operation
     }
@@ -1356,7 +1600,7 @@ Vector polynomial_regression(const Vector x, const Vector y, const size_t order)
     return coefficients;
 }
 
-data_type compute_polynomial(const Vector coefficients, const data_type x) {
+FUNC_DEF data_type compute_polynomial(const Vector coefficients, const data_type x) {
     data_type y = 0.0;
     for (size_t i = 0; i < coefficients.len; i++) {
         y += coefficients.data[i] * power(x, i);

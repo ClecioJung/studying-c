@@ -47,3 +47,8 @@ exponential
 square-root
 trace
 matrix-symmetric
+qr-decomposition
+householder-matrix
+upper-hessenberg-matrix
+schur-decomposition
+eigenvalues

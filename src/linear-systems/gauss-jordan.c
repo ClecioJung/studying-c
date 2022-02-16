@@ -7,7 +7,7 @@
 int main(void) {
     Matrix A = alloc_matrix(4, 4);
     Vector b = alloc_vector(4);
-    printf("Matrix A: \n");
+    printf("Matrix A:\n");
     A.data[0][0] = 10.0;
     A.data[0][1] = -2.0;
     A.data[0][2] = -1.0;
@@ -25,13 +25,13 @@ int main(void) {
     A.data[3][2] = -2.0;
     A.data[3][3] = 10.0;
     print_matrix(A);
-    printf("Vector b: \n");
+    printf("Vector b:\n");
     b.data[0] = 3.0;
     b.data[1] = 15.0;
     b.data[2] = 27.0;
     b.data[3] = -9.0;
     print_vector(b);
-    printf("Vector x: \n");
+    printf("Vector x:\n");
     Vector x = gauss_jordan(A, b);
     print_vector(x);
     free_vector(&x);

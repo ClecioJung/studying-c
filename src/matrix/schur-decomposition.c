@@ -24,21 +24,26 @@ int main(void) {
     A.data[3][2] = 4.0;
     A.data[3][3] = 1.0;
     print_matrix(A);
-    Matrix L, U;
-    lu_decomposition(A, &L, &U);
-    printf("Matrix L:\n");
-    print_matrix(L);
+    Matrix U, T;
+    schur_decomposition(A, &U, &T);
     printf("Matrix U:\n");
     print_matrix(U);
-    printf("L * U =\n");
-    Matrix mul = mul_matrices(L, U);
+    printf("Matrix T:\n");
+    print_matrix(T);
+    if (matrix_is_orthogonal(U)) {
+        printf("The matrix U is orthogonal!\n\n");
+    }
+    printf("U * T * U^T =\n");
+    Matrix transposeU = matrix_transpose(U);
+    Matrix mul = mul_3_matrices(U, T, transposeU);
     print_matrix(mul);
     if (matrices_are_equal(mul, A)) {
-        printf("This equals to the A matrix!\nSo, we calculated the LU decomposition corectly!\n");
+        printf("This equals to the A matrix!\nSo, we calculated the Schur decomposition corectly!\n");
     }
     free_matrix(&A);
-    free_matrix(&L);
     free_matrix(&U);
+    free_matrix(&T);
+    free_matrix(&transposeU);
     free_matrix(&mul);
     return EXIT_SUCCESS;
 }

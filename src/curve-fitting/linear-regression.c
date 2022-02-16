@@ -14,7 +14,7 @@ int main(void) {
     y.data[1] = 6.9;
     y.data[2] = 9.1;
     data_type a, b;
-    printf("Linear regression resulted in: \n");
+    printf("Linear regression resulted in:\n");
     data_type r = linear_regression(x, y, &a, &b);
     printf("a: %g\n", a);
     printf("b: %g\n", b);

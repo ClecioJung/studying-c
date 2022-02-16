@@ -6,7 +6,7 @@
 
 int main(void) {
     Matrix A = alloc_matrix(2, 3);
-    printf("Matrix A: \n");
+    printf("Matrix A:\n");
     A.data[0][0] = 1.0;
     A.data[0][1] = 2.0;
     A.data[0][2] = 3.0;
@@ -14,7 +14,7 @@ int main(void) {
     A.data[1][1] = 5.0;
     A.data[1][2] = 6.0;
     print_matrix(A);
-    printf("Pseudo inverse matrix: \n");
+    printf("Pseudo inverse matrix:\n");
     Matrix pseudo_inv = pseudo_inverse(A);
     print_matrix(pseudo_inv);
     printf("pseudo_inverse(A) * A =\n");

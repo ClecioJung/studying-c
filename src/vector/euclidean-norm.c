@@ -6,7 +6,7 @@
 
 int main(void) {
     Vector a = alloc_vector(3);
-    printf("Vector a: \n");
+    printf("Vector a:\n");
     a.data[0] = 4.0;
     a.data[1] = 3.0;
     a.data[2] = 0.0;
