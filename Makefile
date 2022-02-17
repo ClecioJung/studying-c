@@ -7,6 +7,7 @@
 # ----------------------------------------
 
 # Folders
+BDIR = bin
 DDIR = .deps
 SDIR = src
 
@@ -18,10 +19,10 @@ SRCS = $(call rwildcard,$(SDIR),*.c)
 #SRCS = $(wildcard $(SDIR)/**/*.c $(SDIR)/**/*.cpp)
 
 # Target files
-TRGS = $(patsubst %,%,$(basename $(notdir $(SRCS))))
+TRGS = $(addprefix $(BDIR)/,$(patsubst %,%,$(basename $(notdir $(SRCS)))))
 
 # Dependency files
-DEPS = $(addprefix $(DDIR)/,$(patsubst %,%.d,$(TRGS)))
+DEPS = $(addprefix $(DDIR)/,$(patsubst %,%.d,$(patsubst %,%,$(basename $(notdir $(SRCS))))))
 
 # Gitignore file
 GITIGNORE = .gitignore
@@ -38,8 +39,8 @@ CXX = g++
 INCLUDES = 
 
 # Flags for compiler
-CFLAGS = -W -Wall -Wextra -pedantic -O2 -std=c11
-CXXFLAGS = -W -Wall -Wextra -pedantic -O2 -std=c++11
+CFLAGS = -W -Wall -Wextra -pedantic -Werror -O2 -std=c11
+CXXFLAGS = -W -Wall -Wextra -pedantic -Werror -O2 -std=c++11
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DDIR)/$*.Td
 
 # ----------------------------------------
@@ -57,25 +58,17 @@ GREEN = \033[0;32m
 
 all: $(TRGS)
 
-%: $(SDIR)/**/%.c
-%: $(SDIR)/**/%.c $(DDIR)/%.d | $(DDIR)
+ $(BDIR)/%: $(SDIR)/**/%.c
+ $(BDIR)/%: $(SDIR)/**/%.c $(DDIR)/%.d | $(DDIR) $(BDIR)
 	@ echo "${GREEN}Building target: ${BOLD}$@${GREEN}, using dependencies: ${BOLD}$^${NORMAL}"
 	$(CC) $(CFLAGS) $(DEPFLAGS) $(filter %.c %.s %.o,$^) -o $@ $(INCLUDES)
 	mv -f $(DDIR)/$*.Td $(DDIR)/$*.d && touch $@
-	@if [ $(shell grep -Fxq "$@" ${GITIGNORE}; echo $$?) = 1 ] ; then \
-		echo "${GREEN}Adding target ${BOLD}$@${GREEN} to ${GITIGNORE}${NORMAL}" ; \
-		echo "$@" >> ${GITIGNORE} ; \
-	fi
 
-%: $(SDIR)/**/%.cpp
-%: $(SDIR)/**/%.cpp $(DDIR)/%.d | $(DDIR)
+ $(BDIR)/%: $(SDIR)/**/%.cpp
+ $(BDIR)/%: $(SDIR)/**/%.cpp $(DDIR)/%.d | $(DDIR) $(BDIR)
 	@ echo "${GREEN}Building target: ${BOLD}$@${GREEN}, using dependencies: ${BOLD}$^${NORMAL}"
 	$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(filter %.cpp %.s %.o,$^) -o $@ $(INCLUDES)
 	mv -f $(DDIR)/$*.Td $(DDIR)/$*.d && touch $@
-	@if [ $(shell grep -Fxq "$@" ${GITIGNORE}; echo $$?) = 1 ] ; then \
-		echo "${GREEN}Adding target ${BOLD}$@${GREEN} to ${GITIGNORE}${NORMAL}" ; \
-		echo "$@" >> ${GITIGNORE} ; \
-	fi
 
 $(DDIR)/%.d: ;
 .PRECIOUS: $(DDIR)/%.d
@@ -90,9 +83,13 @@ $(DDIR):
 	@ echo "${GREEN}Creating directory: ${BOLD}$@${NORMAL}"
 	mkdir -p $@
 
+$(BDIR):
+	@ echo "${GREEN}Creating directory: ${BOLD}$@${NORMAL}"
+	mkdir -p $@
+
 clean:
 	@ echo "${GREEN}Cleaning up${NORMAL}"
-	rm -rf $(DDIR)/ $(TRGS)
+	rm -rf $(DDIR)/ $(BDIR)/
 
 remade: clean all
 
