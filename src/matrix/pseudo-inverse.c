@@ -7,12 +7,12 @@
 int main(void) {
     Matrix A = matrix_alloc(2, 3);
     printf("Matrix A:\n");
-    A.data[0][0] = 1.0;
-    A.data[0][1] = 2.0;
-    A.data[0][2] = 3.0;
-    A.data[1][0] = 4.0;
-    A.data[1][1] = 5.0;
-    A.data[1][2] = 6.0;
+    matrix_set(A, 0, 0, 1.0);
+    matrix_set(A, 0, 1, 2.0);
+    matrix_set(A, 0, 2, 3.0);
+    matrix_set(A, 1, 0, 4.0);
+    matrix_set(A, 1, 1, 5.0);
+    matrix_set(A, 1, 2, 6.0);
     matrix_print(A);
     printf("Pseudo inverse matrix:\n");
     Matrix pseudo_inv = pseudo_inverse(A);

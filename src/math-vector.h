@@ -49,7 +49,7 @@ typedef struct {
 } Vector;
 
 typedef struct {
-    data_type **data;
+    data_type *data;
     size_t rows;
     size_t cols;
 } Matrix;
@@ -61,7 +61,7 @@ FUNC_DEF bool are_close(const data_type a, const data_type b, const data_type de
 FUNC_DEF data_type maximum(const data_type a, const data_type b);
 FUNC_DEF data_type minimum(const data_type a, const data_type b);
 FUNC_DEF data_type sign(const data_type value);
-FUNC_DEF data_type generate_random_data_type(const data_type min, const data_type max);
+FUNC_DEF data_type random_number(const data_type min, const data_type max);
 FUNC_DEF data_type square_root(const data_type value);
 FUNC_DEF data_type power(const data_type base, uint64_t expoent);
 FUNC_DEF data_type exponential(const data_type value);
@@ -70,8 +70,12 @@ FUNC_DEF data_type exponential(const data_type value);
 FUNC_DEF Vector vector_alloc(const size_t len);
 FUNC_DEF void vector_dealloc(Vector *const vector);
 FUNC_DEF Vector vector_realloc(Vector *const vector, const size_t len);
+FUNC_DEF bool vector_is_valid(const Vector vector);
+FUNC_DEF void vector_set(const Vector vector, const size_t index, const data_type value);
+FUNC_DEF data_type vector_get(const Vector vector, const size_t index);
 FUNC_DEF Vector vector_random(const size_t len, const data_type min, const data_type max);
 FUNC_DEF Vector vector_init(const size_t len, const data_type value);
+FUNC_DEF void vector_assign(Vector *const vector, const Vector equals);
 FUNC_DEF void vector_replace(Vector *const vector, const Vector equals);
 FUNC_DEF Vector vector_copy(const Vector vector);
 FUNC_DEF void vector_print(const Vector vector);
@@ -102,10 +106,15 @@ FUNC_DEF size_t binary_search(const Vector vec, const data_type value);
 // Matrix functions
 FUNC_DEF Matrix matrix_alloc(const size_t rows, const size_t cols);
 FUNC_DEF void matrix_dealloc(Matrix *const matrix);
+FUNC_DEF bool matrix_is_valid(const Matrix A);
+FUNC_DEF void matrix_set(const Matrix A, const size_t row, const size_t col, const data_type value);
+FUNC_DEF data_type matrix_get(const Matrix A, const size_t row, const size_t col);
+FUNC_DEF bool matrix_is_squared(const Matrix A);
 FUNC_DEF Matrix matrix_random(const size_t rows, const size_t cols, const data_type min, const data_type max);
 FUNC_DEF Matrix matrix_init(const size_t rows, const size_t cols, const data_type value);
 FUNC_DEF Matrix matrix_identity(const size_t rows);
 FUNC_DEF Matrix matrix_copy(const Matrix matrix);
+FUNC_DEF void matrix_assign(Matrix *const matrix, const Matrix equals);
 FUNC_DEF void matrix_replace(Matrix *const matrix, const Matrix equals);
 FUNC_DEF void matrix_print(const Matrix matrix);
 FUNC_DEF Vector vector_from_matrix_column(const Matrix A, const size_t col);
@@ -194,7 +203,7 @@ FUNC_DEF data_type sign(const data_type value) {
     return ((value > 0) ? 1.0 : -1.0);
 }
 
-FUNC_DEF data_type generate_random_data_type(const data_type min, const data_type max) {
+FUNC_DEF data_type random_number(const data_type min, const data_type max) {
     const data_type rand_unitary = ((data_type)rand()) / ((data_type)RAND_MAX);
     return rand_unitary * (max - min) + min;
 }
@@ -284,13 +293,31 @@ FUNC_DEF Vector vector_realloc(Vector *const vector, const size_t len) {
     return *vector;
 }
 
+FUNC_DEF bool vector_is_valid(const Vector vector) {
+    return (vector.data != NULL);
+}
+
+FUNC_DEF void vector_set(const Vector vector, const size_t index, const data_type value) {
+    if (vector_is_valid(vector) || (index >= vector.len)) {
+        return;
+    }
+    vector.data[index] = value;
+}
+
+FUNC_DEF data_type vector_get(const Vector vector, const size_t index) {
+    if (vector_is_valid(vector) || (index >= vector.len)) {
+        return NAN;
+    }
+    return vector.data[index];
+}
+
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector vector_random(const size_t len, const data_type min, const data_type max) {
     Vector vector = vector_alloc(len);
-    if (vector.data != NULL) {
+    if (vector_is_valid(vector)) {
         srand(time(NULL));
         for (size_t i = 0; i < len; i++) {
-            vector.data[i] = generate_random_data_type(min, max);
+            vector.data[i] = random_number(min, max);
         }
     }
     return vector;
@@ -299,7 +326,7 @@ FUNC_DEF Vector vector_random(const size_t len, const data_type min, const data_
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector vector_init(const size_t len, const data_type value) {
     Vector vector = vector_alloc(len);
-    if (vector.data != NULL) {
+    if (vector_is_valid(vector)) {
         for (size_t i = 0; i < len; i++) {
             vector.data[i] = value;
         }
@@ -307,16 +334,20 @@ FUNC_DEF Vector vector_init(const size_t len, const data_type value) {
     return vector;
 }
 
-FUNC_DEF void vector_replace(Vector *const vector, const Vector equals) {
-    vector_dealloc(vector);
+FUNC_DEF void vector_assign(Vector *const vector, const Vector equals) {
     vector->data = equals.data;
     vector->len = equals.len;
+}
+
+FUNC_DEF void vector_replace(Vector *const vector, const Vector equals) {
+    vector_dealloc(vector);
+    vector_assign(vector, equals);
 }
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector vector_copy(const Vector vector) {
     Vector new_vec = vector_alloc(vector.len);
-    if (new_vec.data != NULL) {
+    if (vector_is_valid(new_vec)) {
         for (size_t i = 0; i < vector.len; i++) {
             new_vec.data[i] = vector.data[i];
         }
@@ -335,7 +366,7 @@ FUNC_DEF void vector_print(const Vector vector) {
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector vector_scale(const data_type scalar, const Vector vector) {
     Vector new_vec = vector_alloc(vector.len);
-    if (new_vec.data != NULL) {
+    if (vector_is_valid(new_vec)) {
         for (size_t i = 0; i < vector.len; i++) {
             new_vec.data[i] = scalar * vector.data[i];
         }
@@ -388,7 +419,7 @@ FUNC_DEF Vector vector_sum(const Vector a, const Vector b) {
         return (Vector){0};  // Invalid operation
     }
     Vector new_vec = vector_alloc(a.len);
-    if (new_vec.data != NULL) {
+    if (vector_is_valid(new_vec)) {
         for (size_t i = 0; i < a.len; i++) {
             new_vec.data[i] = a.data[i] + b.data[i];
         }
@@ -402,7 +433,7 @@ FUNC_DEF Vector vector_sub(const Vector a, const Vector b) {
         return (Vector){0};  // Invalid operation
     }
     Vector new_vec = vector_alloc(a.len);
-    if (new_vec.data != NULL) {
+    if (vector_is_valid(new_vec)) {
         for (size_t i = 0; i < a.len; i++) {
             new_vec.data[i] = a.data[i] - b.data[i];
         }
@@ -657,22 +688,11 @@ FUNC_DEF Matrix matrix_alloc(const size_t rows, const size_t cols) {
         return (Matrix){0};
     }
     Matrix matrix = (Matrix){
-        .data = (data_type **)malloc(rows * sizeof(data_type *)),
+        .data = (data_type *)malloc(rows * cols * sizeof(data_type)),
         .rows = rows,
         .cols = cols,
     };
-    if (matrix.data != NULL) {
-        for (size_t i = 0; i < rows; i++) {
-            matrix.data[i] = NULL;
-        }
-        for (size_t i = 0; i < rows; i++) {
-            matrix.data[i] = (data_type *)malloc(cols * sizeof(data_type));
-            if (matrix.data[i] == NULL) {
-                matrix_dealloc(&matrix);
-                break;
-            }
-        }
-    } else {
+    if (matrix.data == NULL) {
         matrix.rows = 0;
         matrix.cols = 0;
     }
@@ -683,23 +703,42 @@ FUNC_DEF void matrix_dealloc(Matrix *const matrix) {
     if (matrix == NULL) {
         return;
     }
-    for (size_t i = 0; i < matrix->rows; i++) {
-        free(matrix->data[i]);
-    }
     free(matrix->data);
     matrix->data = NULL;
     matrix->rows = 0;
     matrix->cols = 0;
 }
 
+FUNC_DEF bool matrix_is_valid(const Matrix A) {
+    return (A.data != NULL);
+}
+
+FUNC_DEF void matrix_set(const Matrix A, const size_t row, const size_t col, const data_type value) {
+    if (!matrix_is_valid(A) || (row >= A.rows) || (col >= A.cols)) {
+        return;
+    }
+    A.data[row * A.cols + col] = value;
+}
+
+FUNC_DEF data_type matrix_get(const Matrix A, const size_t row, const size_t col) {
+    if (!matrix_is_valid(A) || (row >= A.rows) || (col >= A.cols)) {
+        return NAN;
+    }
+    return A.data[row * A.cols + col];
+}
+
+FUNC_DEF bool matrix_is_squared(const Matrix A) {
+    return (matrix_is_valid(A) && (A.rows == A.cols));
+}
+
 // Remember to free the matrix after calling this function!
 FUNC_DEF Matrix matrix_random(const size_t rows, const size_t cols, const data_type min, const data_type max) {
     Matrix matrix = matrix_alloc(rows, cols);
-    if (matrix.data != NULL) {
+    if (matrix_is_valid(matrix)) {
         srand(time(NULL));
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < cols; j++) {
-                matrix.data[i][j] = generate_random_data_type(min, max);
+                matrix_set(matrix, i, j, random_number(min, max));
             }
         }
     }
@@ -709,10 +748,10 @@ FUNC_DEF Matrix matrix_random(const size_t rows, const size_t cols, const data_t
 // Remember to free the matrix after calling this function!
 FUNC_DEF Matrix matrix_init(const size_t rows, const size_t cols, const data_type value) {
     Matrix matrix = matrix_alloc(rows, cols);
-    if (matrix.data != NULL) {
+    if (matrix_is_valid(matrix)) {
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < cols; j++) {
-                matrix.data[i][j] = value;
+                matrix_set(matrix, i, j, value);
             }
         }
     }
@@ -722,10 +761,10 @@ FUNC_DEF Matrix matrix_init(const size_t rows, const size_t cols, const data_typ
 // Remember to free the matrix after calling this function!
 FUNC_DEF Matrix matrix_identity(const size_t rows) {
     Matrix matrix = matrix_alloc(rows, rows);
-    if (matrix.data != NULL) {
+    if (matrix_is_valid(matrix)) {
         for (size_t i = 0; i < rows; i++) {
             for (size_t j = 0; j < rows; j++) {
-                matrix.data[i][j] = (i == j ? 1 : 0);
+                matrix_set(matrix, i, j, (i == j ? 1.0 : 0.0));
             }
         }
     }
@@ -735,21 +774,25 @@ FUNC_DEF Matrix matrix_identity(const size_t rows) {
 // Remember to free the matrix after calling this function!
 FUNC_DEF Matrix matrix_copy(const Matrix matrix) {
     Matrix new_matrix = matrix_alloc(matrix.rows, matrix.cols);
-    if (new_matrix.data != NULL) {
+    if (matrix_is_valid(new_matrix)) {
         for (size_t i = 0; i < matrix.rows; i++) {
             for (size_t j = 0; j < matrix.cols; j++) {
-                new_matrix.data[i][j] = matrix.data[i][j];
+                matrix_set(new_matrix, i, j, matrix_get(matrix, i, j));
             }
         }
     }
     return new_matrix;
 }
 
-FUNC_DEF void matrix_replace(Matrix *const matrix, const Matrix equals) {
-    matrix_dealloc(matrix);
+FUNC_DEF void matrix_assign(Matrix *const matrix, const Matrix equals) {
     matrix->data = equals.data;
     matrix->rows = equals.rows;
     matrix->cols = equals.cols;
+}
+
+FUNC_DEF void matrix_replace(Matrix *const matrix, const Matrix equals) {
+    matrix_dealloc(matrix);
+    matrix_assign(matrix, equals);
 }
 
 FUNC_DEF void matrix_print(const Matrix matrix) {
@@ -761,7 +804,7 @@ FUNC_DEF void matrix_print(const Matrix matrix) {
     for (size_t i = 0; i < matrix.rows; i++) {
         printf("[%zu]: ", i);
         for (size_t j = 0; j < matrix.cols; j++) {
-            const data_type value = fabs(matrix.data[i][j]) > PRECISION ? matrix.data[i][j] : 0.0;
+            const data_type value = fabs(matrix_get(matrix, i, j)) > PRECISION ? matrix_get(matrix, i, j) : 0.0;
             printf("%-10g ", value);
         }
         printf("\n");
@@ -775,9 +818,9 @@ FUNC_DEF Vector vector_from_matrix_column(const Matrix A, const size_t col) {
         return (Vector){0};  // Invalid operation
     }
     Vector vec = vector_alloc(A.rows);
-    if (vec.data != NULL) {
+    if (vector_is_valid(vec)) {
         for (size_t i = 0; i < vec.len; i++) {
-            vec.data[i] = A.data[i][col];
+            vec.data[i] = matrix_get(A, i, col);
         }
     }
     return vec;
@@ -786,10 +829,10 @@ FUNC_DEF Vector vector_from_matrix_column(const Matrix A, const size_t col) {
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Matrix matrix_scale(const data_type scalar, const Matrix A) {
     Matrix result = matrix_alloc(A.rows, A.cols);
-    if (result.data != NULL) {
+    if (matrix_is_valid(result)) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                result.data[i][j] = scalar * A.data[i][j];
+                matrix_set(result, i, j, scalar * matrix_get(A, i, j));
             }
         }
     }
@@ -802,11 +845,11 @@ FUNC_DEF Matrix matrix_mul(const Matrix A, const Matrix B) {
         return (Matrix){0};  // Invalid operation
     }
     Matrix result = matrix_init(A.rows, B.cols, 0.0);
-    if (result.data != NULL) {
+    if (matrix_is_valid(result)) {
         for (size_t i = 0; i < result.rows; i++) {
             for (size_t j = 0; j < result.cols; j++) {
                 for (size_t k = 0; k < A.cols; k++) {
-                    result.data[i][j] += A.data[i][k] * B.data[k][j];
+                    matrix_set(result, i, j, matrix_get(result, i, j) + matrix_get(A, i, k) * matrix_get(B, k, j));
                 }
             }
         }
@@ -830,10 +873,10 @@ FUNC_DEF Vector matrix_mul_vector(const Matrix A, const Vector b) {
         return (Vector){0};  // Invalid operation
     }
     Vector result = vector_init(A.rows, 0.0);
-    if (result.data != NULL) {
+    if (vector_is_valid(result)) {
         for (size_t i = 0; i < result.len; i++) {
             for (size_t k = 0; k < A.cols; k++) {
-                result.data[i] += A.data[i][k] * b.data[k];
+                result.data[i] += matrix_get(A, i, k) * b.data[k];
             }
         }
     }
@@ -843,10 +886,10 @@ FUNC_DEF Vector matrix_mul_vector(const Matrix A, const Vector b) {
 // Remember to free the returned matrix after calling this function!
 FUNC_DEF Matrix matrix_transpose(const Matrix A) {
     Matrix transpose = matrix_alloc(A.cols, A.rows);
-    if (transpose.data != NULL) {
+    if (matrix_is_valid(transpose)) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                transpose.data[j][i] = A.data[i][j];
+                matrix_set(transpose, j, i, matrix_get(A, i, j));
             }
         }
     }
@@ -855,14 +898,14 @@ FUNC_DEF Matrix matrix_transpose(const Matrix A) {
 
 // Remember to free the returned matrix after calling this function!
 FUNC_DEF Matrix matrix_symmetric(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return (Matrix){0};  // Invalid operation
     }
     Matrix sym = matrix_alloc(A.rows, A.cols);
-    if (sym.data != NULL) {
+    if (matrix_is_valid(sym)) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                sym.data[i][j] = (A.data[i][j] + A.data[j][i]) / 2.0;
+                matrix_set(sym, i, j, (matrix_get(A, i, j) + matrix_get(A, j, i)) / 2.0);
             }
         }
     }
@@ -871,14 +914,14 @@ FUNC_DEF Matrix matrix_symmetric(const Matrix A) {
 
 // Remember to free the returned matrix after calling this function!
 FUNC_DEF Matrix matrix_skew_symmetric(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return (Matrix){0};  // Invalid operation
     }
     Matrix skew = matrix_alloc(A.rows, A.cols);
-    if (skew.data != NULL) {
+    if (matrix_is_valid(skew)) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                skew.data[i][j] = (A.data[i][j] - A.data[j][i]) / 2.0;
+                matrix_set(skew, i, j, (matrix_get(A, i, j) - matrix_get(A, j, i)) / 2.0);
             }
         }
     }
@@ -886,36 +929,36 @@ FUNC_DEF Matrix matrix_skew_symmetric(const Matrix A) {
 }
 
 FUNC_DEF data_type trace(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return 0.0;  // Invalid operation
     }
     data_type trace = 0.0;
     for (size_t i = 0; i < A.rows; i++) {
-        trace += A.data[i][i];
+        trace += matrix_get(A, i, i);
     }
     return trace;
 }
 
 FUNC_DEF data_type determinant(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return 0.0;  // Invalid operation
     }
     // Gaussian elimination
     Matrix B = matrix_copy(A);
-    if (B.data == NULL) {
+    if (!matrix_is_valid(B)) {
         return 0.0;
     }
     for (size_t k = 0; (k + 1) < B.rows; k++) {
         for (size_t i = (k + 1); i < B.rows; i++) {
-            const data_type m = B.data[i][k] / B.data[k][k];
+            const data_type m = matrix_get(B, i, k) / matrix_get(B, k, k);
             for (size_t j = (k + 1); j < B.rows; j++) {
-                B.data[i][j] -= m * B.data[k][j];
+                matrix_set(B, i, j, matrix_get(B, i, j) - m * matrix_get(B, k, j));
             }
         }
     }
     data_type det = 1.0;
     for (size_t k = 0; k < B.rows; k++) {
-        det *= B.data[k][k];
+        det *= matrix_get(B, k, k);
     }
     matrix_dealloc(&B);
     return det;
@@ -923,22 +966,22 @@ FUNC_DEF data_type determinant(const Matrix A) {
 
 // Remember to free L and U matrices after calling this function!
 FUNC_DEF void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
-    if ((A.rows != A.cols) || (L == NULL) || (U == NULL)) {
+    if (!matrix_is_squared(A) || (L == NULL) || (U == NULL)) {
         return;  // Invalid operation
     }
     *L = matrix_identity(A.rows);
     *U = matrix_copy(A);
-    if ((L->data == NULL) || (U->data == NULL)) {
+    if (!matrix_is_valid(*L) || !matrix_is_valid(*U)) {
         matrix_dealloc(L);
         matrix_dealloc(U);
         return;
     }
     for (size_t k = 0; (k + 1) < U->rows; k++) {
         for (size_t i = (k + 1); i < U->rows; i++) {
-            L->data[i][k] = U->data[i][k] / U->data[k][k];
-            U->data[i][k] = 0.0;
+            matrix_set(*L, i, k, matrix_get(*U, i, k) / matrix_get(*U, k, k));
+            matrix_set(*U, i, k, 0.0);
             for (size_t j = (k + 1); j < U->rows; j++) {
-                U->data[i][j] -= L->data[i][k] * U->data[k][j];
+                matrix_set(*U, i, j, matrix_get(*U, i, j) - matrix_get(*L, i, k) * matrix_get(*U, k, j));
             }
         }
     }
@@ -946,31 +989,31 @@ FUNC_DEF void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U)
 
 // Remember to free L and U matrices after calling this function!
 FUNC_DEF void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
-    if ((A.rows != A.cols) || (L == NULL) || (U == NULL)) {
+    if (!matrix_is_squared(A) || (L == NULL) || (U == NULL)) {
         return;  // Invalid operation
     }
     // Crout Decomposition
     *L = matrix_init(A.rows, A.cols, 0.0);
     *U = matrix_identity(A.rows);
-    if ((L->data == NULL) || (U->data == NULL)) {
+    if (!matrix_is_valid(*L) || !matrix_is_valid(*U)) {
         matrix_dealloc(L);
         matrix_dealloc(U);
         return;
     }
     for (size_t k = 0; k < A.rows; k++) {
         for (size_t i = k; i < A.rows; i++) {
-            L->data[i][k] = A.data[i][k];
+            matrix_set(*L, i, k, matrix_get(A, i, k));
             for (size_t l = 0; l < k; l++) {
-                L->data[i][k] -= L->data[i][l] * U->data[l][k];
+                matrix_set(*L, i, k, matrix_get(*L, i, k) - matrix_get(*L, i, l) * matrix_get(*U, l, k));
             }
         }
         if ((k + 1) != A.rows) {
             for (size_t j = (k + 1); j < A.rows; j++) {
-                U->data[k][j] = A.data[k][j];
+                matrix_set(*U, k, j, matrix_get(A, k, j));
                 for (size_t l = 0; l < k; l++) {
-                    U->data[k][j] -= L->data[k][l] * U->data[l][j];
+                    matrix_set(*U, k, j, matrix_get(*U, k, j) - matrix_get(*L, k, l) * matrix_get(*U, l, j));
                 }
-                U->data[k][j] /= L->data[k][k];
+                matrix_set(*U, k, j, matrix_get(*U, k, j) / matrix_get(*L, k, k));
             }
         }
     }
@@ -978,12 +1021,12 @@ FUNC_DEF void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *co
 
 // Remember to free Q and R matrices after calling this function!
 FUNC_DEF void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R) {
-    if ((A.rows != A.cols) || (Q == NULL) || (R == NULL)) {
+    if (!matrix_is_squared(A) || (Q == NULL) || (R == NULL)) {
         return;  // Invalid operation
     }
     *Q = matrix_copy(A);
     *R = matrix_init(A.rows, A.cols, 0.0);
-    if ((Q->data == NULL) || (R->data == NULL)) {
+    if (!matrix_is_valid(*Q) || !matrix_is_valid(*R)) {
     qr_decomposition_safe_exit:
         matrix_dealloc(Q);
         matrix_dealloc(R);
@@ -991,30 +1034,30 @@ FUNC_DEF void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R)
     }
     for (size_t i = 0; i < A.cols; i++) {
         Vector ai = vector_from_matrix_column(A, i);
-        if (ai.data == NULL) {
+        if (!vector_is_valid(ai)) {
             goto qr_decomposition_safe_exit;
         }
         // Gram-Schmidt process
         for (size_t j = 0; j < i; j++) {
             Vector qj = vector_from_matrix_column(*Q, j);
-            if (qj.data == NULL) {
+            if (!vector_is_valid(qj)) {
                 vector_dealloc(&ai);
                 goto qr_decomposition_safe_exit;
             }
-            R->data[j][i] = dot_product(qj, ai);
+            matrix_set(*R, j, i, dot_product(qj, ai));
             for (size_t k = 0; k < A.rows; k++) {
-                Q->data[k][i] -= R->data[j][i] * qj.data[k];
+                matrix_set(*Q, k, i, matrix_get(*Q, k, i) - matrix_get(*R, j, i) * qj.data[k]);
             }
             vector_dealloc(&qj);
         }
         vector_dealloc(&ai);
         Vector qi = vector_from_matrix_column(*Q, i);
-        if (qi.data == NULL) {
+        if (!vector_is_valid(qi)) {
             goto qr_decomposition_safe_exit;
         }
-        R->data[i][i] = euclidean_norm(qi);
+        matrix_set(*R, i, i, euclidean_norm(qi));
         for (size_t k = 0; k < A.rows; k++) {
-            Q->data[k][i] = qi.data[k] / R->data[i][i];
+            matrix_set(*Q, k, i, qi.data[k] / matrix_get(*R, i, i));
         }
         vector_dealloc(&qi);
     }
@@ -1029,7 +1072,7 @@ FUNC_DEF Matrix householder_matrix(const Vector vec) {
     }
     for (size_t i = 0; i < matrix.rows; i++) {
         for (size_t j = 0; j < matrix.cols; j++) {
-            matrix.data[i][j] -= (2.0 * vec.data[i] * vec.data[j]) / norm_squared;
+            matrix_set(matrix, i, j, matrix_get(matrix, i, j) - (2.0 * vec.data[i] * vec.data[j]) / norm_squared);
         }
     }
     return matrix;
@@ -1039,12 +1082,12 @@ FUNC_DEF Matrix householder_matrix(const Vector vec) {
 // Decomposition A = U * H * U^T,
 // with H in upper Hessenberg form and U orthogonal
 FUNC_DEF void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H) {
-    if ((A.rows != A.cols) || (U == NULL) || (H == NULL)) {
+    if (!matrix_is_squared(A) || (U == NULL) || (H == NULL)) {
         return;  // Invalid operation
     }
     *U = matrix_identity(A.rows);
     *H = matrix_copy(A);
-    if ((H->data == NULL) || (U->data == NULL)) {
+    if (!matrix_is_valid(*H) || !matrix_is_valid(*U)) {
     hessenberg_matrix_safe_exit:
         matrix_dealloc(H);
         matrix_dealloc(U);
@@ -1053,30 +1096,30 @@ FUNC_DEF void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *c
     for (size_t i = 1; (i + 1) < A.rows; i++) {
         Vector v = vector_alloc(H->rows - i);
         for (size_t j = 0; j < v.len; j++) {
-            v.data[j] = H->data[i + j][i - 1];
+            v.data[j] = matrix_get(*H, i + j, i - 1);
         }
         v.data[0] += sign(v.data[0]) * euclidean_norm(v);
         Matrix householder = householder_matrix(v);
         vector_dealloc(&v);
-        if (householder.data == NULL) {
+        if (!matrix_is_valid(householder)) {
             goto hessenberg_matrix_safe_exit;
         }
         Matrix P = matrix_identity(H->rows);
-        if (P.data == NULL) {
+        if (!matrix_is_valid(P)) {
             matrix_dealloc(&householder);
             goto hessenberg_matrix_safe_exit;
         }
         const size_t offset = H->rows - householder.rows;
         for (size_t i = offset; i < P.rows; i++) {
             for (size_t j = offset; j < P.cols; j++) {
-                P.data[i][j] = householder.data[i - offset][j - offset];
+                matrix_set(P, i, j, matrix_get(householder, i - offset, j - offset));
             }
         }
         matrix_dealloc(&householder);
         matrix_replace(H, matrix_mul_three(P, *H, P));
         matrix_replace(U, matrix_mul(*U, P));
         matrix_dealloc(&P);
-        if ((H->data == NULL) || (U->data == NULL)) {
+        if (!matrix_is_valid(*H) || !matrix_is_valid(*U)) {
             goto hessenberg_matrix_safe_exit;
         }
     }
@@ -1084,11 +1127,11 @@ FUNC_DEF void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *c
 
 // Remember to free the matrices U and T after calling this function!
 FUNC_DEF void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T) {
-    if ((A.rows != A.cols) || (U == NULL) || (T == NULL)) {
+    if (!matrix_is_squared(A) || (U == NULL) || (T == NULL)) {
         return;  // Invalid operation
     }
     upper_hessenberg_matrix(A, U, T);
-    if ((U->data == NULL) || (T->data == NULL)) {
+    if (!matrix_is_valid(*U) || !matrix_is_valid(*T)) {
     schur_decomposition_safe_exit:
         matrix_dealloc(U);
         matrix_dealloc(T);
@@ -1099,7 +1142,7 @@ FUNC_DEF void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const
         Matrix Q = (Matrix){0};
         Matrix R = (Matrix){0};
         qr_decomposition(*T, &Q, &R);
-        if ((R.data == NULL) || (Q.data == NULL)) {
+        if (!matrix_is_valid(R) || !matrix_is_valid(Q)) {
             matrix_dealloc(&Q);
             matrix_dealloc(&R);
             goto schur_decomposition_safe_exit;
@@ -1108,7 +1151,7 @@ FUNC_DEF void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const
         matrix_replace(U, matrix_mul(*U, Q));
         matrix_dealloc(&Q);
         matrix_dealloc(&R);
-        if ((U->data == NULL) || (T->data == NULL)) {
+        if (!matrix_is_valid(*U) || !matrix_is_valid(*T)) {
             goto schur_decomposition_safe_exit;
         }
         if (matrix_is_upper_triangular(*T)) {
@@ -1123,9 +1166,9 @@ Vector eigenvalues(const Matrix A) {
     Matrix T = (Matrix){0};
     schur_decomposition(A, &U, &T);
     Vector eig = vector_alloc(T.rows);
-    if ((eig.data != NULL) && (matrix_is_upper_triangular(T))) {
+    if (vector_is_valid(eig) && matrix_is_upper_triangular(T)) {
         for (size_t i = 0; i < T.rows; i++) {
-            eig.data[i] = T.data[i][i];
+            eig.data[i] = matrix_get(T, i, i);
         }
     }
     matrix_dealloc(&U);
@@ -1135,25 +1178,23 @@ Vector eigenvalues(const Matrix A) {
 
 // Remember to free vec after calling this function!
 FUNC_DEF data_type power_method(const Matrix A, Vector *const vec) {
-    if ((A.rows != A.cols) || (vec == NULL)) {
+    if (!matrix_is_squared(A) || (vec == NULL)) {
         return NAN;  // Invalid operation
     }
     *vec = vector_random(A.rows, 0.0, 1.0);
-    if ((vec->data == NULL)) {
+    if (!vector_is_valid(*vec)) {
     power_method_safe_exit:
         vector_dealloc(vec);
         return NAN;
     }
     data_type eig = 0.0;
     for (size_t i = 0; i < MAX_ITERATIONS; i++) {
-        Vector previous_vec = (Vector){
-            .data = vec->data,
-            .len = vec->len,
-        };
+        Vector previous_vec;
+        vector_assign(&previous_vec, *vec);
         *vec = matrix_mul_vector(A, *vec);
         eig = euclidean_norm(*vec);
         vector_replace(vec, vector_scale((1.0 / eig), *vec));
-        if ((vec->data == NULL) || (previous_vec.data == NULL)) {
+        if (!vector_is_valid(*vec) || !vector_is_valid(previous_vec)) {
             vector_dealloc(&previous_vec);
             goto power_method_safe_exit;
         }
@@ -1168,7 +1209,7 @@ FUNC_DEF data_type power_method(const Matrix A, Vector *const vec) {
 
 // Remember to free the returned matrix after calling this function!
 FUNC_DEF Matrix matrix_inverse(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return (Matrix){0};  // Invalid operation
     }
     // Computes the inverse matrix of A using LU decomposition
@@ -1176,7 +1217,7 @@ FUNC_DEF Matrix matrix_inverse(const Matrix A) {
     lu_decomposition(A, &L, &U);
     Matrix inv = matrix_alloc(A.rows, A.cols);
     Vector b = vector_alloc(A.rows);
-    if ((L.data == NULL) || (U.data == NULL) || (inv.data == NULL) || (b.data == NULL)) {
+    if (!matrix_is_valid(L) || !matrix_is_valid(U) || !matrix_is_valid(inv) || !vector_is_valid(b)) {
         matrix_dealloc(&L);
         matrix_dealloc(&U);
         matrix_dealloc(&inv);
@@ -1188,18 +1229,18 @@ FUNC_DEF Matrix matrix_inverse(const Matrix A) {
             b.data[j] = (j == i) ? 1.0 : 0.0;
         }
         Vector d = forward_substitution(L, b);
-        if (d.data == NULL) {
+        if (!vector_is_valid(d)) {
             matrix_dealloc(&inv);
             break;
         }
         Vector x = back_substitution(U, d);
-        if (x.data == NULL) {
+        if (!vector_is_valid(x)) {
             vector_dealloc(&d);
             matrix_dealloc(&inv);
             break;
         }
         for (size_t j = 0; j < A.rows; j++) {
-            inv.data[j][i] = x.data[j];
+            matrix_set(inv, j, i, x.data[j]);
         }
         vector_dealloc(&d);
         vector_dealloc(&x);
@@ -1238,10 +1279,10 @@ FUNC_DEF Matrix matrix_sum(const Matrix A, const Matrix B) {
         return (Matrix){0};  // Invalid operation
     }
     Matrix result = matrix_alloc(A.rows, A.cols);
-    if (result.data != NULL) {
+    if (matrix_is_valid(result)) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                result.data[i][j] = A.data[i][j] + B.data[i][j];
+                matrix_set(result, i, j, matrix_get(A, i, j) + matrix_get(B, i, j));
             }
         }
     }
@@ -1254,10 +1295,10 @@ FUNC_DEF Matrix matrix_sub(const Matrix A, const Matrix B) {
         return (Matrix){0};  // Invalid operation
     }
     Matrix result = matrix_alloc(A.rows, A.cols);
-    if (result.data != NULL) {
+    if (matrix_is_valid(result)) {
         for (size_t i = 0; i < A.rows; i++) {
             for (size_t j = 0; j < A.cols; j++) {
-                result.data[i][j] = A.data[i][j] - B.data[i][j];
+                matrix_set(result, i, j, matrix_get(A, i, j) - matrix_get(B, i, j));
             }
         }
     }
@@ -1271,7 +1312,7 @@ FUNC_DEF data_type matrix_max_diff(const Matrix A, const Matrix previous_A) {
     data_type error = 0.0;
     for (size_t i = 0; i < A.rows; i++) {
         for (size_t j = 0; j < A.cols; j++) {
-            error = maximum(fabs(A.data[i][j] - previous_A.data[i][j]), error);
+            error = maximum(fabs(matrix_get(A, i, j) - matrix_get(previous_A, i, j)), error);
         }
     }
     return error;
@@ -1283,7 +1324,7 @@ FUNC_DEF bool matrix_are_equal(const Matrix A, const Matrix B) {
     }
     for (size_t i = 0; i < A.rows; i++) {
         for (size_t j = 0; j < A.cols; j++) {
-            if (!are_close(A.data[i][j], B.data[i][j], PRECISION)) {
+            if (!are_close(matrix_get(A, i, j), matrix_get(B, i, j), PRECISION)) {
                 return false;
             }
         }
@@ -1292,7 +1333,7 @@ FUNC_DEF bool matrix_are_equal(const Matrix A, const Matrix B) {
 }
 
 FUNC_DEF bool matrix_is_orthogonal(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return false;
     }
     Matrix transpose = matrix_transpose(A);
@@ -1306,13 +1347,13 @@ FUNC_DEF bool matrix_is_orthogonal(const Matrix A) {
 }
 
 FUNC_DEF bool matrix_is_upper_triangular(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return false;  // Invalid operation
     }
     data_type error = 0.0;
     for (size_t i = 0; i < A.rows; i++) {
         for (size_t j = 0; j < i; j++) {
-            error = maximum(error, fabs(A.data[i][j]));
+            error = maximum(error, fabs(matrix_get(A, i, j)));
         }
     }
     return (error < PRECISION);
@@ -1320,17 +1361,17 @@ FUNC_DEF bool matrix_is_upper_triangular(const Matrix A) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector back_substitution(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Vector x = vector_alloc(b.len);
-    if (x.data != NULL) {
+    if (vector_is_valid(x)) {
         for (size_t i = (b.len - 1); i < b.len; i--) {
             data_type sum = b.data[i];
             for (size_t j = (i + 1); j < b.len; j++) {
-                sum -= A.data[i][j] * x.data[j];
+                sum -= matrix_get(A, i, j) * x.data[j];
             }
-            x.data[i] = sum / A.data[i][i];
+            x.data[i] = sum / matrix_get(A, i, i);
         }
     }
     return x;
@@ -1338,17 +1379,17 @@ FUNC_DEF Vector back_substitution(const Matrix A, const Vector b) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector forward_substitution(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Vector x = vector_alloc(b.len);
-    if (x.data != NULL) {
+    if (vector_is_valid(x)) {
         for (size_t i = 0; i < b.len; i++) {
             data_type sum = b.data[i];
             for (size_t j = 0; j < i; j++) {
-                sum -= A.data[i][j] * x.data[j];
+                sum -= matrix_get(A, i, j) * x.data[j];
             }
-            x.data[i] = sum / A.data[i][i];
+            x.data[i] = sum / matrix_get(A, i, i);
         }
     }
     return x;
@@ -1356,27 +1397,29 @@ FUNC_DEF Vector forward_substitution(const Matrix A, const Vector b) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector gaussian_elimination(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Matrix A_copied = matrix_copy(A);
     Vector b_copied = vector_copy(b);
-    if ((A_copied.data == NULL) || (b_copied.data == NULL)) {
+    if (!matrix_is_valid(A_copied) || !vector_is_valid(b_copied)) {
         return (Vector){0};
     }
     // Partial pivoting
     for (size_t k = 0; (k + 1) < A_copied.rows; k++) {
-        data_type w = fabs(A_copied.data[k][k]);
+        data_type w = fabs(matrix_get(A_copied, k, k));
         size_t r = k;
         for (size_t i = (k + 1); i < A_copied.rows; i++) {
-            if (fabs(A_copied.data[i][k]) > w) {
-                w = fabs(A_copied.data[i][k]);
+            if (fabs(matrix_get(A_copied, i, k)) > w) {
+                w = fabs(matrix_get(A_copied, i, k));
                 r = i;
             }
         }
         if (r != k) {
             for (size_t i = k; i < A_copied.rows; i++) {
-                swap(&A_copied.data[k][i], &A_copied.data[r][i]);
+                const data_type temp = matrix_get(A_copied, k, i);
+                matrix_set(A_copied, k, i, matrix_get(A_copied, r, i));
+                matrix_set(A_copied, r, i, temp);
             }
             swap(&b_copied.data[k], &b_copied.data[r]);
         }
@@ -1384,9 +1427,9 @@ FUNC_DEF Vector gaussian_elimination(const Matrix A, const Vector b) {
     // Gaussian elimination
     for (size_t k = 0; (k + 1) < A_copied.rows; k++) {
         for (size_t i = (k + 1); i < A_copied.rows; i++) {
-            const data_type m = A_copied.data[i][k] / A_copied.data[k][k];
+            const data_type m = matrix_get(A_copied, i, k) / matrix_get(A_copied, k, k);
             for (size_t j = (k + 1); j < A_copied.rows; j++) {
-                A_copied.data[i][j] -= m * A_copied.data[k][j];
+                matrix_set(A_copied, i, j, matrix_get(A_copied, i, j) - m * matrix_get(A_copied, k, j));
             }
             b_copied.data[i] -= m * b_copied.data[k];
         }
@@ -1399,26 +1442,26 @@ FUNC_DEF Vector gaussian_elimination(const Matrix A, const Vector b) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector gauss_jordan(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Matrix A_copied = matrix_copy(A);
     Vector b_copied = vector_copy(b);
-    if ((A_copied.data == NULL) || (b_copied.data == NULL)) {
+    if (!matrix_is_valid(A_copied) || !vector_is_valid(b_copied)) {
         return (Vector){0};
     }
     for (size_t k = 0; k < A_copied.rows; k++) {
         for (size_t i = 0; i < A_copied.rows; i++) {
-            const data_type m = A_copied.data[i][k] / A_copied.data[k][k];
-            const data_type p = A_copied.data[k][k];
+            const data_type m = matrix_get(A_copied, i, k) / matrix_get(A_copied, k, k);
+            const data_type p = matrix_get(A_copied, k, k);
             if (i == k) {
                 for (size_t j = k; j < A_copied.cols; j++) {
-                    A_copied.data[i][j] /= p;
+                    matrix_set(A_copied, i, j, matrix_get(A_copied, i, j) / p);
                 }
                 b_copied.data[i] /= p;
             } else {
                 for (size_t j = k; j < A_copied.cols; j++) {
-                    A_copied.data[i][j] -= m * A_copied.data[k][j];
+                    matrix_set(A_copied, i, j, matrix_get(A_copied, i, j) - m * matrix_get(A_copied, k, j));
                 }
                 b_copied.data[i] -= m * b_copied.data[k];
             }
@@ -1430,15 +1473,15 @@ FUNC_DEF Vector gauss_jordan(const Matrix A, const Vector b) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector lu_solving(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Vector x = (Vector){0};
     Matrix L, U;
     lu_decomposition(A, &L, &U);
-    if ((L.data != NULL) && (U.data != NULL)) {
+    if (matrix_is_valid(L) || matrix_is_valid(U)) {
         Vector d = forward_substitution(L, b);
-        if (d.data != NULL) {
+        if (vector_is_valid(d)) {
             x = back_substitution(U, d);
         }
         vector_dealloc(&d);
@@ -1450,14 +1493,14 @@ FUNC_DEF Vector lu_solving(const Matrix A, const Vector b) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector jacobi_method(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Vector x = vector_init(b.len, 0.0);
-    if (x.data != NULL) {
+    if (vector_is_valid(x)) {
         for (size_t k = 0; k < MAX_ITERATIONS; k++) {
             Vector previous_x = vector_copy(x);
-            if (previous_x.data == NULL) {
+            if (!vector_is_valid(previous_x)) {
                 vector_dealloc(&x);
                 break;
             }
@@ -1465,10 +1508,10 @@ FUNC_DEF Vector jacobi_method(const Matrix A, const Vector b) {
                 data_type sum = b.data[i];
                 for (size_t j = 0; j < x.len; j++) {
                     if (i != j) {
-                        sum -= A.data[i][j] * previous_x.data[j];
+                        sum -= matrix_get(A, i, j) * previous_x.data[j];
                     }
                 }
-                x.data[i] = sum / A.data[i][i];
+                x.data[i] = sum / matrix_get(A, i, i);
             }
             const data_type error = vector_max_diff(x, previous_x);
             vector_dealloc(&previous_x);
@@ -1482,14 +1525,14 @@ FUNC_DEF Vector jacobi_method(const Matrix A, const Vector b) {
 
 // Remember to free the returned vector after calling this function!
 FUNC_DEF Vector gauss_seidel(const Matrix A, const Vector b) {
-    if ((A.rows != A.cols) || (A.rows != b.len)) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
     Vector x = vector_init(b.len, 0.0);
-    if (x.data != NULL) {
+    if (vector_is_valid(x)) {
         for (size_t k = 0; k < MAX_ITERATIONS; k++) {
             Vector previous_x = vector_copy(x);
-            if (previous_x.data == NULL) {
+            if (!vector_is_valid(previous_x)) {
                 vector_dealloc(&x);
                 break;
             }
@@ -1497,10 +1540,10 @@ FUNC_DEF Vector gauss_seidel(const Matrix A, const Vector b) {
                 data_type sum = b.data[i];
                 for (size_t j = 0; j < x.len; j++) {
                     if (i != j) {
-                        sum -= A.data[i][j] * x.data[j];
+                        sum -= matrix_get(A, i, j) * x.data[j];
                     }
                 }
-                x.data[i] = sum / A.data[i][i];
+                x.data[i] = sum / matrix_get(A, i, i);
             }
             const data_type error = vector_max_diff(x, previous_x);
             vector_dealloc(&previous_x);
@@ -1513,17 +1556,17 @@ FUNC_DEF Vector gauss_seidel(const Matrix A, const Vector b) {
 }
 
 FUNC_DEF bool columns_condition(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return false;  // Invalid operation
     }
     for (size_t i = 0; i < A.rows; i++) {
         data_type sum = 0.0;
         for (size_t j = 0; j < A.rows; j++) {
             if (i != j) {
-                sum += fabs(A.data[j][i]);
+                sum += fabs(matrix_get(A, j, i));
             }
         }
-        if (fabs(A.data[i][i]) < sum) {
+        if (fabs(matrix_get(A, i, i)) < sum) {
             return false;
         }
     }
@@ -1531,17 +1574,17 @@ FUNC_DEF bool columns_condition(const Matrix A) {
 }
 
 FUNC_DEF bool rows_condition(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return false;  // Invalid operation
     }
     for (size_t i = 0; i < A.rows; i++) {
         data_type sum = 0.0;
         for (size_t j = 0; j < A.rows; j++) {
             if (i != j) {
-                sum += fabs(A.data[i][j]);
+                sum += fabs(matrix_get(A, i, j));
             }
         }
-        if (fabs(A.data[i][i]) < sum) {
+        if (fabs(matrix_get(A, i, i)) < sum) {
             return false;
         }
     }
@@ -1549,21 +1592,21 @@ FUNC_DEF bool rows_condition(const Matrix A) {
 }
 
 FUNC_DEF bool sassenfeld_condition(const Matrix A) {
-    if (A.rows != A.cols) {
+    if (!matrix_is_squared(A)) {
         return false;  // Invalid operation
     }
     bool condition = false;
     Vector beta = vector_alloc(A.rows);
-    if (beta.data != NULL) {
+    if (vector_is_valid(beta)) {
         for (size_t i = 0; i < A.rows; i++) {
             data_type sum = 0.0;
             for (size_t j = 0; j < i; j++) {
-                sum += fabs(A.data[i][j]) * beta.data[j];
+                sum += fabs(matrix_get(A, i, j)) * beta.data[j];
             }
             for (size_t j = (i + 1); j < A.rows; j++) {
-                sum += fabs(A.data[i][j]);
+                sum += fabs(matrix_get(A, i, j));
             }
-            beta.data[i] = sum / A.data[i][i];
+            beta.data[i] = sum / matrix_get(A, i, i);
         }
         if (vector_max(beta) < 1.0) {
             condition = true;
@@ -1617,7 +1660,7 @@ FUNC_DEF Vector polynomial_regression(const Vector x, const Vector y, const size
     }
     Matrix A = matrix_init(order + 1, order + 1, 0.0);
     Vector b = vector_init(order + 1, 0.0);
-    if ((A.data == NULL) || (b.data == NULL)) {
+    if (!matrix_is_valid(A) || !vector_is_valid(b)) {
         matrix_dealloc(&A);
         vector_dealloc(&b);
         return (Vector){0};
@@ -1626,10 +1669,10 @@ FUNC_DEF Vector polynomial_regression(const Vector x, const Vector y, const size
     for (size_t i = 0; i < A.rows; i++) {
         for (size_t j = 0; j <= i; j++) {
             for (size_t l = 0; l < x.len; l++) {
-                A.data[i][j] += power(x.data[l], (i + j));
+                matrix_set(A, i, j, matrix_get(A, i, j) + power(x.data[l], (i + j)));
             }
             if (i != j) {
-                A.data[j][i] = A.data[i][j];
+                matrix_set(A, j, i, matrix_get(A, i, j));
             }
         }
         for (size_t l = 0; l < x.len; l++) {
