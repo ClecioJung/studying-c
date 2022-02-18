@@ -1,6 +1,10 @@
 .deps/
 .obj/
 bin/
+.deps-lib/
+.obj-lib/
 .vscode/
-*.o
 *.d
+*.o
+*.a
+*.so

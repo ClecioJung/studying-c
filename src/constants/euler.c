@@ -1,14 +1,17 @@
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/scalar.h"
 
-data_type euler(void) {
-    data_type e = 1.0;
+#define MAX_ITERATIONS 10000
+#define PRECISION 1e-10
+
+double euler(void) {
+    double e = 1.0;
     for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
-        const data_type delta = 1.0 / ((data_type)factorial(i));
+        const double delta = 1.0 / ((double)factorial(i));
         e += delta;
         if (fabs(delta) < PRECISION) {
             break;

@@ -1,8 +1,8 @@
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/matrix.h"
 
 int main(void) {
     Vector v = vector_alloc(2);

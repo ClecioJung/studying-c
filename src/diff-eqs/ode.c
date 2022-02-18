@@ -1,8 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include "../../lib/ode.h"
 
-#define ODE_IMPLEMENTATION
-#include "ode.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 double f(const double x, const double y) {
     (void)x;

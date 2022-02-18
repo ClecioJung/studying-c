@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/search.h"
+#include "../../lib/sorting.h"
 
 int main(void) {
     const size_t len = 30;
-    Vector vec = vector_random(len, 0.0, (data_type)len);
+    Vector vec = vector_random(len, 0.0, (double)len);
     quicksort(vec);
     vector_print(vec);
-    const data_type value = 15.0;
+    const double value = 15.0;
     const size_t index = binary_search(vec, value);
     if (index < len) {
         printf("Binary search: found value %g at index %zu\n", vec.data[index], index);

@@ -1,8 +1,8 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/sorting.h"
 
 typedef void (*Sorting_Fn)(const Vector);
 

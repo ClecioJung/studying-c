@@ -21,67 +21,71 @@
 // SOFTWARE.
 
 //------------------------------------------------------------------------------
-// HEADER
+// SOURCE
 //------------------------------------------------------------------------------
 
-#ifndef __ROOTS_H
-#define __ROOTS_H
+#include "scalar.h"
 
 #include <math.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
 
-typedef double (*root_fn)(const double);
-
-double bisection_method(const root_fn fn, double start, double end);
-double fakepos_method(const root_fn fn, double start, double end);
-double newton_raphson_method(const root_fn fn, const root_fn dfn, const double initial);
-double secant_method(const root_fn fn, const double start, const double end);
-
-#endif  // __ROOTS_H
-
-//------------------------------------------------------------------------------
-// IMPLEMENTATION
-//------------------------------------------------------------------------------
-
-#ifdef ROOTS_IMPLEMENTATION
-
-double bisection_method(const root_fn fn, double start, double end) {
-    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-        const double middle = (start + end) / 2.0;
-        if (fabs(end - start) < PRECISION) {
-            return middle;
-        }
-        if (fn(start) * fn(middle) < 0) {
-            end = middle;
-        } else {
-            start = middle;
-        }
+void swap(double *const a, double *const b) {
+    if ((a != NULL) && (b != NULL)) {
+        const double temp = *a;
+        *a = *b;
+        *b = temp;
     }
-    return 0.0;
 }
 
-double fakepos_method(const root_fn fn, double start, double end) {
-    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-        const double x = end - ((fn(end) * (end - start)) / (fn(end) - fn(start)));
-        if (fabs(end - start) < PRECISION) {
-            return x;
-        }
-        if (fn(start) * fn(end) < 0) {
-            end = x;
-        } else {
-            start = x;
-        }
+uint64_t factorial(uint64_t value) {
+    uint64_t result = 1;
+    while (value > 1) {
+        result = result * value;
+        value--;
     }
-    return 0.0;
+    return result;
 }
 
-double newton_raphson_method(const root_fn fn, const root_fn dfn, const double initial) {
-    double x = initial;
+bool are_close(const double a, const double b, const double delta) {
+    return (fabs(a - b) < delta);
+}
+
+double maximum(const double a, const double b) {
+    return ((a > b) ? a : b);
+}
+
+double minimum(const double a, const double b) {
+    return ((a < b) ? a : b);
+}
+
+double sign(const double value) {
+    return ((value > 0) ? 1.0 : -1.0);
+}
+
+double random_number(const double min, const double max) {
+    const double rand_unitary = ((double)rand()) / ((double)RAND_MAX);
+    return rand_unitary * (max - min) + min;
+}
+
+// My own square root function, so I don't need to link with -lm,
+// avoiding any dependencies
+double square_root(const double value) {
+    if (fabs(value) < PRECISION) {
+        return 0.0;  // square_root(0) = 0
+    } else if (value < 0) {
+        return NAN;
+    }
+    double x = value;
+    // Use the Newton-Raphson method to find the root
+    // of the function f(x) = x^2 - value
     for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-        const double delta = fn(x) / dfn(x);
-        x -= delta;
+        const double delta = (value / x - x) / 2.0;
+        x += delta;
         if (fabs(delta) < PRECISION) {
             break;
         }
@@ -89,21 +93,31 @@ double newton_raphson_method(const root_fn fn, const root_fn dfn, const double i
     return x;
 }
 
-double secant_method(const root_fn fn, const double start, const double end) {
-    double previous_x = start;
-    double x = end;
-    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-        const double delta = (fn(x) * (x - previous_x)) / (fn(x) - fn(previous_x));
-        previous_x = x;
-        x -= delta;
-        if (fabs(delta) < PRECISION) {
+// My own power function, so I don't need to link with -lm,
+// avoiding any dependencies
+double power(const double base, uint64_t expoent) {
+    double result = 1.0;
+    while (expoent != 0) {
+        result *= base;
+        expoent--;
+    }
+    return result;
+}
+
+// My own exponential function, so I don't need to link with -lm,
+// avoiding any dependencies
+double exponential(const double value) {
+    double term = 1.0;
+    double result = 1.0;
+    for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
+        term *= value / ((double)i);
+        result += term;
+        if (fabs(term) < PRECISION) {
             break;
         }
     }
-    return x;
+    return result;
 }
-
-#endif  // ROOTS_IMPLEMENTATION
 
 //------------------------------------------------------------------------------
 // END

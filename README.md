@@ -4,14 +4,6 @@ This is a set of simple C codes developed to study algorithms and concepts of co
 
 - Developed with C11;
 - This code uses some UNIX functions, so it is platform dependent (it was tested only on Linux);
-- In this studies, I found this references to be very usefull:
-    - [Numerical Methods for Engineers](https://books.google.com.br/books?id=SA1LPgAACAAJ&hl=pt-BR&source=gbs_book_other_versions);
-    - [C, the Complete Reference](https://books.google.com.br/books/about/C_the_Complete_Reference.html?id=hHc_AQAAIAAJ&redir_esc=y);
-- In the development of this code I created some very useful [stb-style header-only librarys](https://github.com/nothings/stb), such as:
-    - [math-vector.h](./src/math-vector.h): Useful math functions for dealing with scalars, vectors, matrices, solve linear systems, curve fitting and more. Also includes functions for sorting and searchnig vectors;
-    - [roots.h](./src/roots-of-eqs/roots.h): Useful functions for finding roots of equations;
-    - [integration.h](./src/integration/integration.h): Useful functions for numerical integration;
-    - [ode.h](./src/diff-eqs/ode.h): Useful functions for solving Ordinary Differential Equations (ODE) numerically;
 - Implemented [data structures](https://en.wikipedia.org/wiki/Data_structure):
     - [Linked list](https://en.wikipedia.org/wiki/Linked_list);
     - [Doubly linked list](https://en.wikipedia.org/wiki/Doubly_linked_list);

@@ -1,8 +1,7 @@
+#include "../../lib/roots.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#define ROOTS_IMPLEMENTATION
-#include "roots.h"
 
 double f(const double x) {
     return (x * x - 2.0);

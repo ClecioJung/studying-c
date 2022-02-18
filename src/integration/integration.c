@@ -1,8 +1,7 @@
+#include "../../lib/integration.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#define INTEGRATION_IMPLEMENTATION
-#include "integration.h"
 
 double f(const double x) {
     return (x * x);

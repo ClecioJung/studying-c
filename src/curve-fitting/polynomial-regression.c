@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/curve-fitting.h"
 
 int main(void) {
     Vector x = vector_alloc(5);

@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/curve-fitting.h"
 
 int main(void) {
     Vector x = vector_alloc(3);
@@ -13,7 +12,7 @@ int main(void) {
     y.data[0] = 0.0;
     y.data[1] = 2.0;
     y.data[2] = 4.0;
-    const data_type value = 1.5;
+    const double value = 1.5;
     printf("Lagrange interpolation at %g results in %g\n", value, lagrange_interpolation(x, y, value));
     vector_dealloc(&x);
     vector_dealloc(&y);

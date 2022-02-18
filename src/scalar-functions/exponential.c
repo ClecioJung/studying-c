@@ -2,13 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/scalar.h"
 
 int main(void) {
     printf("Exponential:\n");
     for (int i = -9; i < 10; i++) {
-        printf("exponential(%02d) = %g\n", i, exponential((data_type)i));
+        printf("exponential(%02d) = %g\n", i, exponential((double)i));
     }
     return EXIT_SUCCESS;
 }

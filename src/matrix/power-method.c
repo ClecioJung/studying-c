@@ -1,8 +1,8 @@
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/matrix.h"
 
 int main(void) {
     Matrix A = matrix_alloc(4, 4);
@@ -25,7 +25,7 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     Vector vec = (Vector){0};
-    data_type eig = power_method(A, &vec);
+    double eig = power_method(A, &vec);
     printf("Greatest eigenvalue: %g\n", eig);
     printf("Eigenvector:\n");
     vector_print(vec);

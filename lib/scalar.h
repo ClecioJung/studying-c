@@ -24,53 +24,25 @@
 // HEADER
 //------------------------------------------------------------------------------
 
-#ifndef __INTEGRATION_H
-#define __INTEGRATION_H
+#ifndef __SCALAR_H
+#define __SCALAR_H
 
-typedef double (*integration_fn)(const double);
+#include <stdbool.h>
+#include <stdint.h>
 
-double trapezoidal_rule(const integration_fn fn, const double start, const double end, const size_t segments);
-double simpson_rule(const integration_fn fn, const double start, const double end, const size_t segments);
-double simpson_rule_38(const integration_fn fn, const double start, const double end, size_t segments);
+// Scalar functions
+void swap(double *const a, double *const b);
+uint64_t factorial(uint64_t value);
+bool are_close(const double a, const double b, const double delta);
+double maximum(const double a, const double b);
+double minimum(const double a, const double b);
+double sign(const double value);
+double random_number(const double min, const double max);
+double square_root(const double value);
+double power(const double base, uint64_t expoent);
+double exponential(const double value);
 
-#endif  // __INTEGRATION_H
-
-//------------------------------------------------------------------------------
-// IMPLEMENTATION
-//------------------------------------------------------------------------------
-
-#ifdef INTEGRATION_IMPLEMENTATION
-
-double trapezoidal_rule(const integration_fn fn, const double start, const double end, const size_t segments) {
-    double step = (end - start) / segments;
-    double sum = (fn(start) + fn(end)) / 2.0;
-    for (size_t i = 1; i < segments; i++) {
-        sum += fn(start + i * step);
-    }
-    return (step * sum);
-}
-
-double simpson_rule(const integration_fn fn, const double start, const double end, const size_t segments) {
-    double step = (end - start) / segments;
-    double sum = fn(start) + fn(end);
-    for (size_t i = 1; i < segments; i++) {
-        sum += ((i % 2) ? 4.0 : 2.0) * fn(start + i * step);
-    }
-    return (step * sum) / 3.0;
-}
-
-double simpson_rule_38(const integration_fn fn, const double start, const double end, size_t segments) {
-    // segments must be multiple of 3!
-    segments = 3 * ((segments + 2) / 3);
-    double step = (end - start) / segments;
-    double sum = fn(start) + fn(end);
-    for (size_t i = 1; i < segments; i++) {
-        sum += ((i % 3) ? 3.0 : 2.0) * fn(start + i * step);
-    }
-    return (3.0 / 8.0) * (step * sum);
-}
-
-#endif  // INTEGRATION_IMPLEMENTATION
+#endif  // __SCALAR_H
 
 //------------------------------------------------------------------------------
 // END

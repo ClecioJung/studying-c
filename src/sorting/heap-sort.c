@@ -1,7 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
 
-#define MATH_VECTOR_IMPLEMENTATION
-#include "../math-vector.h"
+#include "../../lib/sorting.h"
 
 int main(void) {
     const size_t len = 30;
