@@ -35,7 +35,7 @@
 #include "scalar.h"
 
 #define MAX_ITERATIONS 10000
-#define PRECISION 1e-9
+#define COMPARATION_PRECISION 1e-8
 
 // Remember to free the returned vector after calling this function!
 Vector vector_alloc(const size_t len) {
@@ -136,8 +136,8 @@ Vector vector_copy(const Vector vector) {
 
 void vector_print(const Vector vector) {
     for (size_t i = 0; i < vector.len; i++) {
-        const double value = fabs(vector.data[i]) > PRECISION ? vector.data[i] : 0.0;
-        printf("[%03zu]: %g\n", i, value);
+        const double value = fabs(vector.data[i]) > COMPARATION_PRECISION ? vector.data[i] : 0.0;
+        printf("[%03zu]: %lg\n", i, value);
     }
     printf("\n");
 }
@@ -236,11 +236,27 @@ bool vector_are_equal(const Vector a, const Vector b) {
         return false;
     }
     for (size_t i = 0; i < a.len; i++) {
-        if (!are_close(a.data[i], b.data[i], PRECISION)) {
+        if (!are_close(a.data[i], b.data[i], COMPARATION_PRECISION)) {
             return false;
         }
     }
     return true;
+}
+
+bool vector_is_null(const Vector vec) {
+    for (size_t i = 0; i < vec.len; i++) {
+        if (!are_close(vec.data[i], 0.0, COMPARATION_PRECISION)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool vector_are_orthogonal(const Vector a, const Vector b) {
+    if (a.len != b.len) {
+        return false;
+    }
+    return are_close(dot_product(a, b), 0.0, COMPARATION_PRECISION);
 }
 
 void vector_scale_over(const double scalar, const Vector *const vector) {

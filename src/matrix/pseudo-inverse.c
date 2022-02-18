@@ -27,7 +27,10 @@ int main(void) {
     Matrix mul = matrix_mul_three(A, pseudo_inv, A);
     matrix_print(mul);
     if (matrix_are_equal(mul, A)) {
-        printf("This equals to the A matrix!\nSo, we calculated the pseudo-inverse matrix corectly!\n");
+        printf("The pseudo-inverse matrix was properly calculated!\n");
+    } else {
+        fprintf(stderr, "The pseudo-inverse matrix was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     matrix_dealloc(&mul);
     matrix_dealloc(&A);

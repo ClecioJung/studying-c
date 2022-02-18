@@ -26,8 +26,11 @@ int main(void) {
     printf("Sum of the previous matrices:\n");
     Matrix sum = matrix_sum(sym, skew);
     matrix_print(sum);
-    if (matrix_are_equal(sum, A)) {
-        printf("This equals to the A matrix!\nSo, we calculated the Symmetric and Skew-symmetric matrices corectly!\n");
+    if (matrix_is_symmetric(sym) && matrix_is_skew_symmetric(skew) && matrix_are_equal(sum, A)) {
+        printf("The symmetric and skew-symmetric matrices were properly calculated!\n");
+    } else {
+        fprintf(stderr, "The symmetric and skew-symmetric matrices were NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     matrix_dealloc(&A);
     matrix_dealloc(&sym);

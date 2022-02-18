@@ -1,20 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../../lib/scalar.h"
 #include "../../lib/search.h"
-#include "../../lib/sorting.h"
+
+#define PRECISION 1e-10
 
 int main(void) {
     const size_t len = 30;
-    Vector vec = vector_random(len, 0.0, (double)len);
-    quicksort(vec);
+    Vector vec = vector_alloc(len);
+    for (size_t i = 0; i < vec.len; i++) {
+        vec.data[i] = (double)i;
+    }
     vector_print(vec);
     const double value = 15.0;
     const size_t index = binary_search(vec, value);
-    if (index < len) {
-        printf("Binary search: found value %g at index %zu\n", vec.data[index], index);
+    if ((index < len) && are_close(value, vec.data[index], PRECISION)) {
+        printf("Binary search: found value %lg at index %zu\n", vec.data[index], index);
     } else {
-        printf("Binary search: didn't found value %g\n", value);
+        fprintf(stderr, "Binary search: didn't found value %lg\n", value);
+        return EXIT_FAILURE;
     }
     vector_dealloc(&vec);
     return EXIT_SUCCESS;

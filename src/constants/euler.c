@@ -5,6 +5,7 @@
 
 #include "../../lib/scalar.h"
 
+#define EULER 2.7182818284590452354
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
 
@@ -21,6 +22,12 @@ double euler(void) {
 }
 
 int main(void) {
-    printf("Euler constant was aproximated to be %lg\n", euler());
-    return EXIT_SUCCESS;
+    const double result = euler();
+    if (are_close(result, EULER, PRECISION)) {
+        printf("Euler constant was aproximated to be %lg\n", result);
+        return EXIT_SUCCESS;
+    } else {
+        fprintf(stderr, "Couldn't approximate euler's constant: %lg\n", result);
+        return EXIT_FAILURE;
+    }
 }

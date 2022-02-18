@@ -2,18 +2,35 @@
 #include <stdlib.h>
 
 #include "../../lib/curve-fitting.h"
+#include "../../lib/scalar.h"
+
+#define PRECISION 1e-10
 
 int main(void) {
-    Vector x = vector_alloc(3);
-    Vector y = vector_alloc(3);
+    Vector x = vector_alloc(6);
+    Vector y = vector_alloc(6);
     x.data[0] = 0.0;
     x.data[1] = 1.0;
     x.data[2] = 2.0;
+    x.data[3] = 3.0;
+    x.data[4] = 4.0;
+    x.data[5] = 5.0;
     y.data[0] = 0.0;
     y.data[1] = 2.0;
     y.data[2] = 4.0;
-    const double value = 1.5;
-    printf("Lagrange interpolation at %g results in %g\n", value, lagrange_interpolation(x, y, value));
+    y.data[3] = 6.0;
+    y.data[4] = 2.0;
+    y.data[5] = 0.0;
+    printf("Lagrange interpolation:\n");
+    for (size_t i = 0; i < x.len; i++) {
+        const double result = lagrange_interpolation(x, y, x.data[i]);
+        if (are_close(result, y.data[i], PRECISION)) {
+            printf("Interpolation at %lg results in %lg\n", x.data[i], result);
+        } else {
+            fprintf(stderr, "Lagrange interpolation: couldn't interpolate correctly the provided values!\n");
+            return EXIT_FAILURE;
+        }
+    }
     vector_dealloc(&x);
     vector_dealloc(&y);
     return EXIT_SUCCESS;

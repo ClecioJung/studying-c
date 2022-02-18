@@ -24,8 +24,9 @@
 // SOURCE
 //------------------------------------------------------------------------------
 
-#include <stdlib.h>
 #include "integration.h"
+
+#include <stdlib.h>
 
 double trapezoidal_rule(const integration_fn fn, const double start, const double end, const size_t segments) {
     double step = (end - start) / segments;

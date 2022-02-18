@@ -29,13 +29,16 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Square root](https://en.wikipedia.org/wiki/Square_root);
     - [Exponential](https://en.wikipedia.org/wiki/Exponential_function);
 - Implemented operations with [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)):
-    - Sum/subtraction of vectors and multiplication by scalars;
+    - Sum/subtraction of vectors;
+    - Multiplication of vectors by scalars;
     - [Dot product](https://en.wikipedia.org/wiki/Dot_product);
     - [Cross product](https://en.wikipedia.org/wiki/Cross_product);
     - [Euclidean norm](https://en.wikipedia.org/wiki/Euclidean_space#Euclidean_norm);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
-    - Sum/subtraction of matrices and multiplication by scalars;
-    - Multiplication between matrices, and matrices by vectors;
+    - Sum/subtraction of matrices;
+    - Multiplication of matrices by scalars;
+    - Multiplication between matrices;
+    - Multiplication between matrices and vectors;
     - [Trace](https://en.wikipedia.org/wiki/Trace_(linear_algebra));
     - [Determinant](https://en.wikipedia.org/wiki/Determinant);
     - [Transpose matrix](https://en.wikipedia.org/wiki/Transpose);
@@ -76,69 +79,24 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Third order Runge-Kutta method;
     - [Fourth order Runge-Kutta method](https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods);
     - Butcher’s (1964) fifth-order RK method;
+
 # Usage
 
-Download this project and compile it by typing the command `make` in its folder. Next, just run one of the executables. Here is an example:
+Download this project and compile it by typing the command `make` in its folder. Next, just run one of the executables located in the `bin` folder. Here is an example:
 
 ```console
 $ make
-$ ./linked-list
-$ ./doubly-linked-list
-$ ./xor-linked-list
-$ ./dynamic-array
-$ ./circular-buffer
-$ ./binary-tree
-$ ./bubble-sort
-$ ./select-sort
-$ ./insert-sort
-$ ./shell-sort
-$ ./merge-sort
-$ ./heap-sort
-$ ./quicksort
-$ ./compare-sorting
-$ ./sequential-search
-$ ./binary-search
-$ ./compare-search
-$ ./euler
-$ ./pi
-$ ./dot-product
-$ ./cross-product
-$ ./euclidean-norm
-$ ./matrix-transpose
-$ ./determinant
-$ ./lu-decomposition
-$ ./lu-crout-decomposition
-$ ./matrix-inverse
-$ ./pseudo-inverse
-$ ./gaussian-elimination
-$ ./gauss-jordan
-$ ./lu-solving
-$ ./jacobi-method
-$ ./gauss-seidel
-$ ./roots
-$ ./lagrange-interpolation
-$ ./linear-regression
-$ ./polynomial-regression
-$ ./integration
-$ ./ode
-$ ./square-root
-$ ./exponential
-$ ./trace
-$ ./matrix-symmetric
-$ ./qr-decomposition
-$ ./householder-matrix
-$ ./upper-hessenberg-matrix
-$ ./schur-decomposition
-$ ./eigenvalues
-$ ./power-method
+$ ./bin/binary-tree
 ```
 
-In order to check if there is any memory leak, run the following commands (it is necessary to have `valgrind` installed):
+In order to check if there is any memory leak, use the `valgrind` command:
 
 ```console
-$ valgrind --tool=memcheck ./linked-list
-$ valgrind --tool=memcheck ./doubly-linked-list
-$ valgrind --tool=memcheck ./xor-linked-list
-$ valgrind --tool=memcheck ./dynamic-array
-$ valgrind --tool=memcheck ./binary-tree
+$ valgrind --tool=memcheck ./bin/binary-tree
+```
+
+To run all the tests, use the following command:
+
+```console
+$ make test
 ```

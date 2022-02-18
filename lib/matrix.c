@@ -36,7 +36,8 @@
 #include "scalar.h"
 
 #define MAX_ITERATIONS 10000
-#define PRECISION 1e-9
+#define ITERATION_PRECISION 1e-10
+#define COMPARATION_PRECISION 1e-9
 
 // Remember to free the matrix after calling this function!
 Matrix matrix_alloc(const size_t rows, const size_t cols) {
@@ -170,7 +171,7 @@ void matrix_print(const Matrix matrix) {
     for (size_t i = 0; i < matrix.rows; i++) {
         printf("[%03zu]: ", i);
         for (size_t j = 0; j < matrix.cols; j++) {
-            const double value = fabs(matrix_get(matrix, i, j)) > PRECISION ? matrix_get(matrix, i, j) : 0.0;
+            const double value = fabs(matrix_get(matrix, i, j)) > COMPARATION_PRECISION ? matrix_get(matrix, i, j) : 0.0;
             printf("%-10g ", value);
         }
         printf("\n");
@@ -584,7 +585,7 @@ double power_method(const Matrix A, Vector *const vec) {
         }
         eig = euclidean_norm(*vec);
         vector_scale_over((1.0 / eig), vec);
-        if (vector_max_diff(*vec, previous_vec) < PRECISION) {
+        if (vector_max_diff(*vec, previous_vec) < ITERATION_PRECISION) {
             break;
         }
     }
@@ -675,7 +676,7 @@ bool matrix_are_equal(const Matrix A, const Matrix B) {
     }
     for (size_t i = 0; i < A.rows; i++) {
         for (size_t j = 0; j < A.cols; j++) {
-            if (!are_close(matrix_get(A, i, j), matrix_get(B, i, j), PRECISION)) {
+            if (!are_close(matrix_get(A, i, j), matrix_get(B, i, j), COMPARATION_PRECISION)) {
                 return false;
             }
         }
@@ -700,13 +701,63 @@ bool matrix_is_upper_triangular(const Matrix A) {
     if (!matrix_is_squared(A)) {
         return false;  // Invalid operation
     }
-    double error = 0.0;
     for (size_t i = 0; i < A.rows; i++) {
         for (size_t j = 0; j < i; j++) {
-            error = maximum(error, fabs(matrix_get(A, i, j)));
+            if (fabs(matrix_get(A, i, j)) >= COMPARATION_PRECISION) {
+                return false;
+            }
         }
     }
-    return (error < PRECISION);
+    return true;
+}
+
+bool matrix_is_lower_triangular(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return false;  // Invalid operation
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = (i + 1); j < A.cols; j++) {
+            if (fabs(matrix_get(A, i, j)) >= COMPARATION_PRECISION) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool matrix_is_symmetric(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return false;  // Invalid operation
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < i; j++) {
+            if (!are_close(matrix_get(A, i, j), matrix_get(A, j, i), COMPARATION_PRECISION)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool matrix_is_skew_symmetric(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return false;  // Invalid operation
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j <= i; j++) {
+            if (!are_close(matrix_get(A, i, j), -matrix_get(A, j, i), COMPARATION_PRECISION)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool matrix_is_null_space(const Matrix A, const Vector vec) {
+    Vector result = matrix_mul_vector(A, vec);
+    const bool is_null_space = vector_is_null(result);
+    vector_dealloc(&result);
+    return is_null_space;
 }
 
 void vector_from_matrix_column_over(const Vector *const vector, const Matrix A, const size_t col) {

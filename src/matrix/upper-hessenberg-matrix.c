@@ -32,6 +32,9 @@ int main(void) {
     matrix_print(H);
     if (matrix_is_orthogonal(U)) {
         printf("The matrix U is orthogonal!\n\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     printf("U * H * U^T =\n");
     Matrix transposeU = matrix_transpose(U);
@@ -39,6 +42,9 @@ int main(void) {
     matrix_print(mul);
     if (matrix_are_equal(mul, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the upper Hessenberg matrix corectly!\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     matrix_dealloc(&A);
     matrix_dealloc(&U);

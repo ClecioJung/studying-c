@@ -6,8 +6,9 @@
 
 #include "../../lib/scalar.h"
 
-#define MAX_ITERATIONS 10000
-#define PRECISION 1e-10
+#define PI 3.14159265358979323846
+#define MAX_ITERATIONS 1000000000
+#define PRECISION 1e-8
 
 double pi_Gregory_leibniz(void) {
     double pi = 0.0;
@@ -67,19 +68,37 @@ double pi_Chudnovsky(void) {
 
 typedef double (*Approx_Fn)(void);
 
-void test_algorithm(const char *const algorithm, const Approx_Fn approx_fn) {
+typedef struct {
+    const char *const name;
+    const Approx_Fn approx_fn;
+} Approx_Algorithm;
+
+int test_algorithm(const Approx_Algorithm algorithm) {
     struct timeval stop, start;
     gettimeofday(&start, NULL);
-    const double result = approx_fn();
+    const double result = algorithm.approx_fn();
     gettimeofday(&stop, NULL);
     unsigned long int delta_us = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
-    printf("Took %04ld us for the %s to approximate pi to be %lg\n", delta_us, algorithm, result);
+    if (are_close(result, PI, PRECISION)) {
+        printf("Took %04ld us for the %s to approximate pi to be %lg\n", delta_us, algorithm.name, result);
+        return EXIT_SUCCESS;
+    } else {
+        fprintf(stderr, "Algorithm %s failed to approximate pi: %lg\n", algorithm.name, result);
+        return EXIT_FAILURE;
+    }
 }
 
 int main(void) {
-    test_algorithm("Gregory-Leibniz Series", pi_Gregory_leibniz);
-    test_algorithm("Nilakantha Series", pi_Nilakantha);
-    test_algorithm("Srinivasa Ramanujan formula", pi_Ramanujan);
-    test_algorithm("Chudnovsky formula", pi_Chudnovsky);
+    const Approx_Algorithm algorithms[] = {
+        {"Gregory-Leibniz Series", pi_Gregory_leibniz},
+        {"Nilakantha Series", pi_Nilakantha},
+        {"Srinivasa Ramanujan formula", pi_Ramanujan},
+        {"Chudnovsky formula", pi_Chudnovsky},
+    };
+    for (size_t i = 0; i < sizeof(algorithms) / sizeof(algorithms[0]); i++) {
+        if (test_algorithm(algorithms[i]) != EXIT_SUCCESS) {
+            return EXIT_FAILURE;
+        }
+    }
     return EXIT_SUCCESS;
 }

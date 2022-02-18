@@ -25,10 +25,21 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     Vector vec = (Vector){0};
-    double eig = power_method(A, &vec);
-    printf("Greatest eigenvalue: %g\n", eig);
+    const double eig = power_method(A, &vec);
+    printf("Greatest eigenvalue: %lg\n", eig);
     printf("Eigenvector:\n");
     vector_print(vec);
+    {
+        for (size_t i = 0; i < A.rows; i++) {
+            matrix_dec(A, i, i, eig);
+        }
+        if (matrix_is_null_space(A, vec)) {
+            printf("The eigenvalue and eigenvector were properly calculated!\n\n");
+        } else {
+            fprintf(stderr, "The eigenvalue and eigenvector were NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+    }
     matrix_dealloc(&A);
     vector_dealloc(&vec);
     return EXIT_SUCCESS;

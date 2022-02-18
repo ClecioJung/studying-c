@@ -39,6 +39,7 @@ LIB_OBJS = $(addprefix $(LIB_ODIR)/,$(patsubst %,%.o,$(patsubst %,%,$(basename $
 
 # Compiler and linker
 CC = gcc
+AR = ar
 
 # Libraries
 INCLUDES = $(LIB_SLL)
@@ -63,7 +64,7 @@ all: $(LIB_SLL) $(BINS)
 
 $(LIB_SLL): $(LIB_OBJS) | $(LIB_ODIR)
 	@ echo "${GREEN}Building statically linked library: ${BOLD}$@${GREEN}, using dependencies: ${BOLD}$^${NORMAL}"
-	ar rcs $(LIB_SLL) $(LIB_OBJS)
+	$(AR) rcs $(LIB_SLL) $(LIB_OBJS)
 
 $(LIB_ODIR)/%.o : $(LIB_DIR)/%.c
 $(LIB_ODIR)/%.o : $(LIB_DIR)/%.c $(LIB_DDIR)/%.d | $(LIB_DDIR) $(LIB_ODIR)
@@ -90,6 +91,17 @@ $(LIB_DDIR)/%.d: ;
 # Script rules
 # ----------------------------------------
 
+test: $(BINS)
+	@ for t in $(BINS); do \
+		echo "${GREEN}Running test: ${BOLD}$$t${NORMAL}" ; \
+		./$$t 1>/dev/null ; \
+		if [ $$? -ne 0 ] ; then \
+			echo "${RED}Test ${BOLD}$$t${RED} failed${NORMAL}" ; \
+			exit 1 ; \
+		fi ; \
+	done
+	@echo "${GREEN}Success, all tests passed.${NORMAL}"
+
 $(BDIR) $(DDIR) $(LIB_ODIR) $(LIB_DDIR):
 	@ echo "${GREEN}Creating directory: ${BOLD}$@${NORMAL}"
 	mkdir -p $@
@@ -100,6 +112,6 @@ clean:
 
 remade: clean all
 
-.PHONY: all clean remade
+.PHONY: all test clean remade
 
 # ----------------------------------------

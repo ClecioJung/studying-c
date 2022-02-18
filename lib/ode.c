@@ -24,8 +24,9 @@
 // SOURCE
 //------------------------------------------------------------------------------
 
-#include <stdlib.h>
 #include "ode.h"
+
+#include <stdlib.h>
 
 void euler_method(const ode_fn fn, double *const x, double *const y, const double step) {
     if ((x != NULL) && (y != NULL)) {

@@ -24,21 +24,70 @@ int main(void) {
     matrix_set(A, 3, 2, 4.0);
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
-    Matrix L, U;
-    lu_decomposition(A, &L, &U);
-    printf("Matrix L:\n");
-    matrix_print(L);
-    printf("Matrix U:\n");
-    matrix_print(U);
-    printf("L * U =\n");
-    Matrix mul = matrix_mul(L, U);
-    matrix_print(mul);
-    if (matrix_are_equal(mul, A)) {
-        printf("This equals to the A matrix!\nSo, we calculated the LU decomposition corectly!\n");
+    {
+        Matrix L, U;
+        lu_decomposition(A, &L, &U);
+        printf("Matrix L:\n");
+        matrix_print(L);
+        if (matrix_is_lower_triangular(L)) {
+            printf("The matrix L is lower-triangular!\n\n");
+        } else {
+            fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        printf("Matrix U:\n");
+        matrix_print(U);
+        if (matrix_is_upper_triangular(U)) {
+            printf("The matrix U is upper-triangular!\n\n");
+        } else {
+            fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        printf("L * U =\n");
+        Matrix mul = matrix_mul(L, U);
+        matrix_print(mul);
+        if (matrix_are_equal(mul, A)) {
+            printf("This equals to the A matrix!\nSo, we calculated the LU decomposition corectly!\n\n");
+        } else {
+            fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        matrix_dealloc(&L);
+        matrix_dealloc(&U);
+        matrix_dealloc(&mul);
+    }
+    {
+        Matrix L, U;
+        lu_crout_decomposition(A, &L, &U);
+        printf("Matrix L:\n");
+        matrix_print(L);
+        if (matrix_is_lower_triangular(L)) {
+            printf("The matrix L is lower-triangular!\n\n");
+        } else {
+            fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        printf("Matrix U:\n");
+        matrix_print(U);
+        if (matrix_is_upper_triangular(U)) {
+            printf("The matrix U is upper-triangular!\n\n");
+        } else {
+            fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        printf("L * U =\n");
+        Matrix mul = matrix_mul(L, U);
+        matrix_print(mul);
+        if (matrix_are_equal(mul, A)) {
+            printf("This equals to the A matrix!\nSo, we calculated the LU Crout decomposition corectly!\n\n");
+        } else {
+            fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        matrix_dealloc(&L);
+        matrix_dealloc(&U);
+        matrix_dealloc(&mul);
     }
     matrix_dealloc(&A);
-    matrix_dealloc(&L);
-    matrix_dealloc(&U);
-    matrix_dealloc(&mul);
     return EXIT_SUCCESS;
 }

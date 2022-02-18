@@ -28,16 +28,28 @@ int main(void) {
     qr_decomposition(A, &Q, &R);
     printf("Matrix Q:\n");
     matrix_print(Q);
-    printf("Matrix R:\n");
-    matrix_print(R);
     if (matrix_is_orthogonal(Q)) {
         printf("The matrix Q is orthogonal!\n\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
+    }
+    printf("Matrix R:\n");
+    matrix_print(R);
+    if (matrix_is_upper_triangular(R)) {
+        printf("The matrix R is upper-triangular!\n\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     printf("Q * R =\n");
     Matrix mul = matrix_mul(Q, R);
     matrix_print(mul);
     if (matrix_are_equal(mul, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the QR decomposition corectly!\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     matrix_dealloc(&A);
     matrix_dealloc(&Q);

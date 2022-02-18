@@ -79,6 +79,10 @@ double matrix_max_diff(const Matrix A, const Matrix previous_A);
 bool matrix_are_equal(const Matrix A, const Matrix B);
 bool matrix_is_orthogonal(const Matrix A);
 bool matrix_is_upper_triangular(const Matrix A);
+bool matrix_is_lower_triangular(const Matrix A);
+bool matrix_is_symmetric(const Matrix A);
+bool matrix_is_skew_symmetric(const Matrix A);
+bool matrix_is_null_space(const Matrix A, const Vector vec);
 
 // 'over' methods override the contents of their arguments,
 // avoiding the need to allocate more memory for the results

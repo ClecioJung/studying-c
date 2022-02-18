@@ -3,6 +3,9 @@
 #include <stdlib.h>
 
 #include "../../lib/curve-fitting.h"
+#include "../../lib/scalar.h"
+
+#define PRECISION 1e-10
 
 int main(void) {
     Vector x = vector_alloc(5);
@@ -12,16 +15,22 @@ int main(void) {
     x.data[2] = 2.0;
     x.data[3] = 3.0;
     x.data[4] = 4.0;
-    y.data[0] = 5.05;
-    y.data[1] = 6.9;
-    y.data[2] = 9.1;
-    y.data[3] = 12.3;
-    y.data[4] = 15.1;
+    y.data[0] = 2.0;
+    y.data[1] = 4.0;
+    y.data[2] = 8.0;
+    y.data[3] = 14.0;
+    y.data[4] = 22.0;
     printf("Polynomial regression resulted in:\n");
     Vector pol = polynomial_regression(x, y, 2);
     vector_print(pol);
     for (size_t i = 0; i < x.len; i++) {
-        printf("The approx. polynomial avaliated at %g results in %g, while the original vlaue was %g\n", x.data[i], compute_polynomial(pol, x.data[i]), y.data[i]);
+        const double result = compute_polynomial(pol, x.data[i]);
+        if (are_close(result, y.data[i], PRECISION)) {
+            printf("The approx. polynomial avaliated at %lg results in %lg, while the original value was %lg\n", x.data[i], result, y.data[i]);
+        } else {
+            fprintf(stderr, "Polynomial regression: couldn't interpolate correctly the provided values!\n");
+            return EXIT_FAILURE;
+        }
     }
     vector_dealloc(&pol);
     vector_dealloc(&x);

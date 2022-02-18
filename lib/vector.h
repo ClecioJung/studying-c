@@ -60,6 +60,8 @@ Vector vector_sum(const Vector a, const Vector b);
 Vector vector_sub(const Vector a, const Vector b);
 double vector_max_diff(Vector x, Vector previous_x);
 bool vector_are_equal(const Vector a, const Vector b);
+bool vector_is_null(const Vector vec);
+bool vector_are_orthogonal(const Vector a, const Vector b);
 
 // 'over' methods override the contents of their arguments,
 // avoiding the need to allocate more memory for the results

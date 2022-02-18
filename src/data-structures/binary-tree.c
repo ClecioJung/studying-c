@@ -150,7 +150,7 @@ int power(int base, int expoent) {
 
 int eval(Node *const node) {
     if (node == NULL) {
-        return EXIT_SUCCESS;
+        return 0;
     }
     const char c = node->value;
     switch (c) {

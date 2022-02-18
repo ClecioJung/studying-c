@@ -25,7 +25,10 @@ int main(void) {
     matrix_print(mul);
     Matrix identity = matrix_identity(A.rows);
     if (matrix_are_equal(mul, identity)) {
-        printf("This equals to the identity matrix!\nSo, we calculated the inverse matrix corectly!\n");
+        printf("The inverse matrix was properly calculated!\n");
+    } else {
+        fprintf(stderr, "The inverse matrix was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     matrix_dealloc(&identity);
     matrix_dealloc(&A);

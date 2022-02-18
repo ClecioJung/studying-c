@@ -28,10 +28,19 @@ int main(void) {
     schur_decomposition(A, &U, &T);
     printf("Matrix U:\n");
     matrix_print(U);
-    printf("Matrix T:\n");
-    matrix_print(T);
     if (matrix_is_orthogonal(U)) {
         printf("The matrix U is orthogonal!\n\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
+    }
+    printf("Matrix T:\n");
+    matrix_print(T);
+    if (matrix_is_upper_triangular(T)) {
+        printf("The matrix T is upper-triangular!\n\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     printf("U * T * U^T =\n");
     Matrix transposeU = matrix_transpose(U);
@@ -39,6 +48,9 @@ int main(void) {
     matrix_print(mul);
     if (matrix_are_equal(mul, A)) {
         printf("This equals to the A matrix!\nSo, we calculated the Schur decomposition corectly!\n");
+    } else {
+        fprintf(stderr, "The decomposition was NOT properly calculated!\n");
+        return EXIT_FAILURE;
     }
     matrix_dealloc(&A);
     matrix_dealloc(&U);
