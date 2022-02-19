@@ -27,12 +27,8 @@
 #ifndef __VECTOR_H
 #define __VECTOR_H
 
-// #include <math.h>
 #include <stdbool.h>
-// #include <stdint.h>
-// #include <stdio.h>
 #include <stdlib.h>
-// #include <time.h>
 
 typedef struct {
     double *data;
@@ -47,8 +43,6 @@ void vector_set(const Vector vector, const size_t index, const double value);
 double vector_get(const Vector vector, const size_t index);
 Vector vector_random(const size_t len, const double min, const double max);
 Vector vector_init(const size_t len, const double value);
-void vector_assign(Vector *const vector, const Vector equals);
-void vector_replace(Vector *const vector, const Vector equals);
 Vector vector_copy(const Vector vector);
 void vector_print(const Vector vector);
 Vector vector_scale(const double scalar, const Vector vector);
@@ -63,10 +57,11 @@ bool vector_are_equal(const Vector a, const Vector b);
 bool vector_is_null(const Vector vec);
 bool vector_are_orthogonal(const Vector a, const Vector b);
 
-// 'over' methods override the contents of their arguments,
+// 'over' functions override the contents of their arguments,
 // avoiding the need to allocate more memory for the results
+void vector_init_over(const Vector vector, const double value);
+void vector_copy_over(const Vector vector, const Vector vec_to_copy);
 void vector_scale_over(const double scalar, const Vector *const vector);
-void vector_copy_over(const Vector *const vector, const Vector vec_to_copy);
 
 #endif  // __VECTOR_H
 

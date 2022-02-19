@@ -43,6 +43,14 @@ bool columns_condition(const Matrix A);
 bool rows_condition(const Matrix A);
 bool sassenfeld_condition(const Matrix A);
 
+// 'over' functions override the contents of their arguments,
+// avoiding the need to allocate more memory for the results
+void back_substitution_over(const Matrix A, const Vector b);
+void forward_substitution_over(const Matrix A, const Vector b);
+void gaussian_elimination_over(const Matrix A, const Vector b);
+void gauss_jordan_over(const Matrix A, const Vector b);
+void lu_solving_over(const Matrix A, const Vector b);
+
 #endif  // __LINEAR_SYSTEMS_H
 
 //------------------------------------------------------------------------------

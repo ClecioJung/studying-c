@@ -25,7 +25,7 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     Matrix U, H;
-    matrix_upper_hessenberg(A, &U, &H);
+    matrix_upper_hessenberg(A, &H, &U);
     printf("Matrix U:\n");
     matrix_print(U);
     printf("Matrix H:\n");

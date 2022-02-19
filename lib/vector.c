@@ -106,30 +106,16 @@ Vector vector_random(const size_t len, const double min, const double max) {
 Vector vector_init(const size_t len, const double value) {
     Vector vector = vector_alloc(len);
     if (vector_is_valid(vector)) {
-        for (size_t i = 0; i < len; i++) {
-            vector.data[i] = value;
-        }
+        vector_init_over(vector, value);
     }
     return vector;
-}
-
-void vector_assign(Vector *const vector, const Vector equals) {
-    vector->data = equals.data;
-    vector->len = equals.len;
-}
-
-void vector_replace(Vector *const vector, const Vector equals) {
-    vector_dealloc(vector);
-    vector_assign(vector, equals);
 }
 
 // Remember to free the returned vector after calling this function!
 Vector vector_copy(const Vector vector) {
     Vector new_vec = vector_alloc(vector.len);
     if (vector_is_valid(new_vec)) {
-        for (size_t i = 0; i < vector.len; i++) {
-            new_vec.data[i] = vector.data[i];
-        }
+        vector_copy_over(new_vec, vector);
     }
     return new_vec;
 }
@@ -259,18 +245,24 @@ bool vector_are_orthogonal(const Vector a, const Vector b) {
     return are_close(vector_dot_product(a, b), 0.0, COMPARATION_PRECISION);
 }
 
-void vector_scale_over(const double scalar, const Vector *const vector) {
-    for (size_t i = 0; i < vector->len; i++) {
-        vector->data[i] *= scalar;
+void vector_init_over(const Vector vector, const double value) {
+    for (size_t i = 0; i < vector.len; i++) {
+        vector.data[i] = value;
     }
 }
 
-void vector_copy_over(const Vector *const vector, const Vector vec_to_copy) {
-    if (!vector_is_valid(*vector) || (vector->len != vec_to_copy.len)) {
+void vector_copy_over(const Vector vector, const Vector to_copy) {
+    if (!vector_is_valid(vector) || (vector.len != to_copy.len)) {
         return;
     }
+    for (size_t i = 0; i < vector.len; i++) {
+        vector.data[i] = to_copy.data[i];
+    }
+}
+
+void vector_scale_over(const double scalar, const Vector *const vector) {
     for (size_t i = 0; i < vector->len; i++) {
-        vector->data[i] = vec_to_copy.data[i];
+        vector->data[i] *= scalar;
     }
 }
 

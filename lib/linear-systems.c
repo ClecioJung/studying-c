@@ -62,15 +62,9 @@ Vector back_substitution(const Matrix A, const Vector b) {
     if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
-    Vector x = vector_alloc(b.len);
+    Vector x = vector_copy(b);
     if (vector_is_valid(x)) {
-        for (size_t i = (b.len - 1); i < b.len; i--) {
-            double sum = b.data[i];
-            for (size_t j = (i + 1); j < b.len; j++) {
-                sum -= matrix_get(A, i, j) * x.data[j];
-            }
-            x.data[i] = sum / matrix_get(A, i, i);
-        }
+        back_substitution_over(A, x);
     }
     return x;
 }
@@ -80,15 +74,9 @@ Vector forward_substitution(const Matrix A, const Vector b) {
     if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
-    Vector x = vector_alloc(b.len);
+    Vector x = vector_copy(b);
     if (vector_is_valid(x)) {
-        for (size_t i = 0; i < b.len; i++) {
-            double sum = b.data[i];
-            for (size_t j = 0; j < i; j++) {
-                sum -= matrix_get(A, i, j) * x.data[j];
-            }
-            x.data[i] = sum / matrix_get(A, i, i);
-        }
+        forward_substitution_over(A, x);
     }
     return x;
 }
@@ -98,25 +86,15 @@ Vector gaussian_elimination(const Matrix A, const Vector b) {
     if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
-    Matrix A_copied = matrix_copy(A);
-    Vector b_copied = vector_copy(b);
-    if (!matrix_is_valid(A_copied) || !vector_is_valid(b_copied)) {
-        return (Vector){0};
+    Matrix A_copy = matrix_copy(A);
+    Vector b_copy = vector_copy(b);
+    if (!matrix_is_valid(A_copy) || !vector_is_valid(b_copy)) {
+        vector_dealloc(&b_copy);
+    } else {
+        gaussian_elimination_over(A_copy, b_copy);
     }
-    partial_pivoting(A_copied, b_copied);
-    for (size_t k = 0; (k + 1) < A_copied.rows; k++) {
-        for (size_t i = (k + 1); i < A_copied.rows; i++) {
-            const double m = matrix_get(A_copied, i, k) / matrix_get(A_copied, k, k);
-            for (size_t j = (k + 1); j < A_copied.rows; j++) {
-                matrix_dec(A_copied, i, j, m * matrix_get(A_copied, k, j));
-            }
-            b_copied.data[i] -= m * b_copied.data[k];
-        }
-    }
-    Vector x = back_substitution(A_copied, b_copied);
-    matrix_dealloc(&A_copied);
-    vector_dealloc(&b_copied);
-    return x;
+    matrix_dealloc(&A_copy);
+    return b_copy;
 }
 
 // Remember to free the returned vector after calling this function!
@@ -124,30 +102,15 @@ Vector gauss_jordan(const Matrix A, const Vector b) {
     if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
-    Matrix A_copied = matrix_copy(A);
-    Vector b_copied = vector_copy(b);
-    if (!matrix_is_valid(A_copied) || !vector_is_valid(b_copied)) {
-        return (Vector){0};
+    Matrix A_copy = matrix_copy(A);
+    Vector b_copy = vector_copy(b);
+    if (!matrix_is_valid(A_copy) || !vector_is_valid(b_copy)) {
+        vector_dealloc(&b_copy);
+    } else {
+        gauss_jordan_over(A_copy, b_copy);
     }
-    for (size_t k = 0; k < A_copied.rows; k++) {
-        for (size_t i = 0; i < A_copied.rows; i++) {
-            const double m = matrix_get(A_copied, i, k) / matrix_get(A_copied, k, k);
-            const double p = matrix_get(A_copied, k, k);
-            if (i == k) {
-                for (size_t j = k; j < A_copied.cols; j++) {
-                    matrix_set(A_copied, i, j, matrix_get(A_copied, i, j) / p);
-                }
-                b_copied.data[i] /= p;
-            } else {
-                for (size_t j = k; j < A_copied.cols; j++) {
-                    matrix_dec(A_copied, i, j, m * matrix_get(A_copied, k, j));
-                }
-                b_copied.data[i] -= m * b_copied.data[k];
-            }
-        }
-    }
-    matrix_dealloc(&A_copied);
-    return b_copied;
+    matrix_dealloc(&A_copy);
+    return b_copy;
 }
 
 // Remember to free the returned vector after calling this function!
@@ -155,19 +118,15 @@ Vector lu_solving(const Matrix A, const Vector b) {
     if (!matrix_is_squared(A) || (A.rows != b.len)) {
         return (Vector){0};  // Invalid operation
     }
-    Vector x = (Vector){0};
-    Matrix L, U;
-    matrix_lu_decomposition(A, &L, &U);
-    if (matrix_is_valid(L) || matrix_is_valid(U)) {
-        Vector d = forward_substitution(L, b);
-        if (vector_is_valid(d)) {
-            x = back_substitution(U, d);
-        }
-        vector_dealloc(&d);
+    Matrix A_copy = matrix_copy(A);
+    Vector b_copy = vector_copy(b);
+    if (!matrix_is_valid(A_copy) || !vector_is_valid(b_copy)) {
+        vector_dealloc(&b_copy);
+    } else {
+        lu_solving_over(A_copy, b_copy);
     }
-    matrix_dealloc(&L);
-    matrix_dealloc(&U);
-    return x;
+    matrix_dealloc(&A_copy);
+    return b_copy;
 }
 
 // Remember to free the returned vector after calling this function!
@@ -181,7 +140,7 @@ Vector jacobi_method(const Matrix A, const Vector b) {
         vector_dealloc(&x);
     } else {
         for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-            vector_copy_over(&previous_x, x);
+            vector_copy_over(previous_x, x);
             for (size_t i = 0; i < x.len; i++) {
                 double sum = b.data[i];
                 for (size_t j = 0; j < x.len; j++) {
@@ -212,7 +171,7 @@ Vector gauss_seidel(const Matrix A, const Vector b) {
         vector_dealloc(&x);
     } else {
         for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-            vector_copy_over(&previous_x, x);
+            vector_copy_over(previous_x, x);
             for (size_t i = 0; i < b.len; i++) {
                 double sum = b.data[i];
                 for (size_t j = 0; j < x.len; j++) {
@@ -291,6 +250,88 @@ bool sassenfeld_condition(const Matrix A) {
         vector_dealloc(&beta);
     }
     return condition;
+}
+
+// The vector solution is stored in b
+// The matrix is considered to be upper triangular
+void back_substitution_over(const Matrix A, const Vector b) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
+        return;  // Invalid operation
+    }
+    for (size_t i = (b.len - 1); i < b.len; i--) {
+        for (size_t j = (i + 1); j < b.len; j++) {
+            b.data[i] -= matrix_get(A, i, j) * b.data[j];
+        }
+        b.data[i] /= matrix_get(A, i, i);
+    }
+}
+
+// The vector solution is stored in b
+// The matrix is considered to be lower triangular with ones in the diagonal
+void forward_substitution_over(const Matrix A, const Vector b) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
+        return;  // Invalid operation
+    }
+    for (size_t i = 0; i < b.len; i++) {
+        for (size_t j = 0; j < i; j++) {
+            b.data[i] -= matrix_get(A, i, j) * b.data[j];
+        }
+    }
+}
+
+// WARNING! This function changes the contents of A and b!
+// The vector solution is stored in b
+void gaussian_elimination_over(const Matrix A, const Vector b) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
+        return;  // Invalid operation
+    }
+    partial_pivoting(A, b);
+    for (size_t k = 0; (k + 1) < A.rows; k++) {
+        for (size_t i = (k + 1); i < A.rows; i++) {
+            const double m = matrix_get(A, i, k) / matrix_get(A, k, k);
+            for (size_t j = (k + 1); j < A.rows; j++) {
+                matrix_dec(A, i, j, m * matrix_get(A, k, j));
+            }
+            b.data[i] -= m * b.data[k];
+        }
+    }
+    back_substitution_over(A, b);
+}
+
+// WARNING! This function changes the contents of A and b!
+// The vector solution is stored in b
+void gauss_jordan_over(const Matrix A, const Vector b) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
+        return;  // Invalid operation
+    }
+    for (size_t k = 0; k < A.rows; k++) {
+        for (size_t i = 0; i < A.rows; i++) {
+            const double m = matrix_get(A, i, k) / matrix_get(A, k, k);
+            const double p = matrix_get(A, k, k);
+            if (i == k) {
+                for (size_t j = k; j < A.cols; j++) {
+                    matrix_set(A, i, j, matrix_get(A, i, j) / p);
+                }
+                b.data[i] /= p;
+            } else {
+                for (size_t j = k; j < A.cols; j++) {
+                    matrix_dec(A, i, j, m * matrix_get(A, k, j));
+                }
+                b.data[i] -= m * b.data[k];
+            }
+        }
+    }
+}
+
+// WARNING! This function changes the contents of A and b!
+// The vector solution is stored in b
+void lu_solving_over(const Matrix A, const Vector b) {
+    if (!matrix_is_squared(A) || (A.rows != b.len)) {
+        return;  // Invalid operation
+    }
+    matrix_lu_dec_over(A);
+    forward_substitution_over(A, b);
+    back_substitution_over(A, b);
 }
 
 //------------------------------------------------------------------------------

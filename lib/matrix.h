@@ -50,8 +50,6 @@ Matrix matrix_random(const size_t rows, const size_t cols, const double min, con
 Matrix matrix_init(const size_t rows, const size_t cols, const double value);
 Matrix matrix_identity(const size_t rows);
 Matrix matrix_copy(const Matrix matrix);
-void matrix_assign(Matrix *const matrix, const Matrix equals);
-void matrix_replace(Matrix *const matrix, const Matrix equals);
 void matrix_print(const Matrix matrix);
 Vector vector_from_matrix_column(const Matrix A, const size_t col);
 Matrix matrix_scale(const double scalar, const Matrix A);
@@ -69,8 +67,8 @@ void matrix_lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
 void matrix_lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U);
 void matrix_qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R);
 Matrix matrix_householder(const Vector vec);
-void matrix_upper_hessenberg(const Matrix A, Matrix *const U, Matrix *const H);
-void matrix_schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T);
+void matrix_upper_hessenberg(const Matrix A, Matrix *const H, Matrix *const U);
+void matrix_schur_decomposition(const Matrix A, Matrix *const T, Matrix *const U);
 Vector matrix_eigenvalues(const Matrix A);
 double matrix_power_method(const Matrix A, Vector *const vec);
 Matrix matrix_inverse(const Matrix A);
@@ -84,14 +82,21 @@ bool matrix_is_symmetric(const Matrix A);
 bool matrix_is_skew_symmetric(const Matrix A);
 bool matrix_is_null_space(const Matrix A, const Vector vec);
 
-// 'over' methods override the contents of their arguments,
+// 'over' functions override the contents of their arguments,
 // avoiding the need to allocate more memory for the results
-void vector_from_matrix_column_over(const Vector *const vector, const Matrix A, const size_t col);
-void matrix_identity_over(const Matrix *const matrix);
+void matrix_init_over(const Matrix A, const double value);
+void vector_from_matrix_column_over(const Vector vector, const Matrix A, const size_t col);
+void matrix_identity_over(const Matrix matrix);
+void matrix_copy_over(const Matrix matrix, const Matrix to_copy);
+void matrix_mul_over(const Matrix result, const Matrix A, const Matrix B);
+void matrix_mul_vector_over(const Vector result, const Matrix A, const Vector b);
 void matrix_lu_dec_over(const Matrix A);
 void matrix_lu_crout_dec_over(const Matrix A);
 void matrix_undo_lu_over(const Matrix A);
 void matrix_undo_lu_crout_over(const Matrix A);
+void matrix_qr_dec_over(const Matrix A, const Matrix R);
+void matrix_upper_hessenberg_over(const Matrix A, const Matrix U);
+void matrix_schur_dec_over(const Matrix A, const Matrix U);
 
 #endif  // __MATRIX_H
 
