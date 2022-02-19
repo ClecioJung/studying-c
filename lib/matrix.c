@@ -327,9 +327,9 @@ Matrix matrix_skew_symmetric(const Matrix A) {
     return skew;
 }
 
-double trace(const Matrix A) {
+double matrix_trace(const Matrix A) {
     if (!matrix_is_squared(A)) {
-        return 0.0;  // Invalid operation
+        return NAN;  // Invalid operation
     }
     double trace = 0.0;
     for (size_t i = 0; i < A.rows; i++) {
@@ -338,14 +338,14 @@ double trace(const Matrix A) {
     return trace;
 }
 
-double determinant(const Matrix A) {
+double matrix_determinant(const Matrix A) {
     if (!matrix_is_squared(A)) {
-        return 0.0;  // Invalid operation
+        return NAN;  // Invalid operation
     }
     // Gaussian elimination
     Matrix B = matrix_copy(A);
     if (!matrix_is_valid(B)) {
-        return 0.0;
+        return NAN;
     }
     for (size_t k = 0; (k + 1) < B.rows; k++) {
         for (size_t i = (k + 1); i < B.rows; i++) {
@@ -364,7 +364,7 @@ double determinant(const Matrix A) {
 }
 
 // Remember to free L and U matrices after calling this function!
-void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
+void matrix_lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
     if (!matrix_is_squared(A) || (L == NULL) || (U == NULL)) {
         return;  // Invalid operation
     }
@@ -387,11 +387,10 @@ void lu_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
 }
 
 // Remember to free L and U matrices after calling this function!
-void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
+void matrix_lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
     if (!matrix_is_squared(A) || (L == NULL) || (U == NULL)) {
         return;  // Invalid operation
     }
-    // Crout Decomposition
     *L = matrix_init(A.rows, A.cols, 0.0);
     *U = matrix_identity(A.rows);
     if (!matrix_is_valid(*L) || !matrix_is_valid(*U)) {
@@ -419,7 +418,7 @@ void lu_crout_decomposition(const Matrix A, Matrix *const L, Matrix *const U) {
 }
 
 // Remember to free Q and R matrices after calling this function!
-void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R) {
+void matrix_qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R) {
     if (!matrix_is_squared(A) || (Q == NULL) || (R == NULL)) {
         return;  // Invalid operation
     }
@@ -436,13 +435,13 @@ void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R) {
             // Gram-Schmidt process
             for (size_t j = 0; j < i; j++) {
                 vector_from_matrix_column_over(&q, *Q, j);
-                matrix_set(*R, j, i, dot_product(q, a));
+                matrix_set(*R, j, i, vector_dot_product(q, a));
                 for (size_t k = 0; k < A.rows; k++) {
                     matrix_dec(*Q, k, i, matrix_get(*R, j, i) * q.data[k]);
                 }
             }
             vector_from_matrix_column_over(&q, *Q, i);
-            matrix_set(*R, i, i, euclidean_norm(q));
+            matrix_set(*R, i, i, vector_norm(q));
             for (size_t k = 0; k < A.rows; k++) {
                 matrix_set(*Q, k, i, q.data[k] / matrix_get(*R, i, i));
             }
@@ -453,7 +452,7 @@ void qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R) {
 }
 
 // Remember to free the returned matrix after calling this function!
-Matrix householder_matrix(const Vector vec) {
+Matrix matrix_householder(const Vector vec) {
     Matrix matrix = matrix_alloc(vec.len, vec.len);
     if (matrix_is_valid(matrix)) {
         double norm_squared = 0.0;
@@ -472,7 +471,7 @@ Matrix householder_matrix(const Vector vec) {
 // Remember to free the matrices U and H after calling this function!
 // Decomposition A = U * H * U^T,
 // with H in upper Hessenberg form and U orthogonal
-void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H) {
+void matrix_upper_hessenberg(const Matrix A, Matrix *const U, Matrix *const H) {
     if (!matrix_is_squared(A) || (U == NULL) || (H == NULL)) {
         return;  // Invalid operation
     }
@@ -489,7 +488,7 @@ void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H) {
             for (size_t j = 0; j < v.len; j++) {
                 v.data[j] = (j >= i) ? matrix_get(*H, j, i - 1) : 0.0;
             }
-            v.data[i] += sign(v.data[i]) * euclidean_norm(v);
+            v.data[i] += sign(v.data[i]) * vector_norm(v);
             double norm_squared = 0.0;
             for (size_t i = 0; i < v.len; i++) {
                 norm_squared += v.data[i] * v.data[i];
@@ -513,11 +512,11 @@ void upper_hessenberg_matrix(const Matrix A, Matrix *const U, Matrix *const H) {
 }
 
 // Remember to free the matrices U and T after calling this function!
-void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T) {
+void matrix_schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T) {
     if (!matrix_is_squared(A) || (U == NULL) || (T == NULL)) {
         return;  // Invalid operation
     }
-    upper_hessenberg_matrix(A, U, T);
+    matrix_upper_hessenberg(A, U, T);
     if (!matrix_is_valid(*U) || !matrix_is_valid(*T)) {
     schur_decomposition_safe_exit:
         matrix_dealloc(U);
@@ -528,7 +527,7 @@ void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T) {
     for (size_t i = 0; i < MAX_ITERATIONS; i++) {
         Matrix Q = (Matrix){0};
         Matrix R = (Matrix){0};
-        qr_decomposition(*T, &Q, &R);
+        matrix_qr_decomposition(*T, &Q, &R);
         if (!matrix_is_valid(R) || !matrix_is_valid(Q)) {
             matrix_dealloc(&Q);
             matrix_dealloc(&R);
@@ -548,10 +547,10 @@ void schur_decomposition(const Matrix A, Matrix *const U, Matrix *const T) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector eigenvalues(const Matrix A) {
+Vector matrix_eigenvalues(const Matrix A) {
     Matrix U = (Matrix){0};
     Matrix T = (Matrix){0};
-    schur_decomposition(A, &U, &T);
+    matrix_schur_decomposition(A, &U, &T);
     Vector eig = vector_alloc(T.rows);
     if (vector_is_valid(eig) && matrix_is_upper_triangular(T)) {
         for (size_t i = 0; i < T.rows; i++) {
@@ -564,7 +563,7 @@ Vector eigenvalues(const Matrix A) {
 }
 
 // Remember to free vec after calling this function!
-double power_method(const Matrix A, Vector *const vec) {
+double matrix_power_method(const Matrix A, Vector *const vec) {
     if (!matrix_is_squared(A) || (vec == NULL)) {
         return NAN;  // Invalid operation
     }
@@ -583,7 +582,7 @@ double power_method(const Matrix A, Vector *const vec) {
         if (!vector_is_valid(*vec)) {
             goto power_method_safe_exit;
         }
-        eig = euclidean_norm(*vec);
+        eig = vector_norm(*vec);
         vector_scale_over((1.0 / eig), vec);
         if (vector_max_diff(*vec, previous_vec) < ITERATION_PRECISION) {
             break;
@@ -600,7 +599,7 @@ Matrix matrix_inverse(const Matrix A) {
     }
     // Computes the inverse matrix of A using LU decomposition
     Matrix L, U;
-    lu_decomposition(A, &L, &U);
+    matrix_lu_decomposition(A, &L, &U);
     Matrix inv = matrix_alloc(A.rows, A.cols);
     Vector b = vector_alloc(A.rows);
     if (!matrix_is_valid(L) || !matrix_is_valid(U) || !matrix_is_valid(inv) || !vector_is_valid(b)) {
@@ -637,7 +636,7 @@ Matrix matrix_inverse(const Matrix A) {
     return inv;
 }
 
-Matrix pseudo_inverse(const Matrix A) {
+Matrix matrix_pseudo_inverse(const Matrix A) {
     Matrix temp;
     Matrix transpose = matrix_transpose(A);
     if (A.rows > A.cols) {
@@ -774,6 +773,93 @@ void matrix_identity_over(const Matrix *const matrix) {
         for (size_t i = 0; i < matrix->rows; i++) {
             for (size_t j = 0; j < matrix->rows; j++) {
                 matrix_set(*matrix, i, j, (i == j ? 1.0 : 0.0));
+            }
+        }
+    }
+}
+
+// LU decomposition (version with less memory usage)
+// In this version, the LU matrices are stored in the matrix A, changing its contents!
+void matrix_lu_dec_over(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return;  // Invalid operation
+    }
+    for (size_t k = 0; (k + 1) < A.rows; k++) {
+        for (size_t i = (k + 1); i < A.rows; i++) {
+            matrix_set(A, i, k, matrix_get(A, i, k) / matrix_get(A, k, k));
+            for (size_t j = (k + 1); j < A.rows; j++) {
+                matrix_dec(A, i, j, matrix_get(A, i, k) * matrix_get(A, k, j));
+            }
+        }
+    }
+}
+
+// LU Crout decomposition (version with less memory usage)
+// In this version, the LU matrices are stored in the matrix A, changing its contents!
+void matrix_lu_crout_dec_over(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return;  // Invalid operation
+    }
+    for (size_t k = 0; k < A.rows; k++) {
+        for (size_t i = k; i < A.rows; i++) {
+            for (size_t l = 0; l < k; l++) {
+                matrix_dec(A, i, k, matrix_get(A, i, l) * matrix_get(A, l, k));
+            }
+        }
+        if ((k + 1) != A.rows) {
+            for (size_t j = (k + 1); j < A.rows; j++) {
+                for (size_t l = 0; l < k; l++) {
+                    matrix_dec(A, k, j, matrix_get(A, k, l) * matrix_get(A, l, j));
+                }
+                matrix_set(A, k, j, matrix_get(A, k, j) / matrix_get(A, k, k));
+            }
+        }
+    }
+}
+
+// This function undo the effect of lu_dec_over()
+// This is equivalent of performing the multiplication A = L*U
+// So, the contents of the matrix A are sobrescribed
+void matrix_undo_lu_over(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return;  // Invalid operation
+    }
+    for (size_t j = (A.cols - 1); j < A.cols; j--) {
+        for (size_t i = (A.rows - 1); i < A.rows; i--) {
+            if (i <= j) {
+                for (size_t k = 0; k < i; k++) {
+                    matrix_inc(A, i, j, matrix_get(A, i, k) * matrix_get(A, k, j));
+                }
+            } else {
+                matrix_set(A, i, j, matrix_get(A, i, j) * matrix_get(A, j, j));
+                for (size_t k = 0; k < j; k++) {
+                    matrix_inc(A, i, j, matrix_get(A, i, k) * matrix_get(A, k, j));
+                }
+            }
+        }
+    }
+}
+
+// This function undo the effect of lu_dec_crout_over()
+// This is equivalent of performing the multiplication A = L*U
+// So, the contents of the matrix A are sobrescribed
+void matrix_undo_lu_crout_over(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return;  // Invalid operation
+    }
+    for (size_t j = (A.cols - 1); j < A.cols; j--) {
+        for (size_t i = (A.rows - 1); i < A.rows; i--) {
+            if (i < j) {
+                matrix_set(A, i, j, matrix_get(A, i, j) * matrix_get(A, i, i));
+            }
+            if (i <= j) {
+                for (size_t k = 0; k < i; k++) {
+                    matrix_inc(A, i, j, matrix_get(A, i, k) * matrix_get(A, k, j));
+                }
+            } else {
+                for (size_t k = 0; k < j; k++) {
+                    matrix_inc(A, i, j, matrix_get(A, i, k) * matrix_get(A, k, j));
+                }
             }
         }
     }

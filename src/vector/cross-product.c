@@ -21,7 +21,7 @@ int main(void) {
     b.data[2] = 7.0;
     vector_print(b);
     printf("Cross product:\n");
-    Vector cross = cross_product(a, b);
+    Vector cross = vector_cross_product(a, b);
     vector_print(cross);
     if (vector_are_orthogonal(a, cross) && vector_are_orthogonal(a, cross)) {
         printf("The cross product is orthogonal to the vectors a and b!\n");

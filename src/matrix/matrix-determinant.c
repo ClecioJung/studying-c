@@ -21,7 +21,7 @@ int main(void) {
     matrix_set(A, 2, 1, -3.0);
     matrix_set(A, 2, 2, 1.0);
     matrix_print(A);
-    const double result = determinant(A);
+    const double result = matrix_determinant(A);
     if (are_close(result, expected_result, PRECISION)) {
         printf("Determinant: %lg\n", result);
     } else {

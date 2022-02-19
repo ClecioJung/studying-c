@@ -13,7 +13,7 @@ int main(void) {
     v.data[4] = 5.0;
     printf("Vector v:\n");
     vector_print(v);
-    Matrix H = householder_matrix(v);
+    Matrix H = matrix_householder(v);
     printf("Matrix H:\n");
     matrix_print(H);
     if (matrix_is_orthogonal(H) && matrix_is_symmetric(H)) {

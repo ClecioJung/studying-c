@@ -15,7 +15,7 @@ int main(void) {
     a.data[1] = 3.0;
     a.data[2] = 0.0;
     vector_print(a);
-    const double result = euclidean_norm(a);
+    const double result = vector_norm(a);
     if (are_close(result, expected_result, PRECISION)) {
         printf("Euclidean norm: %lg\n", result);
     } else {

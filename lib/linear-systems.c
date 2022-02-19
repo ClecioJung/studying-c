@@ -35,6 +35,28 @@
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
 
+// WARNING: This function changes the contents of its parameters!
+static void partial_pivoting(const Matrix A, const Vector b) {
+    for (size_t k = 0; (k + 1) < A.rows; k++) {
+        double w = fabs(matrix_get(A, k, k));
+        size_t r = k;
+        for (size_t i = (k + 1); i < A.rows; i++) {
+            if (fabs(matrix_get(A, i, k)) > w) {
+                w = fabs(matrix_get(A, i, k));
+                r = i;
+            }
+        }
+        if (r != k) {
+            for (size_t i = k; i < A.rows; i++) {
+                const double temp = matrix_get(A, k, i);
+                matrix_set(A, k, i, matrix_get(A, r, i));
+                matrix_set(A, r, i, temp);
+            }
+            swap(&b.data[k], &b.data[r]);
+        }
+    }
+}
+
 // Remember to free the returned vector after calling this function!
 Vector back_substitution(const Matrix A, const Vector b) {
     if (!matrix_is_squared(A) || (A.rows != b.len)) {
@@ -81,26 +103,7 @@ Vector gaussian_elimination(const Matrix A, const Vector b) {
     if (!matrix_is_valid(A_copied) || !vector_is_valid(b_copied)) {
         return (Vector){0};
     }
-    // Partial pivoting
-    for (size_t k = 0; (k + 1) < A_copied.rows; k++) {
-        double w = fabs(matrix_get(A_copied, k, k));
-        size_t r = k;
-        for (size_t i = (k + 1); i < A_copied.rows; i++) {
-            if (fabs(matrix_get(A_copied, i, k)) > w) {
-                w = fabs(matrix_get(A_copied, i, k));
-                r = i;
-            }
-        }
-        if (r != k) {
-            for (size_t i = k; i < A_copied.rows; i++) {
-                const double temp = matrix_get(A_copied, k, i);
-                matrix_set(A_copied, k, i, matrix_get(A_copied, r, i));
-                matrix_set(A_copied, r, i, temp);
-            }
-            swap(&b_copied.data[k], &b_copied.data[r]);
-        }
-    }
-    // Gaussian elimination
+    partial_pivoting(A_copied, b_copied);
     for (size_t k = 0; (k + 1) < A_copied.rows; k++) {
         for (size_t i = (k + 1); i < A_copied.rows; i++) {
             const double m = matrix_get(A_copied, i, k) / matrix_get(A_copied, k, k);
@@ -154,7 +157,7 @@ Vector lu_solving(const Matrix A, const Vector b) {
     }
     Vector x = (Vector){0};
     Matrix L, U;
-    lu_decomposition(A, &L, &U);
+    matrix_lu_decomposition(A, &L, &U);
     if (matrix_is_valid(L) || matrix_is_valid(U)) {
         Vector d = forward_substitution(L, b);
         if (vector_is_valid(d)) {

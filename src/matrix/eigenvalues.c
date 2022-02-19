@@ -25,7 +25,7 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     printf("Eigenvalues:\n");
-    Vector eig = eigenvalues(A);
+    Vector eig = matrix_eigenvalues(A);
     vector_print(eig);
     matrix_dealloc(&A);
     vector_dealloc(&eig);

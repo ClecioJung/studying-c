@@ -15,7 +15,7 @@ int main(void) {
     matrix_set(A, 1, 2, 6.0);
     matrix_print(A);
     printf("Pseudo inverse matrix:\n");
-    Matrix pseudo_inv = pseudo_inverse(A);
+    Matrix pseudo_inv = matrix_pseudo_inverse(A);
     matrix_print(pseudo_inv);
     printf("pseudo_inverse(A) * A =\n");
     Matrix mul_left = matrix_mul(pseudo_inv, A);

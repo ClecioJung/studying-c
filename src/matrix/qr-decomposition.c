@@ -25,7 +25,7 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     Matrix Q, R;
-    qr_decomposition(A, &Q, &R);
+    matrix_qr_decomposition(A, &Q, &R);
     printf("Matrix Q:\n");
     matrix_print(Q);
     if (matrix_is_orthogonal(Q)) {

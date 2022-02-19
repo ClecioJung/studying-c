@@ -25,7 +25,7 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     Vector vec = (Vector){0};
-    const double eig = power_method(A, &vec);
+    const double eig = matrix_power_method(A, &vec);
     printf("Greatest eigenvalue: %lg\n", eig);
     printf("Eigenvector:\n");
     vector_print(vec);

@@ -153,7 +153,7 @@ Vector vector_scale(const double scalar, const Vector vector) {
     return new_vec;
 }
 
-double dot_product(const Vector a, const Vector b) {
+double vector_dot_product(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return 0.0;  // Invalid operation
     }
@@ -165,7 +165,7 @@ double dot_product(const Vector a, const Vector b) {
 }
 
 // Remember to free the returned vector after calling this function!
-Vector cross_product(const Vector a, const Vector b) {
+Vector vector_cross_product(const Vector a, const Vector b) {
     if ((a.len != 3) || (b.len != 3)) {
         return (Vector){0};  // Invalid operation
     }
@@ -176,7 +176,7 @@ Vector cross_product(const Vector a, const Vector b) {
     return result;
 }
 
-double euclidean_norm(const Vector x) {
+double vector_norm(const Vector x) {
     double value = 0.0;
     for (size_t i = 0; i < x.len; i++) {
         value += x.data[i] * x.data[i];
@@ -256,7 +256,7 @@ bool vector_are_orthogonal(const Vector a, const Vector b) {
     if (a.len != b.len) {
         return false;
     }
-    return are_close(dot_product(a, b), 0.0, COMPARATION_PRECISION);
+    return are_close(vector_dot_product(a, b), 0.0, COMPARATION_PRECISION);
 }
 
 void vector_scale_over(const double scalar, const Vector *const vector) {

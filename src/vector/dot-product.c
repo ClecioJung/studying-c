@@ -21,7 +21,7 @@ int main(void) {
     b.data[1] = 1.0;
     b.data[2] = 0.0;
     vector_print(b);
-    const double result = dot_product(a, b);
+    const double result = vector_dot_product(a, b);
     if (are_close(result, expected_result, PRECISION)) {
         printf("Dot product: %lg\n", result);
     } else {

@@ -25,7 +25,7 @@ int main(void) {
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
     Matrix U, T;
-    schur_decomposition(A, &U, &T);
+    matrix_schur_decomposition(A, &U, &T);
     printf("Matrix U:\n");
     matrix_print(U);
     if (matrix_is_orthogonal(U)) {

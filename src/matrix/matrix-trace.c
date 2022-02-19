@@ -21,7 +21,7 @@ int main(void) {
     matrix_set(A, 2, 1, -3.0);
     matrix_set(A, 2, 2, 1.0);
     matrix_print(A);
-    const double result = trace(A);
+    const double result = matrix_trace(A);
     if (are_close(result, expected_result, PRECISION)) {
         printf("Trace: %lg\n", result);
     } else {
