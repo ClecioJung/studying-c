@@ -8,7 +8,7 @@
 
 #define PRECISION 1e-9
 
-typedef Vector (*Linear_Systems_Fn)(const Matrix A, const Vector b);
+typedef System_Type (*Linear_Systems_Fn)(const Matrix A, const Vector b, Vector *const x);
 
 typedef struct {
     const char *const name;
@@ -16,7 +16,8 @@ typedef struct {
 } Linear_Systems_Algorithm;
 
 int test_algorithm(const Matrix A, const Vector b, const Linear_Systems_Algorithm algorithm) {
-    Vector x = algorithm.method_fn(A, b);
+    Vector x;
+    algorithm.method_fn(A, b, &x);
     printf("The vector solution found by the %s is:\n", algorithm.name);
     vector_print(x);
     Vector result = matrix_mul_vector(A, x);
@@ -70,21 +71,21 @@ int main(void) {
         if (condition) {
             printf("Columns condition returned true!\n");
         } else {
-            fprintf(stderr, "Expected the condition to be true!");
+            fprintf(stderr, "Expected the columns condition to be true!\n");
             return EXIT_FAILURE;
         }
         condition = rows_condition(A);
         if (condition) {
             printf("Rows condition returned true!\n");
         } else {
-            fprintf(stderr, "Expected the condition to be true!");
+            fprintf(stderr, "Expected the rows condition to be true!\n");
             return EXIT_FAILURE;
         }
         condition = sassenfeld_condition(A);
         if (condition) {
             printf("Sassenfeld condition returned true!\n\n");
         } else {
-            fprintf(stderr, "Expected the condition to be true!");
+            fprintf(stderr, "Expected the Sassenfeld condition to be true!\n");
             return EXIT_FAILURE;
         }
     }

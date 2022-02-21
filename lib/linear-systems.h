@@ -32,24 +32,33 @@
 #include "matrix.h"
 #include "vector.h"
 
+typedef enum {
+    Error = 0,        // Couldn't solve the system
+    Invalid,          // System invalid (disagreeing number of rows and columns)
+    Underdetermined,  // System with infinitely many solutions (Normally, a system with fewer equations than unknowns)
+    Overdetermined,   // System with no solution (Normally, a system with more equations than unknowns)
+    Solvable,         // Single unique solution
+} System_Type;
+
 Vector back_substitution(const Matrix A, const Vector b);
 Vector forward_substitution(const Matrix A, const Vector b);
-Vector gaussian_elimination(const Matrix A, const Vector b);
-Vector gauss_jordan(const Matrix A, const Vector b);
-Vector lu_solving(const Matrix A, const Vector b);
-Vector jacobi_method(const Matrix A, const Vector b);
-Vector gauss_seidel(const Matrix A, const Vector b);
+System_Type gaussian_elimination(const Matrix A, const Vector b, Vector *const x);
+System_Type gauss_jordan(const Matrix A, const Vector b, Vector *const x);
+System_Type lu_solving(const Matrix A, const Vector b, Vector *const x);
+System_Type jacobi_method(const Matrix A, const Vector b, Vector *const x);
+System_Type gauss_seidel(const Matrix A, const Vector b, Vector *const x);
 bool columns_condition(const Matrix A);
 bool rows_condition(const Matrix A);
 bool sassenfeld_condition(const Matrix A);
 
 // 'over' functions override the contents of their arguments,
 // avoiding the need to allocate more memory for the results
+void partial_pivoting_over(const Matrix A, const Vector b);
 void back_substitution_over(const Matrix A, const Vector b);
 void forward_substitution_over(const Matrix A, const Vector b);
-void gaussian_elimination_over(const Matrix A, const Vector b);
-void gauss_jordan_over(const Matrix A, const Vector b);
-void lu_solving_over(const Matrix A, const Vector b);
+System_Type gaussian_elimination_over(const Matrix A, const Vector b);
+System_Type gauss_jordan_over(const Matrix A, const Vector b);
+System_Type lu_solving_over(const Matrix A, const Vector b);
 
 #endif  // __LINEAR_SYSTEMS_H
 

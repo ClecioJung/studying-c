@@ -95,7 +95,10 @@ Vector polynomial_regression(const Vector x, const Vector y, const size_t order)
             b.data[i] += y.data[l] * power(x.data[l], i);
         }
     }
-    Vector coefficients = gaussian_elimination(A, b);
+    // If the system doesn't have a siingle unique solution,
+    // the coefficients vector will be deallocated automatically by the function gaussian_elimination()
+    Vector coefficients;
+    gaussian_elimination(A, b, &coefficients);
     matrix_dealloc(&A);
     vector_dealloc(&b);
     return coefficients;
