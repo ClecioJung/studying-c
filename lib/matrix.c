@@ -312,7 +312,7 @@ double matrix_determinant(const Matrix A) {
     if (!matrix_is_valid(A_copy)) {
         return NAN;
     }
-    // Gaussian elimination
+    // Forward elimination (Gauss)
     for (size_t k = 0; (k + 1) < A_copy.rows; k++) {
         for (size_t i = (k + 1); i < A_copy.rows; i++) {
             const double m = matrix_get(A_copy, i, k) / matrix_get(A_copy, k, k);
@@ -811,29 +811,29 @@ void matrix_qr_dec_over(const Matrix A, const Matrix R) {
     if (!matrix_is_squared(A) || !matrix_is_squared(R) || (A.rows != R.rows)) {
         return;  // Invalid operation
     }
-    Vector a = vector_alloc(A.rows);
-    Vector q = vector_alloc(A.rows);
-    if (vector_is_valid(a) && vector_is_valid(q)) {
-        matrix_init_over(R, 0.0);
-        for (size_t i = 0; i < A.cols; i++) {
-            vector_from_matrix_column_over(a, A, i);
-            // Gram-Schmidt process
-            for (size_t j = 0; j < i; j++) {
-                vector_from_matrix_column_over(q, A, j);
-                matrix_set(R, j, i, vector_dot_product(q, a));
-                for (size_t k = 0; k < A.rows; k++) {
-                    matrix_dec(A, k, i, matrix_get(R, j, i) * q.data[k]);
-                }
-            }
-            vector_from_matrix_column_over(q, A, i);
-            matrix_set(R, i, i, vector_norm(q));
+    matrix_init_over(R, 0.0);
+    for (size_t i = 0; i < A.cols; i++) {
+        // Gram-Schmidt process
+        for (size_t j = 0; j < i; j++) {
+            double dot_product_ai_aj = 0.0;
             for (size_t k = 0; k < A.rows; k++) {
-                matrix_set(A, k, i, q.data[k] / matrix_get(R, i, i));
+                dot_product_ai_aj += matrix_get(A, k, i) * matrix_get(A, k, j);
+            }
+            matrix_set(R, j, i, dot_product_ai_aj);
+            for (size_t k = 0; k < A.rows; k++) {
+                matrix_dec(A, k, i, dot_product_ai_aj * matrix_get(A, k, j));
             }
         }
+        double norm_ai = 0.0;
+        for (size_t k = 0; k < A.rows; k++) {
+            norm_ai += matrix_get(A, k, i) * matrix_get(A, k, i);
+        }
+        norm_ai = square_root(norm_ai);
+        matrix_set(R, i, i, norm_ai);
+        for (size_t k = 0; k < A.rows; k++) {
+            matrix_set(A, k, i, matrix_get(A, k, i) / norm_ai);
+        }
     }
-    vector_dealloc(&a);
-    vector_dealloc(&q);
 }
 
 // upper Hessenberg matrix decomposition (version with less memory usage)
