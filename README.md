@@ -4,6 +4,10 @@ This is a set of simple C codes developed to study algorithms and concepts of co
 
 - Developed with C11;
 - This code uses some UNIX functions, so it is platform dependent (it was tested only on Linux);
+- In this studies, I found this references to be very usefull:
+    - [Numerical Methods for Engineers](https://books.google.com.br/books?id=SA1LPgAACAAJ&hl=pt-BR&source=gbs_book_other_versions);
+    - [C, the Complete Reference](https://books.google.com.br/books/about/C_the_Complete_Reference.html?id=hHc_AQAAIAAJ&redir_esc=y);
+    - [Numerical Linear Algebra](https://www.google.com.br/books/edition/Numerical_Linear_Algebra/4Mou5YpRD_kC?hl=pt-BR&gbpv=1&dq=inauthor:%22Lloyd+N.+Trefethen%22&printsec=frontcover);
 - Implemented [data structures](https://en.wikipedia.org/wiki/Data_structure):
     - [Linked list](https://en.wikipedia.org/wiki/Linked_list);
     - [Doubly linked list](https://en.wikipedia.org/wiki/Doubly_linked_list);
@@ -51,6 +55,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Hessenberg matrix computation](https://en.wikipedia.org/wiki/Hessenberg_matrix);
     - [Schur decomposition](https://en.wikipedia.org/wiki/Schur_decomposition) using the [QR algorithm](https://en.wikipedia.org/wiki/QR_algorithm);
     - [Eigenvalues computation](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors);
+    - [Cholesky decomposition](https://en.wikipedia.org/wiki/Cholesky_decomposition);
     - Greatest eigenvalue computation (and its eigenvector) using the [power method](https://en.wikipedia.org/wiki/Power_iteration);
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
     - [Pseudo-inverse matrix](https://en.wikipedia.org/wiki/Generalized_inverse);

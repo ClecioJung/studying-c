@@ -494,6 +494,32 @@ double matrix_power_method(const Matrix A, Vector *const vec) {
 }
 
 // Remember to free the returned matrix after calling this function!
+// Decomposition: A = L * L^T, with L lower-triangular.
+// This decomposition is only possible for symmetric matrices
+Matrix matrix_cholesky_decomposition(const Matrix A) {
+    if (!matrix_is_symmetric(A)) {
+        return (Matrix){0};  // Invalid operation
+    }
+    Matrix L = matrix_init(A.rows, A.cols, 0.0);
+    if (matrix_is_valid(L)) {
+        for (size_t i = 0; i < L.rows; i++) {
+            for (size_t j = 0; j <= i; j++) {
+                double sum = 0.0;
+                for (size_t k = 0; k < j; k++) {
+                    sum += matrix_get(L, i, k) * matrix_get(L, j, k);
+                }
+                if (i == j) {
+                    matrix_set(L, i, i, square_root(matrix_get(A, i, i) - sum));
+                } else {
+                    matrix_set(L, i, j, (matrix_get(A, i, j) - sum) / matrix_get(L, j, j));
+                }
+            }
+        }
+    }
+    return L;
+}
+
+// Remember to free the returned matrix after calling this function!
 Matrix matrix_inverse(const Matrix A) {
     if (!matrix_is_squared(A)) {
         return (Matrix){0};  // Invalid operation

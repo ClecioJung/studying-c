@@ -71,6 +71,7 @@ void matrix_upper_hessenberg(const Matrix A, Matrix *const H, Matrix *const U);
 void matrix_schur_decomposition(const Matrix A, Matrix *const T, Matrix *const U);
 Vector matrix_eigenvalues(const Matrix A);
 double matrix_power_method(const Matrix A, Vector *const vec);
+Matrix matrix_cholesky_decomposition(const Matrix A);
 Matrix matrix_inverse(const Matrix A);
 Matrix matrix_pseudo_inverse(const Matrix A);
 double matrix_max_diff(const Matrix A, const Matrix previous_A);
