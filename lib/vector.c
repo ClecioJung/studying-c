@@ -260,9 +260,9 @@ void vector_copy_over(const Vector vector, const Vector to_copy) {
     }
 }
 
-void vector_scale_over(const double scalar, const Vector *const vector) {
-    for (size_t i = 0; i < vector->len; i++) {
-        vector->data[i] *= scalar;
+void vector_scale_over(const double scalar, const Vector vector) {
+    for (size_t i = 0; i < vector.len; i++) {
+        vector.data[i] *= scalar;
     }
 }
 

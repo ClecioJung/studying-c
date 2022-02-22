@@ -57,6 +57,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Eigenvalues computation](https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors);
     - [Cholesky decomposition](https://en.wikipedia.org/wiki/Cholesky_decomposition);
     - Greatest eigenvalue computation (and its eigenvector) using the [power method](https://en.wikipedia.org/wiki/Power_iteration);
+    - Lowest eigenvalue computation (and its eigenvector) using the [inverse power method](https://en.wikipedia.org/wiki/Inverse_iteration);
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
     - [Pseudo-inverse matrix](https://en.wikipedia.org/wiki/Generalized_inverse);
 - Implemented algorithm for solving [systems of linear equations](https://en.wikipedia.org/wiki/System_of_linear_equations):

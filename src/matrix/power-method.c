@@ -4,6 +4,17 @@
 
 #include "../../lib/matrix.h"
 
+bool check_if_is_eig(const Matrix A, const double eig, const Vector vec) {
+    for (size_t i = 0; i < A.rows; i++) {
+        matrix_dec(A, i, i, eig);
+    }
+    const bool check = matrix_is_null_space(A, vec);
+    for (size_t i = 0; i < A.rows; i++) {
+        matrix_inc(A, i, i, eig);
+    }
+    return check;
+}
+
 int main(void) {
     Matrix A = matrix_alloc(4, 4);
     printf("Matrix A:\n");
@@ -24,23 +35,34 @@ int main(void) {
     matrix_set(A, 3, 2, 4.0);
     matrix_set(A, 3, 3, 1.0);
     matrix_print(A);
-    Vector vec = (Vector){0};
-    const double eig = matrix_power_method(A, &vec);
-    printf("Greatest eigenvalue: %lg\n", eig);
-    printf("Eigenvector:\n");
-    vector_print(vec);
     {
-        for (size_t i = 0; i < A.rows; i++) {
-            matrix_dec(A, i, i, eig);
-        }
-        if (matrix_is_null_space(A, vec)) {
-            printf("The eigenvalue and eigenvector were properly calculated!\n\n");
+        Vector greatest_vec = (Vector){0};
+        const double greatest_eig = matrix_power_method(A, &greatest_vec);
+        printf("Greatest eigenvalue: %lg\n", greatest_eig);
+        printf("Eigenvector:\n");
+        vector_print(greatest_vec);
+        if (check_if_is_eig(A, greatest_eig, greatest_vec)) {
+            printf("The greatest eigenvalue and eigenvector were properly calculated!\n\n");
         } else {
-            fprintf(stderr, "The eigenvalue and eigenvector were NOT properly calculated!\n");
+            fprintf(stderr, "The greatest eigenvalue and eigenvector were NOT properly calculated!\n");
             return EXIT_FAILURE;
         }
+        vector_dealloc(&greatest_vec);
+    }
+    {
+        Vector lowest_vec = (Vector){0};
+        const double lowest_eig = matrix_inverse_power_method(A, &lowest_vec);
+        printf("Lowest eigenvalue: %lg\n", lowest_eig);
+        printf("Eigenvector:\n");
+        vector_print(lowest_vec);
+        if (check_if_is_eig(A, lowest_eig, lowest_vec)) {
+            printf("The lowest eigenvalue and eigenvector were properly calculated!\n\n");
+        } else {
+            fprintf(stderr, "The lowest eigenvalue and eigenvector were NOT properly calculated!\n");
+            return EXIT_FAILURE;
+        }
+        vector_dealloc(&lowest_vec);
     }
     matrix_dealloc(&A);
-    vector_dealloc(&vec);
     return EXIT_SUCCESS;
 }

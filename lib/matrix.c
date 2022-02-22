@@ -188,11 +188,7 @@ Matrix matrix_sum(const Matrix A, const Matrix B) {
     }
     Matrix result = matrix_alloc(A.rows, A.cols);
     if (matrix_is_valid(result)) {
-        for (size_t i = 0; i < A.rows; i++) {
-            for (size_t j = 0; j < A.cols; j++) {
-                matrix_set(result, i, j, matrix_get(A, i, j) + matrix_get(B, i, j));
-            }
-        }
+        matrix_sum_over(result, A, B);
     }
     return result;
 }
@@ -204,11 +200,7 @@ Matrix matrix_sub(const Matrix A, const Matrix B) {
     }
     Matrix result = matrix_alloc(A.rows, A.cols);
     if (matrix_is_valid(result)) {
-        for (size_t i = 0; i < A.rows; i++) {
-            for (size_t j = 0; j < A.cols; j++) {
-                matrix_set(result, i, j, matrix_get(A, i, j) - matrix_get(B, i, j));
-            }
-        }
+        matrix_sub_over(result, A, B);
     }
     return result;
 }
@@ -484,11 +476,39 @@ double matrix_power_method(const Matrix A, Vector *const vec) {
         vector_copy_over(previous_vec, *vec);
         matrix_mul_vector_over(*vec, A, previous_vec);
         eig = vector_norm(*vec);
-        vector_scale_over((1.0 / eig), vec);
+        vector_scale_over((1.0 / eig), *vec);
         if (vector_max_diff(*vec, previous_vec) < ITERATION_PRECISION) {
             break;
         }
     }
+    vector_dealloc(&previous_vec);
+    return eig;
+}
+
+// Remember to free vec after calling this function!
+double matrix_inverse_power_method(const Matrix A, Vector *const vec) {
+    if (!matrix_is_squared(A) || (vec == NULL)) {
+        return NAN;  // Invalid operation
+    }
+    Matrix invA = matrix_inverse(A);
+    *vec = vector_random(A.rows, 0.0, 1.0);
+    Vector previous_vec = vector_alloc(vec->len);
+    if (!vector_is_valid(*vec) || !vector_is_valid(previous_vec)) {
+        vector_dealloc(vec);
+        vector_dealloc(&previous_vec);
+        return NAN;
+    }
+    double eig = 0.0;
+    for (size_t i = 0; i < MAX_ITERATIONS; i++) {
+        vector_copy_over(previous_vec, *vec);
+        matrix_mul_vector_over(*vec, invA, previous_vec);
+        eig = -1.0 / vector_norm(*vec);
+        vector_scale_over(eig, *vec);
+        if (vector_max_diff(*vec, previous_vec) < ITERATION_PRECISION) {
+            break;
+        }
+    }
+    matrix_dealloc(&invA);
     vector_dealloc(&previous_vec);
     return eig;
 }
@@ -688,6 +708,38 @@ void vector_from_matrix_column_over(const Vector vector, const Matrix A, const s
     }
     for (size_t i = 0; i < vector.len; i++) {
         vector.data[i] = matrix_get(A, i, col);
+    }
+}
+
+void matrix_scale_over(const double scalar, const Matrix A) {
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < A.cols; j++) {
+            matrix_set(A, i, j, scalar * matrix_get(A, i, j));
+        }
+    }
+}
+
+void matrix_sum_over(const Matrix result, const Matrix A, const Matrix B) {
+    if ((result.rows != A.rows) || (result.cols != A.cols) || (A.rows != B.rows) || (A.cols != B.cols)) {
+        return;  // Invalid operation
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < A.cols; j++) {
+            const double value = matrix_get(A, i, j) + matrix_get(B, i, j);
+            matrix_set(result, i, j, value);
+        }
+    }
+}
+
+void matrix_sub_over(const Matrix result, const Matrix A, const Matrix B) {
+    if ((result.rows != A.rows) || (result.cols != A.cols) || (A.rows != B.rows) || (A.cols != B.cols)) {
+        return;  // Invalid operation
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < A.cols; j++) {
+            const double value = matrix_get(A, i, j) - matrix_get(B, i, j);
+            matrix_set(result, i, j, value);
+        }
     }
 }
 

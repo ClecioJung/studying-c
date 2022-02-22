@@ -61,7 +61,7 @@ bool vector_are_orthogonal(const Vector a, const Vector b);
 // avoiding the need to allocate more memory for the results
 void vector_init_over(const Vector vector, const double value);
 void vector_copy_over(const Vector vector, const Vector vec_to_copy);
-void vector_scale_over(const double scalar, const Vector *const vector);
+void vector_scale_over(const double scalar, const Vector vector);
 
 #endif  // __VECTOR_H
 

@@ -71,6 +71,7 @@ void matrix_upper_hessenberg(const Matrix A, Matrix *const H, Matrix *const U);
 void matrix_schur_decomposition(const Matrix A, Matrix *const T, Matrix *const U);
 Vector matrix_eigenvalues(const Matrix A);
 double matrix_power_method(const Matrix A, Vector *const vec);
+double matrix_inverse_power_method(const Matrix A, Vector *const vec);
 Matrix matrix_cholesky_decomposition(const Matrix A);
 Matrix matrix_inverse(const Matrix A);
 Matrix matrix_pseudo_inverse(const Matrix A);
@@ -87,6 +88,9 @@ bool matrix_is_null_space(const Matrix A, const Vector vec);
 // avoiding the need to allocate more memory for the results
 void matrix_init_over(const Matrix A, const double value);
 void vector_from_matrix_column_over(const Vector vector, const Matrix A, const size_t col);
+void matrix_scale_over(const double scalar, const Matrix A);
+void matrix_sum_over(const Matrix result, const Matrix A, const Matrix B);
+void matrix_sub_over(const Matrix result, const Matrix A, const Matrix B);
 void matrix_identity_over(const Matrix matrix);
 void matrix_copy_over(const Matrix matrix, const Matrix to_copy);
 void matrix_mul_over(const Matrix result, const Matrix A, const Matrix B);
