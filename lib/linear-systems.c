@@ -33,7 +33,7 @@
 #include "scalar.h"
 
 #define MAX_ITERATIONS 10000
-#define PRECISION 1e-10
+#define PRECISION 1e-9
 
 // Remember to free the returned vector after calling this function!
 Vector back_substitution(const Matrix A, const Vector b) {
@@ -277,7 +277,7 @@ void partial_pivoting_over(const Matrix A, const Vector b) {
             }
         }
         if (r != k) {
-            for (size_t i = k; i < A.rows; i++) {
+            for (size_t i = 0; i < A.rows; i++) {
                 const double temp = matrix_get(A, k, i);
                 matrix_set(A, k, i, matrix_get(A, r, i));
                 matrix_set(A, r, i, temp);
@@ -328,14 +328,29 @@ System_Type gaussian_elimination_over(const Matrix A, const Vector b) {
         // But this corner case was not implemented here
         return Overdetermined;
     }
-    // TODO: check if is a singular system
-    partial_pivoting_over(A, b);
-    // Forward elimination
     for (size_t k = 0; (k + 1) < A.rows; k++) {
+        double w = fabs(matrix_get(A, k, k));
+        if (are_close(w, 0.0, PRECISION)) {
+            return Underdetermined;
+        }
+        // Partial pivoting
+        size_t r = k;
         for (size_t i = (k + 1); i < A.rows; i++) {
-            if (are_close(matrix_get(A, k, k), 0.0, PRECISION)) {
-                return Underdetermined;
+            if (fabs(matrix_get(A, i, k)) > w) {
+                w = fabs(matrix_get(A, i, k));
+                r = i;
             }
+        }
+        if (r != k) {
+            for (size_t i = k; i < A.rows; i++) {
+                const double temp = matrix_get(A, k, i);
+                matrix_set(A, k, i, matrix_get(A, r, i));
+                matrix_set(A, r, i, temp);
+            }
+            swap(&b.data[k], &b.data[r]);
+        }
+        // Forward elimination
+        for (size_t i = (k + 1); i < A.rows; i++) {
             const double m = matrix_get(A, i, k) / matrix_get(A, k, k);
             for (size_t j = (k + 1); j < A.rows; j++) {
                 matrix_dec(A, i, j, m * matrix_get(A, k, j));
@@ -364,13 +379,30 @@ System_Type gauss_jordan_over(const Matrix A, const Vector b) {
         // But this corner case was not implemented here
         return Overdetermined;
     }
-    partial_pivoting_over(A, b);
     for (size_t k = 0; k < A.rows; k++) {
+        double w = fabs(matrix_get(A, k, k));
+        if (are_close(w, 0.0, PRECISION)) {
+            return Underdetermined;
+        }
+        // Partial pivoting
+        size_t r = k;
+        for (size_t i = (k + 1); i < A.rows; i++) {
+            if (fabs(matrix_get(A, i, k)) > w) {
+                w = fabs(matrix_get(A, i, k));
+                r = i;
+            }
+        }
+        if (r != k) {
+            for (size_t i = k; i < A.rows; i++) {
+                const double temp = matrix_get(A, k, i);
+                matrix_set(A, k, i, matrix_get(A, r, i));
+                matrix_set(A, r, i, temp);
+            }
+            swap(&b.data[k], &b.data[r]);
+        }
+        // Forward elimination
         for (size_t i = 0; i < A.rows; i++) {
             const double p = matrix_get(A, k, k);
-            if (are_close(p, 0.0, PRECISION)) {
-                return Underdetermined;
-            }
             if (i == k) {
                 for (size_t j = k; j < A.cols; j++) {
                     matrix_set(A, i, j, matrix_get(A, i, j) / p);
