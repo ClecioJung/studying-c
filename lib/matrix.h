@@ -69,6 +69,7 @@ void matrix_qr_decomposition(const Matrix A, Matrix *const Q, Matrix *const R);
 Matrix matrix_householder(const Vector vec);
 void matrix_upper_hessenberg(const Matrix A, Matrix *const H, Matrix *const U);
 void matrix_schur_decomposition(const Matrix A, Matrix *const T, Matrix *const U);
+void matrix_diagonalization(const Matrix A, Matrix *const P, Matrix *const D);
 Vector matrix_eigenvalues(const Matrix A);
 double matrix_power_method(const Matrix A, Vector *const vec);
 double matrix_inverse_power_method(const Matrix A, Vector *const vec);
@@ -78,6 +79,7 @@ Matrix matrix_pseudo_inverse(const Matrix A);
 double matrix_max_diff(const Matrix A, const Matrix previous_A);
 bool matrix_are_equal(const Matrix A, const Matrix B);
 bool matrix_is_orthogonal(const Matrix A);
+bool matrix_is_diagonal(const Matrix A);
 bool matrix_is_upper_triangular(const Matrix A);
 bool matrix_is_lower_triangular(const Matrix A);
 bool matrix_is_symmetric(const Matrix A);
@@ -102,6 +104,7 @@ void matrix_undo_lu_crout_over(const Matrix A);
 void matrix_qr_dec_over(const Matrix A, const Matrix R);
 void matrix_upper_hessenberg_over(const Matrix A, const Matrix U);
 void matrix_schur_dec_over(const Matrix A, const Matrix U);
+void matrix_diagonalization_over(const Matrix A, const Matrix P);
 
 #endif  // __MATRIX_H
 

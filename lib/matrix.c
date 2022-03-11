@@ -210,7 +210,7 @@ Matrix matrix_mul(const Matrix A, const Matrix B) {
     if (A.cols != B.rows) {
         return (Matrix){0};  // Invalid operation
     }
-    Matrix result = matrix_init(A.rows, B.cols, 0.0);
+    Matrix result = matrix_alloc(A.rows, B.cols);
     if (matrix_is_valid(result)) {
         matrix_mul_over(result, A, B);
     }
@@ -233,7 +233,7 @@ Vector matrix_mul_vector(const Matrix A, const Vector b) {
     if (A.cols != b.len) {
         return (Vector){0};  // Invalid operation
     }
-    Vector result = vector_init(A.rows, 0.0);
+    Vector result = vector_alloc(A.rows);
     if (vector_is_valid(result)) {
         matrix_mul_vector_over(result, A, b);
     }
@@ -441,6 +441,25 @@ void matrix_schur_decomposition(const Matrix A, Matrix *const T, Matrix *const U
     }
 }
 
+// Matrix diagonalization
+// Remember to free P and D matrices after calling this function!
+// Decomposition A = P * D * P^-1, with D in diagonal form
+// Only work for real non repeated eigenvalues
+// Based on: https://math.stackexchange.com/questions/3947108/how-to-get-eigenvectors-using-qr-algorithm
+void matrix_diagonalization(const Matrix A, Matrix *const P, Matrix *const D) {
+    if (!matrix_is_squared(A) || (P == NULL) || (D == NULL)) {
+        return;  // Invalid operation
+    }
+    *D = matrix_copy(A);
+    *P = matrix_alloc(A.rows, A.cols);
+    if (!matrix_is_valid(*D) || !matrix_is_valid(*P)) {
+        matrix_dealloc(D);
+        matrix_dealloc(P);
+    } else {
+        matrix_diagonalization_over(*D, *P);
+    }
+}
+
 // Remember to free the returned vector after calling this function!
 Vector matrix_eigenvalues(const Matrix A) {
     Matrix U = (Matrix){0};
@@ -629,6 +648,22 @@ bool matrix_is_orthogonal(const Matrix A) {
     matrix_dealloc(&mul);
     matrix_dealloc(&identity);
     return are_equal;
+}
+
+bool matrix_is_diagonal(const Matrix A) {
+    if (!matrix_is_squared(A)) {
+        return false;  // Invalid operation
+    }
+    for (size_t i = 0; i < A.rows; i++) {
+        for (size_t j = 0; j < A.cols; j++) {
+            if (i != j) {
+                if (fabs(matrix_get(A, i, j)) >= COMPARATION_PRECISION) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }
 
 bool matrix_is_upper_triangular(const Matrix A) {
@@ -987,6 +1022,48 @@ void matrix_schur_dec_over(const Matrix A, const Matrix U) {
     }
     matrix_dealloc(&Q);
     matrix_dealloc(&R);
+}
+
+// Matrix diagonalization (version with less memory usage)
+// In this version, the D matrix is stored in the matrix A, changing its contents!
+// The matrix P must be preallocated!
+// WARNING! This function changes the contents of A and P!
+// Decomposition A = P * D * P^-1, with D in diagonal form
+// Only work for real non repeated eigenvalues
+// Based on: https://math.stackexchange.com/questions/3947108/how-to-get-eigenvectors-using-qr-algorithm
+void matrix_diagonalization_over(const Matrix A, const Matrix P) {
+    if (!matrix_is_squared(A) || !matrix_is_squared(P) || (A.rows != P.rows)) {
+        return;  // Invalid operation
+    }
+    Matrix V = matrix_identity(A.rows);
+    Matrix U = matrix_alloc(A.rows, A.cols);
+    if (matrix_is_valid(V) && matrix_is_valid(U)) {
+        matrix_schur_dec_over(A, U);
+        if (matrix_is_upper_triangular(A)) {
+            for (size_t i = 1; i < A.rows; i++) {
+                for (size_t j = 0; j < i; j++) {
+                    matrix_set(V, j, i, matrix_get(A, j, i));
+                }
+                // Back substitution
+                for (size_t j = (i - 1); j < i; j--) {
+                    for (size_t k = (j + 1); k < i; k++) {
+                        matrix_inc(V, j, i, matrix_get(A, j, k) * matrix_get(V, k, i));
+                    }
+                    matrix_set(V, j, i, matrix_get(V, j, i) / (matrix_get(A, i, i) - matrix_get(A, j, j)));
+                }
+            }
+            matrix_mul_over(P, U, V);
+            // Set the non diagonal elements of A to zero
+            for (size_t i = 0; i < A.rows; i++) {
+                for (size_t j = (i + 1); j < A.rows; j++) {
+                    matrix_set(A, i, j, 0.0);
+                    matrix_set(A, j, i, 0.0);
+                }
+            }
+        }
+    }
+    matrix_dealloc(&U);
+    matrix_dealloc(&V);
 }
 
 //------------------------------------------------------------------------------
