@@ -16,7 +16,7 @@ int main(void) {
     q.data[0] = 1.0;
     q.data[1] = 1.0;
     Vector r = (Vector){0};
-    const double remainder = polynomial_ruffini(p, -q.data[0], &r);
+    const double remainder = polynomial_ruffini_division(p, -q.data[0], &r);
     printf("\nUsing Ruffini's rule to divide the polynomial\n");
     polynomial_print(p, "p", 'x');
     printf("  by\n");

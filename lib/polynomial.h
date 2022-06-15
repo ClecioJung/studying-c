@@ -28,16 +28,20 @@
 #define __POLYNOMIAL_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "vector.h"
 
-void polynomial_print(const Vector coefficients, const char *const name, char x);
+void polynomial_print(const Vector polynomial, const char *const name, char x);
 Vector polynomial_sum(const Vector poly1, const Vector poly2);
 Vector polynomial_multiply(const Vector poly1, const Vector poly2);
 bool polynomial_are_equal(const Vector poly1, const Vector poly2);
-double polynomial_at(const Vector coefficients, const double x);
-double polynomial_horner(const Vector coefficients, const double x);
-double polynomial_ruffini(const Vector polynomial, const double r, Vector *const result);
+double polynomial_evaluation(const Vector polynomial, const double x);
+double polynomial_horner_evaluation(const Vector polynomial, const double x);
+double polynomial_ruffini_division(const Vector polynomial, const double r, Vector *const result);
+double polynomial_ruffini_evaluation(const Vector polynomial, const double x);
+double polynomial_first_diff(const Vector polynomial, const double x);
+double polynomial_diff(const Vector polynomial, uint16_t order, const double x);
 double polynomial_cauchy_upper_bound(const Vector polynomial);
 double polynomial_cauchy_lower_bound(const Vector polynomial);
 double polynomial_lagrange_upper_bound(const Vector polynomial);

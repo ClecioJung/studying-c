@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "scalar.h"
@@ -106,7 +107,7 @@ bool polynomial_are_equal(const Vector poly1, const Vector poly2) {
     return vector_are_equal(poly1, poly2);
 }
 
-double polynomial_at(const Vector polynomial, const double x) {
+double polynomial_evaluation(const Vector polynomial, const double x) {
     double y = 0.0;
     for (size_t i = 0; i < polynomial.len; i++) {
         y += polynomial.data[i] * power(x, i);
@@ -115,7 +116,7 @@ double polynomial_at(const Vector polynomial, const double x) {
 }
 
 // Horner's method
-double polynomial_horner(const Vector polynomial, const double x) {
+double polynomial_horner_evaluation(const Vector polynomial, const double x) {
     if (polynomial.len == 0) {
         return 0.0;
     }
@@ -131,9 +132,17 @@ double polynomial_horner(const Vector polynomial, const double x) {
 // Ruffini's rule
 // Computes the division of the polynomial by a binomial of the form (x – r)
 // Remember to free the returned vector after calling this function!
-double polynomial_ruffini(const Vector polynomial, const double r, Vector *const result) {
-    if ((polynomial.len == 0) || (result == NULL)) {
+double polynomial_ruffini_division(const Vector polynomial, const double r, Vector *const result) {
+    if (result == NULL) {
         return NAN;  // Invalid operation
+    }
+    if (polynomial.len == 0) {
+        *result = (Vector){0};
+        return 0.0;
+    }
+    if (polynomial.len == 1) {
+        *result = (Vector){0};
+        return polynomial.data[0];
     }
     *result = vector_alloc(polynomial.len - 1);
     if (result == NULL) {
@@ -147,6 +156,46 @@ double polynomial_ruffini(const Vector polynomial, const double r, Vector *const
     }
     // return the remainder;
     return (polynomial.data[0] + r * result->data[0]);
+}
+
+// Polynomial evaluation using Ruffini's rule
+double polynomial_ruffini_evaluation(const Vector polynomial, const double x) {
+    if (polynomial.len == 0) {
+        return 0.0;
+    }
+    Vector result = (Vector){0};
+    double remainder = polynomial_ruffini_division(polynomial, x, &result);
+    vector_dealloc(&result);
+    return remainder;
+}
+
+double polynomial_first_diff(const Vector polynomial, const double x) {
+    if (polynomial.len == 0) {
+        return 0.0;
+    }
+    Vector first_division = (Vector){0};
+    polynomial_ruffini_division(polynomial, x, &first_division);
+    Vector second_division = (Vector){0};
+    double remainder = polynomial_ruffini_division(first_division, x, &second_division);
+    vector_dealloc(&first_division);
+    vector_dealloc(&second_division);
+    return remainder;
+}
+
+double polynomial_diff(const Vector polynomial, const uint16_t order, const double x) {
+    if ((polynomial.len == 0) || (order >= polynomial.len)) {
+        return 0.0;
+    }
+    Vector p = (Vector){0};
+    double remainder = polynomial_ruffini_division(polynomial, x, &p);
+    for (uint16_t i = 0; i < order; i++) {
+        Vector division_result = (Vector){0};
+        remainder = polynomial_ruffini_division(p, x, &division_result);
+        vector_dealloc(&p);
+        p = division_result;
+    }
+    vector_dealloc(&p);
+    return (factorial(order) * remainder);
 }
 
 // Cauchy's upper bound

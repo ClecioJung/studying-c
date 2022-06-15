@@ -42,8 +42,9 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Euclidean norm](https://en.wikipedia.org/wiki/Euclidean_space#Euclidean_norm);
 - Implemented operations with [polynomials](https://en.wikipedia.org/wiki/Polynomial):
     - Addidtion and multiplication of polynomials;
+    - Differenctiation of polynomials;
     - Evaluation with [Horner's method](https://en.wikipedia.org/wiki/Horner%27s_method);
-    - Division by a binomial using [Ruffini's_rule](https://en.wikipedia.org/wiki/Ruffini%27s_rule);
+    - Division by a binomial using [Ruffini's rule](https://en.wikipedia.org/wiki/Ruffini%27s_rule);
     - Computation of [polynomial root bounds](https://en.wikipedia.org/wiki/Geometrical_properties_of_polynomial_roots#Bounds_on_all_roots);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
     - Sum/subtraction of matrices;
