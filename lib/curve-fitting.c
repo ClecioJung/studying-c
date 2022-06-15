@@ -104,14 +104,6 @@ Vector polynomial_regression(const Vector x, const Vector y, const size_t order)
     return coefficients;
 }
 
-double compute_polynomial(const Vector coefficients, const double x) {
-    double y = 0.0;
-    for (size_t i = 0; i < coefficients.len; i++) {
-        y += coefficients.data[i] * power(x, i);
-    }
-    return y;
-}
-
 //------------------------------------------------------------------------------
 // END
 //------------------------------------------------------------------------------

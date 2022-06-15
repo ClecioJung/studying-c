@@ -3,11 +3,12 @@
 This is a set of simple C codes developed to study algorithms and concepts of computer science. It posseses the following characteristics:
 
 - Developed with C11;
-- This code uses some UNIX functions, so it is platform dependent (it was tested only on Linux);
+- This code uses some UNIX functions, so it is platform dependent (it was only tested on Linux);
 - In this studies, I found this references to be very usefull:
     - [Numerical Methods for Engineers](https://books.google.com.br/books?id=SA1LPgAACAAJ&hl=pt-BR&source=gbs_book_other_versions);
     - [C, the Complete Reference](https://books.google.com.br/books/about/C_the_Complete_Reference.html?id=hHc_AQAAIAAJ&redir_esc=y);
     - [Numerical Linear Algebra](https://www.google.com.br/books/edition/Numerical_Linear_Algebra/4Mou5YpRD_kC?hl=pt-BR&gbpv=1&dq=inauthor:%22Lloyd+N.+Trefethen%22&printsec=frontcover);
+    - [Cálculo Numérico Computacional](https://sergiopeters.prof.ufsc.br/livro-calculo-numerico-computacional/);
 - Implemented [data structures](https://en.wikipedia.org/wiki/Data_structure):
     - [Linked list](https://en.wikipedia.org/wiki/Linked_list);
     - [Doubly linked list](https://en.wikipedia.org/wiki/Doubly_linked_list);
@@ -31,6 +32,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Pi](https://en.wikipedia.org/wiki/Pi);
 - Implemented scalar functions:
     - [Square root](https://en.wikipedia.org/wiki/Square_root);
+    - [N-th root](https://en.wikipedia.org/wiki/Nth_root);
     - [Exponential](https://en.wikipedia.org/wiki/Exponential_function);
 - Implemented operations with [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)):
     - Sum/subtraction of vectors;
@@ -38,6 +40,11 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Dot product](https://en.wikipedia.org/wiki/Dot_product);
     - [Cross product](https://en.wikipedia.org/wiki/Cross_product);
     - [Euclidean norm](https://en.wikipedia.org/wiki/Euclidean_space#Euclidean_norm);
+- Implemented operations with [polynomials](https://en.wikipedia.org/wiki/Polynomial):
+    - Addidtion and multiplication of polynomials;
+    - Evaluation with [Horner's method](https://en.wikipedia.org/wiki/Horner%27s_method);
+    - Division by a binomial using [Ruffini's_rule](https://en.wikipedia.org/wiki/Ruffini%27s_rule);
+    - Computation of [polynomial root bounds](https://en.wikipedia.org/wiki/Geometrical_properties_of_polynomial_roots#Bounds_on_all_roots);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
     - Sum/subtraction of matrices;
     - Multiplication of matrices by scalars;

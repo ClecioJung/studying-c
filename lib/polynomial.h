@@ -24,26 +24,31 @@
 // HEADER
 //------------------------------------------------------------------------------
 
-#ifndef __SCALAR_H
-#define __SCALAR_H
+#ifndef __POLYNOMIAL_H
+#define __POLYNOMIAL_H
 
 #include <stdbool.h>
-#include <stdint.h>
 
-// Scalar functions
-void swap(double *const a, double *const b);
-uint64_t factorial(uint64_t value);
-bool are_close(const double a, const double b, const double delta);
-double maximum(const double a, const double b);
-double minimum(const double a, const double b);
-double sign(const double value);
-double random_number(const double min, const double max);
-double square_root(const double value);
-double root(const double value, const uint64_t n);
-double power(const double base, uint64_t expoent);
-double exponential(const double value);
+#include "vector.h"
 
-#endif  // __SCALAR_H
+void polynomial_print(const Vector coefficients, const char *const name, char x);
+Vector polynomial_sum(const Vector poly1, const Vector poly2);
+Vector polynomial_multiply(const Vector poly1, const Vector poly2);
+bool polynomial_are_equal(const Vector poly1, const Vector poly2);
+double polynomial_at(const Vector coefficients, const double x);
+double polynomial_horner(const Vector coefficients, const double x);
+double polynomial_ruffini(const Vector polynomial, const double r, Vector *const result);
+double polynomial_cauchy_upper_bound(const Vector polynomial);
+double polynomial_cauchy_lower_bound(const Vector polynomial);
+double polynomial_lagrange_upper_bound(const Vector polynomial);
+double polynomial_lagrange_lower_bound(const Vector polynomial);
+double polynomial_cauchy_upper_quota(const Vector polynomial);
+double polynomial_cauchy_lower_quota(const Vector polynomial);
+double polynomial_kojima_upper_bound(const Vector polynomial);
+double polynomial_kojima_lower_bound(const Vector polynomial);
+void polynomial_root_bounds(const Vector polynomial, double *min, double *max);
+
+#endif  // __POLYNOMIAL_H
 
 //------------------------------------------------------------------------------
 // END

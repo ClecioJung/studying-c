@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "../../lib/curve-fitting.h"
+#include "../../lib/polynomial.h"
 #include "../../lib/scalar.h"
 
 #define PRECISION 1e-10
@@ -24,7 +25,7 @@ int main(void) {
     Vector pol = polynomial_regression(x, y, 2);
     vector_print(pol);
     for (size_t i = 0; i < x.len; i++) {
-        const double result = compute_polynomial(pol, x.data[i]);
+        const double result = polynomial_at(pol, x.data[i]);
         if (are_close(result, y.data[i], PRECISION)) {
             printf("The approx. polynomial avaliated at %lg results in %lg, while the original value was %lg\n", x.data[i], result, y.data[i]);
         } else {

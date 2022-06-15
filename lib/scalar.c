@@ -93,6 +93,33 @@ double square_root(const double value) {
     return x;
 }
 
+// My own root function, so I don't need to link with -lm,
+// avoiding any dependencies
+double root(const double value, const uint64_t n) {
+    if (n == 1) {
+        return value;
+    } else if ((n == 0) && (fabs(value) < PRECISION)) {
+        return NAN;
+    } else if (n == 0) {
+        return 1.0;
+    } else if (fabs(value) < PRECISION) {
+        return 0.0;  // root(0) = 0
+    } else if ((n % 2 == 0) && (value < 0)) {
+        return NAN;
+    }
+    double x = value;
+    // Use the Newton-Raphson method to find the root
+    // of the function f(x) = x^n - value
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        const double delta = (value / power(x, (n - 1)) - x) / ((double)n);
+        x += delta;
+        if (fabs(delta) < PRECISION) {
+            break;
+        }
+    }
+    return x;
+}
+
 // My own power function, so I don't need to link with -lm,
 // avoiding any dependencies
 double power(const double base, uint64_t expoent) {

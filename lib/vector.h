@@ -50,6 +50,7 @@ double vector_dot_product(const Vector a, const Vector b);
 Vector vector_cross_product(const Vector a, const Vector b);
 double vector_norm(const Vector x);
 double vector_max(const Vector x);
+double vector_min(const Vector x);
 Vector vector_sum(const Vector a, const Vector b);
 Vector vector_sub(const Vector a, const Vector b);
 double vector_max_diff(Vector x, Vector previous_x);

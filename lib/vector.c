@@ -178,6 +178,14 @@ double vector_max(const Vector x) {
     return value;
 }
 
+double vector_min(const Vector x) {
+    double value = INFINITY;
+    for (size_t i = 0; i < x.len; i++) {
+        value = minimum(value, x.data[i]);
+    }
+    return value;
+}
+
 // Remember to free the returned vector after calling this function!
 Vector vector_sum(const Vector a, const Vector b) {
     if (a.len != b.len) {
