@@ -34,8 +34,17 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Square root](https://en.wikipedia.org/wiki/Square_root);
     - [N-th root](https://en.wikipedia.org/wiki/Nth_root);
     - [Exponential](https://en.wikipedia.org/wiki/Exponential_function);
+    - [Trigonometric functions](https://en.wikipedia.org/wiki/Trigonometric_functions): sine, cosine, tangent and arctangent functions;
+    - The [atan2](https://en.wikipedia.org/wiki/Atan2) function;
+- Implemented operations with [complex numbers](https://en.wikipedia.org/wiki/Complex_number):
+    - Sum andsubtraction of complex numbers;
+    - Multiplication and division of complex numbers;
+    - Inversion of complex numbers;
+    - Modulus and argument of complex numbers;
+    - Construction of complex numbers by its polar form;
+    - Complex conjugate;
 - Implemented operations with [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)):
-    - Sum/subtraction of vectors;
+    - Sum and subtraction of vectors;
     - Multiplication of vectors by scalars;
     - [Dot product](https://en.wikipedia.org/wiki/Dot_product);
     - [Cross product](https://en.wikipedia.org/wiki/Cross_product);
@@ -47,7 +56,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Division by a binomial using [Ruffini's rule](https://en.wikipedia.org/wiki/Ruffini%27s_rule);
     - Computation of [polynomial root bounds](https://en.wikipedia.org/wiki/Geometrical_properties_of_polynomial_roots#Bounds_on_all_roots);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
-    - Sum/subtraction of matrices;
+    - Sum and subtraction of matrices;
     - Multiplication of matrices by scalars;
     - Multiplication between matrices;
     - Multiplication between matrices and vectors;
