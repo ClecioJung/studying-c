@@ -5,7 +5,6 @@
 
 #include "../../lib/scalar.h"
 
-#define EULER 2.7182818284590452354
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
 

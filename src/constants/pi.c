@@ -6,7 +6,6 @@
 
 #include "../../lib/scalar.h"
 
-#define PI 3.14159265358979323846
 #define MAX_ITERATIONS 1000000000
 #define PRECISION 1e-8
 

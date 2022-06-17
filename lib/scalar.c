@@ -135,7 +135,7 @@ double power(const double base, uint64_t expoent) {
 // avoiding any dependencies
 double exponential(const double value) {
     double term = 1.0;
-    double result = 1.0;
+    double result = term;
     for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
         term *= value / ((double)i);
         result += term;
@@ -144,6 +144,86 @@ double exponential(const double value) {
         }
     }
     return result;
+}
+
+// My own sine function, so I don't need to link with -lm,
+// avoiding any dependencies
+double sine(double value) {
+    value = value - 2 * PI * floor(value / (2 * PI));
+    double term = value;
+    double result = term;
+    for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
+        term *= -value * value / ((double)((2 * i + 1) * (2 * i)));
+        result += term;
+        if (fabs(term) < PRECISION) {
+            break;
+        }
+    }
+    return result;
+}
+
+// My own cosine function, so I don't need to link with -lm,
+// avoiding any dependencies
+double cosine(double value) {
+    value = value - 2 * PI * floor(value / (2 * PI));
+    double term = 1.0;
+    double result = term;
+    for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
+        term *= -value * value / ((double)((2 * i) * (2 * i - 1)));
+        result += term;
+        if (fabs(term) < PRECISION) {
+            break;
+        }
+    }
+    return result;
+}
+
+// My own tangent function, so I don't need to link with -lm,
+// avoiding any dependencies
+double tangent(const double value) {
+    return (sine(value) / cosine(value));
+}
+
+// My own arctangent function, so I don't need to link with -lm,
+// avoiding any dependencies
+double arctangent(const double value) {
+    if (fabs(value) == 1.0) {
+        return (sign(value) * PI / 4.0);
+    } else if (fabs(value) < 1.0) {
+        double result = value;
+        for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
+            const double term = (i % 2 ? -1.0 : 1.0) * power(value, 2 * i + 1) / ((double)(2 * i + 1));
+            result += term;
+            if (fabs(term) < PRECISION) {
+                break;
+            }
+        }
+        return result;
+    } else {  // if fabs(value) >= 1.0
+        double result = PI / 2.0 * (value > 1.0 ? 1.0 : -1.0);
+        for (uint64_t i = 1; i < MAX_ITERATIONS; i++) {
+            const double term = (i % 2 ? -1.0 : 1.0) / (power(value, 2 * i - 1) * ((double)(2 * i - 1)));
+            result += term;
+            if (fabs(term) < PRECISION) {
+                break;
+            }
+        }
+        return result;
+    }
+}
+
+double atan2(const double y, const double x) {
+    if ((x == 0.0) && (y == 0.0)) {
+        return 0.0;
+    } else if (x == 0.0) {
+        return (sign(y) * PI / 2.0);
+    } else if (x > 0.0) {
+        return arctangent(y / x);
+    } else if (y >= 0.0) {
+        return (arctangent(y / x) + PI);
+    } else {
+        return (arctangent(y / x) - PI);
+    }
 }
 
 //------------------------------------------------------------------------------
