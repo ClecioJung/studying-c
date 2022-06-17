@@ -28,12 +28,14 @@
 #define __COMPLEX_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
     double real;
     double imag;
 } Complex;
 
+void complex_print(const Complex c);
 Complex complex_init(const double real, const double imag);
 Complex complex_polar(const double modulus, const double phase);
 double complex_modulus(const Complex c);
@@ -45,6 +47,7 @@ Complex complex_sub(const Complex a, const Complex b);
 Complex complex_mul(const Complex a, const Complex b);
 Complex complex_div(const Complex a, const Complex b);
 bool complex_are_equal(const Complex a, const Complex b);
+Complex complex_power(const Complex base, uint64_t expoent);
 
 #endif  // __COMPLEX_H
 

@@ -27,11 +27,29 @@
 #include "complex.h"
 
 #include <math.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #include "scalar.h"
 
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
+
+void complex_print(const Complex c) {
+    const char imaginary_unit = 'i';
+    const bool print_real = !are_close(c.real, 0.0, PRECISION);
+    const bool print_imag = !are_close(c.imag, 0.0, PRECISION);
+    if (print_real && print_imag) {
+        printf("%lg %c %lg*%c", c.real, ((c.imag > 0.0) ? '+' : '-'), fabs(c.imag), imaginary_unit);
+    } else if (print_real && !print_imag) {
+        printf("%lg", c.real);
+    } else if (!print_real && print_imag) {
+        printf("%lg*%c", c.imag, imaginary_unit);
+    } else {
+        printf("0.0");
+    }
+}
 
 Complex complex_init(const double real, const double imag) {
     return (Complex){
@@ -85,6 +103,15 @@ Complex complex_div(const Complex a, const Complex b) {
 
 bool complex_are_equal(const Complex a, const Complex b) {
     return (are_close(a.real, b.real, PRECISION) && are_close(a.imag, b.imag, PRECISION));
+}
+
+Complex complex_power(const Complex base, uint64_t expoent) {
+    Complex result = complex_init(1.0, 0.0);
+    while (expoent != 0) {
+        result = complex_mul(result, base);
+        expoent--;
+    }
+    return result;
 }
 
 //------------------------------------------------------------------------------

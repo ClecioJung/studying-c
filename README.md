@@ -31,6 +31,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Euler's constant](https://en.wikipedia.org/wiki/Euler%27s_constant);
     - [Pi](https://en.wikipedia.org/wiki/Pi);
 - Implemented scalar functions:
+    - [Exponentiation by a integer positive number](https://en.wikipedia.org/wiki/Exponentiation);
     - [Square root](https://en.wikipedia.org/wiki/Square_root);
     - [N-th root](https://en.wikipedia.org/wiki/Nth_root);
     - [Exponential](https://en.wikipedia.org/wiki/Exponential_function);
@@ -43,6 +44,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Modulus and argument of complex numbers;
     - Construction of complex numbers by its polar form;
     - Complex conjugate;
+    - Exponentiation by a integer positive number;
 - Implemented operations with [vectors](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)):
     - Sum and subtraction of vectors;
     - Multiplication of vectors by scalars;
