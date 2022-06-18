@@ -5,7 +5,7 @@
 #include "../../lib/vector.h"
 
 int main(void) {
-    // p(x) = 2x4 + 3x – 2
+    // p(x) = 2*x^4 + 3*x – 2
     Vector p = vector_alloc(5);
     p.data[0] = -2.0;
     p.data[1] = 3.0;
@@ -21,6 +21,6 @@ int main(void) {
     printf("It's third derivative evaluated at %lg is %lg\n", x, polynomial_diff(p, 3, x));
     printf("It's fourth derivative evaluated at %lg is %lg\n", x, polynomial_diff(p, 4, x));
     printf("It's fifth derivative evaluated at %lg is %lg\n\n", x, polynomial_diff(p, 5, x));
-    vector_dealloc(&p);
+   vector_dealloc(&p);
     return EXIT_SUCCESS;
 }

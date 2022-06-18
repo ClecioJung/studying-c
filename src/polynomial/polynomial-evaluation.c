@@ -36,7 +36,6 @@ int main(void) {
     const Compute_Algorithm algorithms[] = {
         {"conventional method", polynomial_evaluation},
         {"Horner's method", polynomial_horner_evaluation},
-        {"Ruffini's method", polynomial_ruffini_evaluation},
     };
     const size_t len = 10000;
     const double coefficients_value = 1.0;

@@ -39,7 +39,6 @@ bool polynomial_are_equal(const Vector poly1, const Vector poly2);
 double polynomial_evaluation(const Vector polynomial, const double x);
 double polynomial_horner_evaluation(const Vector polynomial, const double x);
 double polynomial_ruffini_division(const Vector polynomial, const double r, Vector *const result);
-double polynomial_ruffini_evaluation(const Vector polynomial, const double x);
 double polynomial_first_diff(const Vector polynomial, const double x);
 double polynomial_diff(const Vector polynomial, uint16_t order, const double x);
 double polynomial_cauchy_upper_bound(const Vector polynomial);
@@ -50,7 +49,7 @@ double polynomial_cauchy_upper_quota(const Vector polynomial);
 double polynomial_cauchy_lower_quota(const Vector polynomial);
 double polynomial_kojima_upper_bound(const Vector polynomial);
 double polynomial_kojima_lower_bound(const Vector polynomial);
-void polynomial_root_bounds(const Vector polynomial, double *min, double *max);
+void polynomial_root_bounds(const Vector polynomial, double *const min, double *const max);
 
 #endif  // __POLYNOMIAL_H
 

@@ -33,6 +33,7 @@
 #include <stdio.h>
 
 #include "scalar.h"
+#include "sorting.h"
 
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
@@ -67,6 +68,9 @@ void polynomial_print(const Vector polynomial, const char *const name, char x) {
             }
         }
         printed_terms++;
+    }
+    if (printed_terms == 0) {
+        printf("0");
     }
     printf("\n");
 }
@@ -120,10 +124,8 @@ double polynomial_horner_evaluation(const Vector polynomial, const double x) {
     if (polynomial.len == 0) {
         return 0.0;
     }
-    size_t i = polynomial.len - 1;
-    double y = polynomial.data[i];
-    while (i > 0) {
-        i--;
+    double y = 0.0;
+    for (size_t i = polynomial.len - 1; i < polynomial.len; i--) {
         y = polynomial.data[i] + x * y;
     }
     return y;
@@ -158,44 +160,37 @@ double polynomial_ruffini_division(const Vector polynomial, const double r, Vect
     return (polynomial.data[0] + r * result->data[0]);
 }
 
-// Polynomial evaluation using Ruffini's rule
-double polynomial_ruffini_evaluation(const Vector polynomial, const double x) {
-    if (polynomial.len == 0) {
-        return 0.0;
-    }
-    Vector result = (Vector){0};
-    double remainder = polynomial_ruffini_division(polynomial, x, &result);
-    vector_dealloc(&result);
-    return remainder;
-}
-
+// Polynomial differentiation using Ruffini's rule
 double polynomial_first_diff(const Vector polynomial, const double x) {
-    if (polynomial.len == 0) {
+    if (polynomial.len <= 1) {
         return 0.0;
     }
-    Vector first_division = (Vector){0};
-    polynomial_ruffini_division(polynomial, x, &first_division);
-    Vector second_division = (Vector){0};
-    double remainder = polynomial_ruffini_division(first_division, x, &second_division);
-    vector_dealloc(&first_division);
-    vector_dealloc(&second_division);
-    return remainder;
+    double first_div_remainder = 0.0;
+    double second_div_remainder = 0.0;
+    for (size_t i = polynomial.len - 1; i > 0; i--) {
+        first_div_remainder = polynomial.data[i] + x * first_div_remainder;
+        second_div_remainder = first_div_remainder + x * second_div_remainder;
+    }
+    return second_div_remainder;
 }
 
 double polynomial_diff(const Vector polynomial, const uint16_t order, const double x) {
-    if ((polynomial.len == 0) || (order >= polynomial.len)) {
+    if (polynomial.len <= order) {
         return 0.0;
     }
-    Vector p = (Vector){0};
-    double remainder = polynomial_ruffini_division(polynomial, x, &p);
-    for (uint16_t i = 0; i < order; i++) {
-        Vector division_result = (Vector){0};
-        remainder = polynomial_ruffini_division(p, x, &division_result);
-        vector_dealloc(&p);
-        p = division_result;
+    Vector remainders = vector_init(order + 1, 0.0);
+    if (!vector_is_valid(remainders)) {
+        return NAN;
     }
-    vector_dealloc(&p);
-    return (factorial(order) * remainder);
+    for (size_t i = polynomial.len - 1; (i + 1) > order; i--) {
+        remainders.data[0] = polynomial.data[i] + x * remainders.data[0];
+        for (size_t j = 1; j < remainders.len; j++) {
+            remainders.data[j] = remainders.data[j - 1] + x * remainders.data[j];
+        }
+    }
+    const double diff = factorial(order) * remainders.data[remainders.len - 1];
+    vector_dealloc(&remainders);
+    return diff;
 }
 
 // Cauchy's upper bound
@@ -331,28 +326,26 @@ double polynomial_kojima_lower_bound(const Vector polynomial) {
     return (1.0 / (max + second_max));
 }
 
-void polynomial_root_bounds(const Vector polynomial, double *min, double *max) {
+void polynomial_root_bounds(const Vector polynomial, double *const min, double *const max) {
     if (polynomial.len == 0) {
         return;  // Invalid operation
     }
-    Vector upper_bounds = vector_alloc(4);
-    upper_bounds.data[0] = polynomial_cauchy_upper_bound(polynomial);
-    upper_bounds.data[1] = polynomial_lagrange_upper_bound(polynomial);
-    upper_bounds.data[2] = polynomial_cauchy_upper_quota(polynomial);
-    upper_bounds.data[3] = polynomial_kojima_upper_bound(polynomial);
-    Vector lower_bounds = vector_alloc(4);
-    lower_bounds.data[0] = polynomial_cauchy_lower_bound(polynomial);
-    lower_bounds.data[1] = polynomial_lagrange_lower_bound(polynomial);
-    lower_bounds.data[2] = polynomial_cauchy_lower_quota(polynomial);
-    lower_bounds.data[3] = polynomial_kojima_lower_bound(polynomial);
     if (max != NULL) {
-        *max = vector_min(upper_bounds);
+        *max = polynomial_cauchy_upper_bound(polynomial);
+        *max = minimum(*max, polynomial_lagrange_upper_bound(polynomial));
+        *max = minimum(*max, polynomial_cauchy_upper_quota(polynomial));
+        *max = minimum(*max, polynomial_kojima_upper_bound(polynomial));
     }
     if (min != NULL) {
-        *min = vector_max(lower_bounds);
+        *min = polynomial_cauchy_lower_bound(polynomial);
+        *min = maximum(*min, polynomial_lagrange_lower_bound(polynomial));
+        *min = maximum(*min, polynomial_cauchy_lower_quota(polynomial));
+        *min = maximum(*min, polynomial_kojima_lower_bound(polynomial));
     }
-    vector_dealloc(&upper_bounds);
-    vector_dealloc(&lower_bounds);
+    if (fabs(*min - *max) < PRECISION) {
+        *min *= 0.99;
+        *max *= 1.01;
+    }
 }
 
 //------------------------------------------------------------------------------
