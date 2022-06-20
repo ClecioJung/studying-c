@@ -37,9 +37,11 @@
 void swap(double *const a, double *const b);
 uint64_t factorial(uint64_t value);
 bool are_close(const double a, const double b, const double delta);
+bool isNAN(const double value);
 double maximum(const double a, const double b);
 double minimum(const double a, const double b);
 double sign(const double value);
+double round(const double value);
 double random_number(const double min, const double max);
 double square_root(const double value);
 double root(const double value, const uint64_t n);

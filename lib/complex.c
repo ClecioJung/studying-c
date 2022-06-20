@@ -101,8 +101,30 @@ Complex complex_div(const Complex a, const Complex b) {
     return complex_mul(a, complex_inverse(b));
 }
 
+Complex complex_mul_scalar(const double scalar, const Complex c) {
+    return complex_init(scalar * c.real, scalar * c.imag);
+}
+
 bool complex_are_equal(const Complex a, const Complex b) {
     return (are_close(a.real, b.real, PRECISION) && are_close(a.imag, b.imag, PRECISION));
+}
+
+bool complex_is_null(const Complex c) {
+    return (are_close(c.real, 0.0, PRECISION) && are_close(c.imag, 0.0, PRECISION));
+}
+
+bool complex_is_real(const Complex c) {
+    if (complex_is_null(c)) {
+        return true;
+    }
+    return are_close(c.imag / c.real, 0.0, PRECISION);
+}
+
+bool complex_is_imag(const Complex c) {
+    if (complex_is_null(c)) {
+        return false;
+    }
+    return are_close(c.real / c.imag, 0.0, PRECISION);
 }
 
 Complex complex_power(const Complex base, uint64_t expoent) {

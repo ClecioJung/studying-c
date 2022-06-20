@@ -108,7 +108,7 @@ $(BDIR) $(DDIR) $(LIB_ODIR) $(LIB_DDIR):
 
 clean:
 	@ echo "${GREEN}Cleaning up${NORMAL}"
-	rm -rf $(BDIR) $(DDIR) $(LIB_ODIR) $(LIB_DDIR)
+	rm -rf $(BDIR) $(DDIR) $(LIB_ODIR) $(LIB_DDIR) *.d *.o *.a *.so
 
 remade: clean all
 

@@ -20,7 +20,11 @@ int main(void) {
     printf("It's second derivative evaluated at %lg is %lg\n", x, polynomial_diff(p, 2, x));
     printf("It's third derivative evaluated at %lg is %lg\n", x, polynomial_diff(p, 3, x));
     printf("It's fourth derivative evaluated at %lg is %lg\n", x, polynomial_diff(p, 4, x));
-    printf("It's fifth derivative evaluated at %lg is %lg\n\n", x, polynomial_diff(p, 5, x));
-   vector_dealloc(&p);
+    printf("It's fifth derivative evaluated at %lg is %lg\n", x, polynomial_diff(p, 5, x));
+    printf("\nAll the non-zero residuals of the Ruffini divisions are:\n");
+    Vector residuals = polynomial_ruffini_residuals(p, x);
+    vector_print(residuals);
+    vector_dealloc(&residuals);
+    vector_dealloc(&p);
     return EXIT_SUCCESS;
 }

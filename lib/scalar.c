@@ -55,6 +55,10 @@ bool are_close(const double a, const double b, const double delta) {
     return (fabs(a - b) < delta);
 }
 
+bool isNAN(const double value) {
+    return (value != value);
+}
+
 double maximum(const double a, const double b) {
     return ((a > b) ? a : b);
 }
@@ -65,6 +69,12 @@ double minimum(const double a, const double b) {
 
 double sign(const double value) {
     return ((value > 0) ? 1.0 : -1.0);
+}
+
+// My own round function, so I don't need to link with -lm,
+// avoiding any dependencies
+double round(const double value) {
+    return ((value >= 0.0) ? floor(value + 0.5) : ceil(value - 0.5));
 }
 
 double random_number(const double min, const double max) {

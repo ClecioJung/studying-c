@@ -29,6 +29,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "vector.h"
+
 size_t sequential_search(const Vector vec, const double value) {
     size_t closest_index = 0;
     for (size_t i = 0; i < vec.len; i++) {

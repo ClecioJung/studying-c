@@ -77,14 +77,14 @@ bool vector_is_valid(const Vector vector) {
 }
 
 void vector_set(const Vector vector, const size_t index, const double value) {
-    if (vector_is_valid(vector) || (index >= vector.len)) {
+    if (!vector_is_valid(vector) || (index >= vector.len)) {
         return;
     }
     vector.data[index] = value;
 }
 
 double vector_get(const Vector vector, const size_t index) {
-    if (vector_is_valid(vector) || (index >= vector.len)) {
+    if (!vector_is_valid(vector) || (index >= vector.len)) {
         return NAN;
     }
     return vector.data[index];

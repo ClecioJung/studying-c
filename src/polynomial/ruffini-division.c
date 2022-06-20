@@ -24,7 +24,7 @@ int main(void) {
     printf("  results in\n");
     polynomial_print(r, "r", 'x');
     printf("  with remainder %lg.\n\n", remainder);
-    Vector check = polynomial_multiply(r, q);
+    Vector check = polynomial_mul(r, q);
     check.data[0] += remainder;
     if (polynomial_are_equal(p, check)) {
         printf("This is the correct result!\n\n");

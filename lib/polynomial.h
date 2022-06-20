@@ -30,17 +30,26 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "complex-vector.h"
+#include "complex.h"
 #include "vector.h"
 
 void polynomial_print(const Vector polynomial, const char *const name, char x);
 Vector polynomial_sum(const Vector poly1, const Vector poly2);
-Vector polynomial_multiply(const Vector poly1, const Vector poly2);
+Vector polynomial_mul(const Vector poly1, const Vector poly2);
 bool polynomial_are_equal(const Vector poly1, const Vector poly2);
 double polynomial_evaluation(const Vector polynomial, const double x);
 double polynomial_horner_evaluation(const Vector polynomial, const double x);
 double polynomial_ruffini_division(const Vector polynomial, const double r, Vector *const result);
+Vector polynomial_quadratic_division(const Vector polynomial, const double a, const double b, Vector *const result);
 double polynomial_first_diff(const Vector polynomial, const double x);
 double polynomial_diff(const Vector polynomial, uint16_t order, const double x);
+Vector polynomial_ruffini_residuals(const Vector p, const double x);
+Complex polynomial_complex_evaluation(const Vector polynomial, const Complex c);
+Complex polynomial_complex_first_diff(const Vector polynomial, const Complex c);
+Complex polynomial_complex_diff(const Vector polynomial, const uint16_t order, const Complex c);
+Complex_Vector polynomial_complex_ruffini_residuals(const Vector p, const Complex x);
+
 double polynomial_cauchy_upper_bound(const Vector polynomial);
 double polynomial_cauchy_lower_bound(const Vector polynomial);
 double polynomial_lagrange_upper_bound(const Vector polynomial);
@@ -50,6 +59,10 @@ double polynomial_cauchy_lower_quota(const Vector polynomial);
 double polynomial_kojima_upper_bound(const Vector polynomial);
 double polynomial_kojima_lower_bound(const Vector polynomial);
 void polynomial_root_bounds(const Vector polynomial, double *const min, double *const max);
+
+uint16_t polynomial_root_multiplicity(const Vector p, const Complex root);
+Complex polynomial_root_guess(const Vector polynomial);
+Complex_Vector polynomial_find_roots(const Vector polynomial);
 
 #endif  // __POLYNOMIAL_H
 

@@ -21,39 +21,88 @@
 // SOFTWARE.
 
 //------------------------------------------------------------------------------
-// HEADER
+// SOURCE
 //------------------------------------------------------------------------------
 
-#ifndef __COMPLEX_H
-#define __COMPLEX_H
+#include "complex-vector.h"
 
+#include <math.h>
 #include <stdbool.h>
-#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct {
-    double real;
-    double imag;
-} Complex;
+#include "complex.h"
+#include "scalar.h"
 
-void complex_print(const Complex c);
-Complex complex_init(const double real, const double imag);
-Complex complex_polar(const double modulus, const double phase);
-double complex_modulus(const Complex c);
-double complex_argument(const Complex c);
-Complex complex_conjugate(const Complex c);
-Complex complex_inverse(const Complex c);
-Complex complex_sum(const Complex a, const Complex b);
-Complex complex_sub(const Complex a, const Complex b);
-Complex complex_mul(const Complex a, const Complex b);
-Complex complex_div(const Complex a, const Complex b);
-Complex complex_mul_scalar(const double scalar, const Complex c);
-bool complex_are_equal(const Complex a, const Complex b);
-bool complex_is_null(const Complex c);
-bool complex_is_real(const Complex c);
-bool complex_is_imag(const Complex c);
-Complex complex_power(const Complex base, uint64_t expoent);
+#define MAX_ITERATIONS 10000
+#define COMPARATION_PRECISION 1e-8
 
-#endif  // __COMPLEX_H
+// Remember to free the returned vector after calling this function!
+Complex_Vector complex_vector_alloc(const size_t len) {
+    Complex_Vector vector = (Complex_Vector){0};
+    if (len != 0) {
+        vector.data = (Complex *)malloc(len * sizeof(Complex));
+        if (vector.data != NULL) {
+            vector.len = len;
+        }
+    }
+    return vector;
+}
+
+void complex_vector_dealloc(Complex_Vector *const vector) {
+    if (vector == NULL) {
+        return;
+    }
+    free(vector->data);
+    vector->data = NULL;
+    vector->len = 0;
+}
+
+bool complex_vector_is_valid(const Complex_Vector vector) {
+    return (vector.data != NULL);
+}
+
+void complex_vector_set(const Complex_Vector vector, const size_t index, const Complex value) {
+    if (!complex_vector_is_valid(vector) || (index >= vector.len)) {
+        return;
+    }
+    vector.data[index] = value;
+}
+
+Complex complex_vector_get(const Complex_Vector vector, const size_t index) {
+    if (!complex_vector_is_valid(vector) || (index >= vector.len)) {
+        return complex_init(NAN, NAN);
+    }
+    return vector.data[index];
+}
+
+// Remember to free the returned vector after calling this function!
+Complex_Vector complex_vector_init(const size_t len, const Complex value) {
+    Complex_Vector vector = complex_vector_alloc(len);
+    if (complex_vector_is_valid(vector)) {
+        complex_vector_init_over(vector, value);
+    }
+    return vector;
+}
+
+void complex_vector_print(const Complex_Vector vector) {
+    if (complex_vector_is_valid(vector)) {
+        for (size_t i = 0; i < vector.len; i++) {
+            printf("[%03zu]: ", i);
+            complex_print(vector.data[i]);
+            printf("\n");
+        }
+        printf("\n");
+    }
+}
+
+void complex_vector_init_over(const Complex_Vector vector, const Complex value) {
+    if (complex_vector_is_valid(vector)) {
+        for (size_t i = 0; i < vector.len; i++) {
+            vector.data[i] = value;
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 // END

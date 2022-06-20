@@ -24,36 +24,32 @@
 // HEADER
 //------------------------------------------------------------------------------
 
-#ifndef __COMPLEX_H
-#define __COMPLEX_H
+#ifndef __COMPLEX_VECTOR_H
+#define __COMPLEX_VECTOR_H
 
 #include <stdbool.h>
-#include <stdint.h>
+#include <stdlib.h>
+
+#include "complex.h"
 
 typedef struct {
-    double real;
-    double imag;
-} Complex;
+    Complex *data;
+    size_t len;
+} Complex_Vector;
 
-void complex_print(const Complex c);
-Complex complex_init(const double real, const double imag);
-Complex complex_polar(const double modulus, const double phase);
-double complex_modulus(const Complex c);
-double complex_argument(const Complex c);
-Complex complex_conjugate(const Complex c);
-Complex complex_inverse(const Complex c);
-Complex complex_sum(const Complex a, const Complex b);
-Complex complex_sub(const Complex a, const Complex b);
-Complex complex_mul(const Complex a, const Complex b);
-Complex complex_div(const Complex a, const Complex b);
-Complex complex_mul_scalar(const double scalar, const Complex c);
-bool complex_are_equal(const Complex a, const Complex b);
-bool complex_is_null(const Complex c);
-bool complex_is_real(const Complex c);
-bool complex_is_imag(const Complex c);
-Complex complex_power(const Complex base, uint64_t expoent);
+Complex_Vector complex_vector_alloc(const size_t len);
+void complex_vector_dealloc(Complex_Vector *const vector);
+bool complex_vector_is_valid(const Complex_Vector vector);
+void complex_vector_set(const Complex_Vector vector, const size_t index, const Complex value);
+Complex complex_vector_get(const Complex_Vector vector, const size_t index);
+Complex_Vector complex_vector_init(const size_t len, const Complex value);
+void complex_vector_print(const Complex_Vector vector);
 
-#endif  // __COMPLEX_H
+// 'over' functions override the contents of their arguments,
+// avoiding the need to allocate more memory for the results
+void complex_vector_init_over(const Complex_Vector vector, const Complex value);
+
+#endif  // __COMPLEX_VECTOR_H
 
 //------------------------------------------------------------------------------
 // END
