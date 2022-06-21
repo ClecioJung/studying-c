@@ -61,7 +61,6 @@ double polynomial_kojima_lower_bound(const Vector polynomial);
 void polynomial_root_bounds(const Vector polynomial, double *const min, double *const max);
 
 uint16_t polynomial_root_multiplicity(const Vector p, const Complex root);
-Complex polynomial_root_guess(const Vector polynomial);
 Complex_Vector polynomial_find_roots(const Vector polynomial);
 
 #endif  // __POLYNOMIAL_H

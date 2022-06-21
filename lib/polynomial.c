@@ -49,7 +49,7 @@ void polynomial_print(const Vector polynomial, const char *const name, char x) {
     }
     size_t printed_terms = 0;
     for (size_t i = (polynomial.len - 1); i < polynomial.len; i--) {
-        if (polynomial.data[i] == 0.0) {
+        if (are_close(polynomial.data[i], 0.0, PRECISION)) {
             continue;
         } else if (polynomial.data[i] < 0.0) {
             printf(" - ");
@@ -59,7 +59,7 @@ void polynomial_print(const Vector polynomial, const char *const name, char x) {
         if (i == 0) {
             printf("%lg", fabs(polynomial.data[i]));
         } else {
-            if (polynomial.data[i] != 1.0) {
+            if (!are_close(fabs(polynomial.data[i]), 1.0, PRECISION)) {
                 printf("%lg*", fabs(polynomial.data[i]));
             }
             printf("%c", x);
@@ -437,7 +437,7 @@ double polynomial_kojima_lower_bound(const Vector polynomial) {
 }
 
 void polynomial_root_bounds(const Vector polynomial, double *const min, double *const max) {
-    if (polynomial.len == 0) {
+    if (polynomial.len <= 1) {
         return;  // Invalid operation
     }
     if (max != NULL) {
@@ -451,10 +451,6 @@ void polynomial_root_bounds(const Vector polynomial, double *const min, double *
         *min = maximum(*min, polynomial_lagrange_lower_bound(polynomial));
         *min = maximum(*min, polynomial_cauchy_lower_quota(polynomial));
         *min = maximum(*min, polynomial_kojima_lower_bound(polynomial));
-    }
-    if (fabs(*min - *max) < PRECISION) {
-        *min *= 0.99;
-        *max *= 1.01;
     }
 }
 
@@ -519,6 +515,10 @@ uint16_t polynomial_root_multiplicity(const Vector p, const Complex root) {
 Complex polynomial_root_guess(const Vector polynomial) {
     double min, max;
     polynomial_root_bounds(polynomial, &min, &max);
+    if (are_close((min - max), 0.0, PRECISION)) {
+        min *= 0.99;
+        max *= 1.01;
+    }
     // Try to find a real guess for the root
     const double step = (max - min) / ((double)(10 * polynomial.len));
     double a = -max - PRECISION;
@@ -542,6 +542,10 @@ Complex polynomial_root_guess(const Vector polynomial) {
         }
         a = b;
         b = b + step;
+    }
+    // If the polynomial has odd order, there is at least one real root
+    if ((polynomial.len % 2) == 0) {
+        return complex_init(square_root(max * min), 0.0);
     }
     // If didn't found a real root guess, try a complex initial guess
     const double guess = square_root((max * min) / 2.0);
@@ -633,11 +637,12 @@ Complex_Vector polynomial_find_roots(const Vector polynomial) {
                 polynomial_ruffini_division(p, root.real, &division_result);
                 roots.data[i++] = root;
             } else {
-                const double squared_modulus = root.real * root.real + root.imag * root.imag;
-                Vector remainder = polynomial_quadratic_division(p, 2.0 * root.real, squared_modulus, &division_result);
+                const double a = -2.0 * root.real;
+                const double b = root.real * root.real + root.imag * root.imag;
+                Vector remainder = polynomial_quadratic_division(p, a, b, &division_result);
                 vector_dealloc(&remainder);
                 roots.data[i++] = root;
-                if (i > roots.len) {
+                if (i >= roots.len) {
                     break;
                 }
                 roots.data[i++] = complex_conjugate(root);
