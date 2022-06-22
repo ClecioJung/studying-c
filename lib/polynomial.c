@@ -455,29 +455,27 @@ void polynomial_root_bounds(const Vector polynomial, double *const min, double *
 }
 
 // Implemeted according to the book Cáculo Numérico Computacional, pg. 267
-double polynomial_limit1(const Vector p) {
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_limit(const Vector p, size_t length) {
+    // Computes the first limit
     double least_dif = INFINITY;
     double greater_coef = 0.0;
-    for (size_t i = 0; i < p.len; i++) {
+    for (size_t i = (p.len - length); i < p.len; i++) {
         greater_coef = maximum(greater_coef, fabs(p.data[i]));
-        for (size_t j = 0; j < p.len; j++) {
+        for (size_t j = (p.len - length); (j < p.len); j++) {
             if (i != j) {
                 const double dif = fabs(fabs(p.data[i]) - fabs(p.data[j]));
                 least_dif = minimum(least_dif, dif);
             }
         }
     }
-    double limit = 0.1 * (least_dif / greater_coef);
-    if (limit < PRECISION) {
-        limit = 0.1;
+    double limit1 = 0.1 * (least_dif / greater_coef);
+    if (limit1 < PRECISION) {
+        limit1 = 0.1;
     }
-    return limit;
-}
-
-// Implemeted according to the book Cáculo Numérico Computacional, pg. 267
-double polynomial_limit2(const Vector p) {
+    // Computes the second limit
     uint16_t decimals = 0;
-    for (size_t i = 0; i < p.len; i++) {
+    for (size_t i = (p.len - length); i < p.len; i++) {
         double coef = p.data[i];
         double dif = 1.0;
         int16_t cont = -1;
@@ -488,44 +486,220 @@ double polynomial_limit2(const Vector p) {
         }
         decimals = (decimals > cont) ? decimals : cont;
     }
-    const double limit = power(0.1, decimals);
-    return limit;
-}
-
-// Implemeted according to the book Cáculo Numérico Computacional, pg. 267
-double polynomial_limit(const Vector p) {
-    const double limit1 = polynomial_limit1(p);
-    const double limit2 = polynomial_limit2(p);
+    const double limit2 = power(0.1, decimals);
+    // The overall limit is
     const double limit = maximum(limit1 * limit2, 1e-7);
     return limit;
 }
 
+// This function only uses the first length coefficients of the polynomial in calculations
+void polynomial_residuals_over(const Vector p, const Complex x, size_t length, Complex_Vector residuals) {
+    complex_vector_init_over(residuals, complex_init(0.0, 0.0));
+    for (size_t i = p.len - 1; ((i < p.len) && (i >= (p.len - length))); i--) {
+        residuals.data[0] = complex_sum(complex_init(p.data[i], 0.0), complex_mul(x, residuals.data[0]));
+        for (size_t j = 1; j <= (i - residuals.len + length); j++) {
+            residuals.data[j] = complex_sum(residuals.data[j - 1], complex_mul(x, residuals.data[j]));
+        }
+    }
+    for (size_t i = 2; i < residuals.len; i++) {
+        residuals.data[i] = complex_mul_scalar(factorial(i), residuals.data[i]);
+    }
+}
+
+// Find root multiplicity
 uint16_t polynomial_root_multiplicity(const Vector p, const Complex root) {
-    const double limit = polynomial_limit(p);
+    Complex_Vector residuals = complex_vector_alloc(p.len);
+    if (!complex_vector_is_valid(residuals)) {
+        return 0;
+    }
+    polynomial_residuals_over(p, root, p.len, residuals);
+    const double limit = polynomial_limit(p, p.len);
     uint16_t multiplicity = 1;
-    double remainders = complex_modulus(polynomial_complex_diff(p, 0, root)) +
-                        complex_modulus(polynomial_complex_diff(p, 1, root));
+    double remainders = complex_modulus(residuals.data[0]) + complex_modulus(residuals.data[1]);
     while (remainders < limit) {
         multiplicity++;
-        remainders += complex_modulus(polynomial_complex_diff(p, multiplicity, root));
+        remainders += complex_modulus(residuals.data[multiplicity]);
     }
+    complex_vector_dealloc(&residuals);
     return multiplicity;
 }
 
-Complex polynomial_root_guess(const Vector polynomial) {
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_eval_over(const Vector polynomial, const double x, const size_t length) {
+    double y = 0.0;
+    for (size_t j = polynomial.len - 1; ((j >= polynomial.len - length) && (j < polynomial.len)); j--) {
+        y = polynomial.data[j] + x * y;
+    }
+    return y;
+}
+
+// Computes the division of the polynomial p by (x-root) using Ruffini's rule
+// This function only uses the first length coefficients of the polynomial in calculations
+void polynomial_div_over(const Vector polynomial, const double r, const size_t length) {
+    for (size_t j = (polynomial.len - 2); ((j >= polynomial.len - length) && (j < polynomial.len)); j--) {
+        polynomial.data[j] = polynomial.data[j] + r * polynomial.data[j + 1];
+    }
+}
+
+// Computes the division of the polynomial p by (x^2 + a*x + b)
+// This function only uses the first length coefficients of the polynomial in calculations
+void polynomial_quadratic_div_over(const Vector polynomial, const double a, const double b, const size_t length) {
+    if (length > 2) {
+        polynomial.data[polynomial.len - 2] = polynomial.data[polynomial.len - 2] - a * polynomial.data[polynomial.len - 1];
+        for (size_t j = (polynomial.len - 3); ((j >= polynomial.len - length) && (j < polynomial.len)); j--) {
+            polynomial.data[j] = polynomial.data[j] - a * polynomial.data[j + 1] - b * polynomial.data[j + 2];
+        }
+    }
+}
+
+// Cauchy's upper bound
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_cauchy_upper_bound_over(const Vector polynomial, const size_t length) {
+    double result = 0.0;
+    for (size_t i = (polynomial.len - length); (i + 1) < polynomial.len; i++) {
+        result = maximum(result, fabs(polynomial.data[i]));
+    }
+    return 1.0 + (result / fabs(polynomial.data[polynomial.len - 1]));
+}
+
+// Cauchy's lower bound
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_cauchy_lower_bound_over(const Vector polynomial, const size_t length) {
+    double result = 0.0;
+    for (size_t i = (polynomial.len - length + 1); i < polynomial.len; i++) {
+        result = maximum(result, fabs(polynomial.data[i]));
+    }
+    result = 1.0 + (result / fabs(polynomial.data[polynomial.len - length]));
+    return (1.0 / result);
+}
+
+// Lagrange's upper bound
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_lagrange_upper_bound_over(const Vector polynomial, const size_t length) {
+    double result = 0.0;
+    for (size_t i = (polynomial.len - length); (i + 1) < polynomial.len; i++) {
+        result += fabs(polynomial.data[i]);
+    }
+    result /= fabs(polynomial.data[polynomial.len - 1]);
+    return maximum(1.0, result);
+}
+
+// Lagrange's lower bound
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_lagrange_lower_bound_over(const Vector polynomial, const size_t length) {
+    double result = 0.0;
+    for (size_t i = (polynomial.len - length + 1); i < polynomial.len; i++) {
+        result += fabs(polynomial.data[i]);
+    }
+    result /= fabs(polynomial.data[polynomial.len - length]);
+    return (1.0 / maximum(1.0, result));
+}
+
+// Cauchy's upper quota
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_cauchy_upper_quota_over(const Vector polynomial, const size_t length) {
+    double x = 0.0;
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        const double previous_x = x;
+        {
+            x = 0.0;
+            for (size_t i = 0; (i + 1) < length; i++) {
+                x += fabs(polynomial.data[polynomial.len - length + i]) * power(previous_x, i);
+            }
+            x /= fabs(polynomial.data[polynomial.len - 1]);
+            x = root(x, (length - 1));
+        }
+        if (fabs(x - previous_x) < PRECISION) {
+            break;
+        }
+    }
+    return x;
+}
+
+// Cauchy's lower quota
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_cauchy_lower_quota_over(const Vector polynomial, const size_t length) {
+    double x = 0.0;
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        const double previous_x = x;
+        {
+            x = 0.0;
+            for (size_t i = 1; i < length; i++) {
+                x += fabs(polynomial.data[polynomial.len - length + i]) * power(previous_x, (length - i - 1));
+            }
+            x /= fabs(polynomial.data[polynomial.len - length]);
+            x = root(x, (length - 1));
+        }
+        if (fabs(x - previous_x) < PRECISION) {
+            break;
+        }
+    }
+    return (1.0 / x);
+}
+
+// Kojima's upper bound
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_kojima_upper_bound_over(const Vector polynomial, const size_t length) {
+    double max = 0.0, second_max = 0.0;
+    for (size_t i = (polynomial.len - length); (i + 1) < polynomial.len; i++) {
+        const double value = root(fabs(polynomial.data[i] / polynomial.data[polynomial.len - 1]), polynomial.len - i - 1);
+        if (max < value) {
+            second_max = max;
+            max = value;
+        } else if (second_max < value) {
+            second_max = value;
+        }
+    }
+    return (max + second_max);
+}
+
+// Kojima's lower bound
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_kojima_lower_bound_over(const Vector polynomial, const size_t length) {
+    double max = 0.0, second_max = 0.0;
+    for (size_t i = (polynomial.len - length + 1); i < polynomial.len; i++) {
+        const double value = root(fabs(polynomial.data[i] / polynomial.data[polynomial.len - length]), (i - polynomial.len + length));
+        if (max < value) {
+            second_max = max;
+            max = value;
+        } else if (second_max < value) {
+            second_max = value;
+        }
+    }
+    return (1.0 / (max + second_max));
+}
+
+// This function only uses the first length coefficients of the polynomial in calculations
+void polynomial_root_bounds_over(const Vector polynomial, double *const min, double *const max, const size_t length) {
+    if (max != NULL) {
+        *max = polynomial_cauchy_upper_bound_over(polynomial, length);
+        *max = minimum(*max, polynomial_lagrange_upper_bound_over(polynomial, length));
+        *max = minimum(*max, polynomial_cauchy_upper_quota_over(polynomial, length));
+        *max = minimum(*max, polynomial_kojima_upper_bound_over(polynomial, length));
+    }
+    if (min != NULL) {
+        *min = polynomial_cauchy_lower_bound_over(polynomial, length);
+        *min = maximum(*min, polynomial_lagrange_lower_bound_over(polynomial, length));
+        *min = maximum(*min, polynomial_cauchy_lower_quota_over(polynomial, length));
+        *min = maximum(*min, polynomial_kojima_lower_bound_over(polynomial, length));
+    }
+}
+
+// This function only uses the first length coefficients of the polynomial in calculations
+Complex polynomial_root_guess_over(const Vector polynomial, const size_t length) {
     double min, max;
-    polynomial_root_bounds(polynomial, &min, &max);
+    polynomial_root_bounds_over(polynomial, &min, &max, length);
     if (are_close((min - max), 0.0, PRECISION)) {
         min *= 0.99;
         max *= 1.01;
     }
-    // Try to find a real guess for the root
-    const double step = (max - min) / ((double)(10 * polynomial.len));
+    //  Try to find a real guess for the root
+    const double step = (max - min) / ((double)(10 * length));
     double a = -max - PRECISION;
     double b = a + step;
     while (b < (PRECISION - min)) {
-        const double fa = polynomial_horner_evaluation(polynomial, a);
-        const double fb = polynomial_horner_evaluation(polynomial, b);
+        const double fa = polynomial_eval_over(polynomial, a, length);
+        const double fb = polynomial_eval_over(polynomial, b, length);
         if (fa * fb <= 0.0) {
             return complex_init((a + b) / 2.0, 0.0);
         }
@@ -535,8 +709,8 @@ Complex polynomial_root_guess(const Vector polynomial) {
     a = min - PRECISION;
     b = a + step;
     while (b < (PRECISION + max)) {
-        const double fa = polynomial_horner_evaluation(polynomial, a);
-        const double fb = polynomial_horner_evaluation(polynomial, b);
+        const double fa = polynomial_eval_over(polynomial, a, length);
+        const double fb = polynomial_eval_over(polynomial, b, length);
         if (fa * fb <= 0.0) {
             return complex_init((a + b) / 2.0, 0.0);
         }
@@ -544,7 +718,7 @@ Complex polynomial_root_guess(const Vector polynomial) {
         b = b + step;
     }
     // If the polynomial has odd order, there is at least one real root
-    if ((polynomial.len % 2) == 0) {
+    if ((length % 2) == 0) {
         return complex_init(square_root(max * min), 0.0);
     }
     // If didn't found a real root guess, try a complex initial guess
@@ -552,45 +726,45 @@ Complex polynomial_root_guess(const Vector polynomial) {
     return complex_init(guess, guess);
 }
 
-uint16_t polynomial_find_root(const Vector p, Complex *const root) {
-    if (root == NULL) {
-        return 0;  // Invalid operation
-    }
-    const double limit = polynomial_limit(p);
-    uint16_t multiplicity;
+// This function only uses the first length coefficients of the polynomial in calculations
+Complex polynomial_find_root_over(const Vector p, uint16_t *const multiplicity, size_t length, Complex_Vector residuals) {
+    const double limit = polynomial_limit(p, length);
+    Complex root = polynomial_root_guess_over(p, length);
+    uint16_t m;
     for (size_t k = 0; k < MAX_ITERATIONS; k++) {
         // Find root multiplicity
-        multiplicity = 1;
-        Complex numerator = polynomial_complex_evaluation(p, *root);
-        Complex denominator = polynomial_complex_first_diff(p, *root);
-        double remainders = complex_modulus(numerator) + complex_modulus(denominator);
+        m = 1;
+        polynomial_residuals_over(p, root, length, residuals);
+        double remainders = complex_modulus(residuals.data[0]) + complex_modulus(residuals.data[1]);
         while (remainders < limit) {
-            multiplicity++;
-            numerator = denominator;
-            denominator = polynomial_complex_diff(p, multiplicity, *root);
-            remainders += complex_modulus(denominator);
+            m++;
+            remainders += complex_modulus(residuals.data[m]);
         }
         // Use Newton method for root finding - Birge-Vieta method
-        const Complex delta = complex_div(numerator, complex_mul_scalar(multiplicity, denominator));
-        *root = complex_sub(*root, delta);
+        const Complex delta = complex_div(residuals.data[m - 1], complex_mul_scalar(m, residuals.data[m]));
+        root = complex_sub(root, delta);
         if (complex_modulus(delta) < PRECISION) {
             break;
         }
     }
-    return multiplicity;
+    if (multiplicity != NULL) {
+        *multiplicity = m;
+    }
+    return root;
 }
 
-void polynomial_root_refinement(const Vector p, Complex *const root, const uint16_t multiplicity) {
+Complex polynomial_root_refinement_over(const Vector p, const Complex guess, const uint16_t multiplicity, Complex_Vector residuals) {
+    Complex root = guess;
     for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        polynomial_residuals_over(p, root, p.len, residuals);
         // Use Newton method for root finding - Birge-Vieta method
-        Complex numerator = polynomial_complex_diff(p, (multiplicity - 1), *root);
-        Complex denominator = complex_mul_scalar(multiplicity, polynomial_complex_diff(p, multiplicity, *root));
-        const Complex delta = complex_div(numerator, denominator);
-        *root = complex_sub(*root, delta);
+        const Complex delta = complex_div(residuals.data[multiplicity - 1], complex_mul_scalar(multiplicity, residuals.data[multiplicity]));
+        root = complex_sub(root, delta);
         if (complex_modulus(delta) < PRECISION) {
             break;
         }
     }
+    return root;
 }
 
 // Remember to free the returned vector after calling this function!
@@ -598,63 +772,61 @@ Complex_Vector polynomial_find_roots(const Vector polynomial) {
     if (polynomial.len <= 1) {
         return (Complex_Vector){0};  // Invalid operation
     }
-    // Normalization of the coefficients of the polynomial
     Vector p = vector_alloc(polynomial.len);
-    if (!vector_is_valid(p)) {
+    Complex_Vector roots = complex_vector_alloc(polynomial.len - 1);
+    Complex_Vector residuals = complex_vector_alloc(polynomial.len);
+    if ((!vector_is_valid(p)) || (!complex_vector_is_valid(roots)) || (!complex_vector_is_valid(residuals))) {
+        vector_dealloc(&p);
+        complex_vector_dealloc(&roots);
+        complex_vector_dealloc(&residuals);
         return (Complex_Vector){0};
     }
+    // Normalization of the coefficients of the polynomial
     p.data[polynomial.len - 1] = 1.0;
     for (size_t i = 0; (i + 1) < polynomial.len; i++) {
         p.data[i] = polynomial.data[i] / polynomial.data[polynomial.len - 1];
     }
-    Complex_Vector roots = complex_vector_alloc(polynomial.len - 1);
-    if (!complex_vector_is_valid(roots)) {
-        vector_dealloc(&p);
-        return (Complex_Vector){0};
-    }
+    /*
+    OBS: In order to avoid realocating memory over and over again, we store
+         the result of the polynomial division of p by (x - root) in p as well.
+         The length of the p polynomial is (p.len - i).
+    */
     // Check for null roots
-    size_t i = 0;
-    while (are_close(p.data[0], 0.0, PRECISION)) {
-        Vector division_result = (Vector){0};
-        roots.data[i] = complex_init(p.data[0], 0.0);
-        polynomial_ruffini_division(p, 0.0, &division_result);
-        vector_dealloc(&p);
-        if (!vector_is_valid(division_result)) {
-            complex_vector_dealloc(&roots);
-            return (Complex_Vector){0};
-        }
-        p = division_result;
-        i++;
+    size_t root_index = 0;
+    while (are_close(p.data[root_index], 0.0, PRECISION)) {
+        roots.data[root_index] = complex_init(p.data[root_index], 0.0);
+        root_index++;
     }
     // Find remaining roots
-    while (i < roots.len) {
-        Complex root = polynomial_root_guess(p);
-        uint16_t multiplicity = polynomial_find_root(p, &root);
-        polynomial_root_refinement(polynomial, &root, multiplicity);
-        while ((multiplicity--) && (i < roots.len)) {
-            Vector division_result = (Vector){0};
+    while (root_index < roots.len) {
+        uint16_t multiplicity;
+        const size_t length = (p.len - root_index);
+        Complex root = polynomial_find_root_over(p, &multiplicity, length, residuals);
+        root = polynomial_root_refinement_over(polynomial, root, multiplicity, residuals);
+        while ((multiplicity--) && (root_index < roots.len)) {
             if (complex_is_real(root)) {
-                polynomial_ruffini_division(p, root.real, &division_result);
-                roots.data[i++] = root;
+                //  Computes the division of the polynomial p by (x-root) using Ruffini's rule
+                polynomial_div_over(p, root.real, length);
+                // Add the root found to the result vector
+                roots.data[root_index] = root;
+                root_index++;
             } else {
+                // Computes the division of the polynomial p by (x^2 + a*x + b)
                 const double a = -2.0 * root.real;
                 const double b = root.real * root.real + root.imag * root.imag;
-                Vector remainder = polynomial_quadratic_division(p, a, b, &division_result);
-                vector_dealloc(&remainder);
-                roots.data[i++] = root;
-                if (i >= roots.len) {
+                polynomial_quadratic_div_over(p, a, b, length);
+                // Add the roots found to the result vector
+                roots.data[root_index] = root;
+                root_index++;
+                if (root_index >= roots.len) {
                     break;
                 }
-                roots.data[i++] = complex_conjugate(root);
+                roots.data[root_index] = complex_conjugate(root);
+                root_index++;
             }
-            vector_dealloc(&p);
-            if (!vector_is_valid(division_result)) {
-                complex_vector_dealloc(&roots);
-                return (Complex_Vector){0};
-            }
-            p = division_result;
         }
     }
+    complex_vector_dealloc(&residuals);
     vector_dealloc(&p);
     return roots;
 }
