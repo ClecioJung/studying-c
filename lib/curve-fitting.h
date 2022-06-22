@@ -32,7 +32,6 @@
 double lagrange_interpolation(const Vector x, const Vector y, const double value);
 double linear_regression(const Vector x, const Vector y, double *const a, double *const b);
 Vector polynomial_regression(const Vector x, const Vector y, const size_t order);
-double compute_polynomial(const Vector coefficients, const double x);
 
 #endif  // __CURVE_FITTING_H
 

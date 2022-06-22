@@ -29,6 +29,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "scalar.h"
+
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
 
@@ -79,6 +81,26 @@ double secant_method(const root_fn fn, const double start, const double end) {
     double x = end;
     for (size_t k = 0; k < MAX_ITERATIONS; k++) {
         const double delta = (fn(x) * (x - previous_x)) / (fn(x) - fn(previous_x));
+        previous_x = x;
+        x -= delta;
+        if (fabs(delta) < PRECISION) {
+            break;
+        }
+    }
+    return x;
+}
+
+double muller_method(const root_fn fn, const double initial) {
+    double x = initial;
+    double previous_x = 0.99 * initial;
+    double before_previous_x = 0.98 * initial;
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        const double q = (x - previous_x) / (previous_x - before_previous_x);
+        const double a = q * fn(x) - q * (1.0 + q) * fn(previous_x) + q * q * fn(before_previous_x);
+        const double b = (2.0 * q + 1.0) * fn(x) - (1.0 + q) * (1.0 + q) * fn(previous_x) + q * q * fn(before_previous_x);
+        const double c = (1.0 + q) * fn(x);
+        const double delta = (2.0 * c * (x - previous_x)) / (b + sign(b) * square_root(b * b - 4.0 * a * c));
+        before_previous_x = previous_x;
         previous_x = x;
         x -= delta;
         if (fabs(delta) < PRECISION) {

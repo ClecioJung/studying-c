@@ -33,6 +33,7 @@ double bisection_method(const root_fn fn, double start, double end);
 double fakepos_method(const root_fn fn, double start, double end);
 double newton_raphson_method(const root_fn fn, const root_fn dfn, const double initial);
 double secant_method(const root_fn fn, const double start, const double end);
+double muller_method(const root_fn fn, const double initial);
 
 #endif  // __ROOTS_H
 

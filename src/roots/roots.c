@@ -53,5 +53,14 @@ int main(void) {
             return EXIT_FAILURE;
         }
     }
+    {
+        const double result = muller_method(f, 2.0);
+        if (are_close(result, SQRT2, PRECISION)) {
+            printf("Root found by the Muller method: %lg\n", result);
+        } else {
+            fprintf(stderr, "The Muller method didn't found the correct root\n");
+            return EXIT_FAILURE;
+        }
+    }
     return EXIT_SUCCESS;
 }
