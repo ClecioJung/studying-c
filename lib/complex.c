@@ -34,7 +34,7 @@
 #include "scalar.h"
 
 #define MAX_ITERATIONS 10000
-#define PRECISION 1e-10
+#define PRECISION 1e-12
 
 void complex_print(const Complex c) {
     const char imaginary_unit = 'i';
@@ -98,7 +98,10 @@ Complex complex_mul(const Complex a, const Complex b) {
 }
 
 Complex complex_div(const Complex a, const Complex b) {
-    return complex_mul(a, complex_inverse(b));
+    const double b_squared_modulus = b.real * b.real + b.imag * b.imag;
+    const double real = (a.real * b.real + a.imag * b.imag) / b_squared_modulus;
+    const double imag = (a.imag * b.real - a.real * b.imag) / b_squared_modulus;
+    return complex_init(real, imag);
 }
 
 Complex complex_mul_scalar(const double scalar, const Complex c) {

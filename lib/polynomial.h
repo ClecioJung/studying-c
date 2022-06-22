@@ -63,6 +63,11 @@ void polynomial_root_bounds(const Vector polynomial, double *const min, double *
 uint16_t polynomial_root_multiplicity(const Vector p, const Complex root);
 Complex_Vector polynomial_find_roots(const Vector polynomial);
 
+// excluir
+Complex polynomial_root_guess_over(const Vector polynomial, const size_t length);
+void polynomial_residuals_over(const Vector p, const Complex x, size_t length, Complex_Vector residuals);
+double polynomial_limit(const Vector p, size_t length);
+
 #endif  // __POLYNOMIAL_H
 
 //------------------------------------------------------------------------------

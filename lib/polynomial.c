@@ -234,9 +234,6 @@ Vector polynomial_ruffini_residuals(const Vector p, const double x) {
             residuals.data[j] = residuals.data[j - 1] + x * residuals.data[j];
         }
     }
-    for (size_t i = 2; i < residuals.len; i++) {
-        residuals.data[i] *= (double)factorial(i);
-    }
     return residuals;
 }
 
@@ -296,9 +293,6 @@ Complex_Vector polynomial_complex_ruffini_residuals(const Vector p, const Comple
         for (size_t j = 1; ((j <= i) && (j < residuals.len)); j++) {
             residuals.data[j] = complex_sum(residuals.data[j - 1], complex_mul(x, residuals.data[j]));
         }
-    }
-    for (size_t i = 2; i < residuals.len; i++) {
-        residuals.data[i] = complex_mul_scalar(factorial(i), residuals.data[i]);
     }
     return residuals;
 }
@@ -500,9 +494,6 @@ void polynomial_residuals_over(const Vector p, const Complex x, size_t length, C
         for (size_t j = 1; j <= (i - residuals.len + length); j++) {
             residuals.data[j] = complex_sum(residuals.data[j - 1], complex_mul(x, residuals.data[j]));
         }
-    }
-    for (size_t i = 2; i < residuals.len; i++) {
-        residuals.data[i] = complex_mul_scalar(factorial(i), residuals.data[i]);
     }
 }
 
@@ -743,7 +734,7 @@ Complex polynomial_find_root_over(const Vector p, uint16_t *const multiplicity, 
         // Use Newton method for root finding - Birge-Vieta method
         const Complex delta = complex_div(residuals.data[m - 1], complex_mul_scalar(m, residuals.data[m]));
         root = complex_sub(root, delta);
-        if (complex_modulus(delta) < PRECISION) {
+        if ((complex_modulus(residuals.data[0]) + complex_modulus(delta)) < PRECISION) {
             break;
         }
     }
@@ -760,7 +751,7 @@ Complex polynomial_root_refinement_over(const Vector p, const Complex guess, con
         // Use Newton method for root finding - Birge-Vieta method
         const Complex delta = complex_div(residuals.data[multiplicity - 1], complex_mul_scalar(multiplicity, residuals.data[multiplicity]));
         root = complex_sub(root, delta);
-        if (complex_modulus(delta) < PRECISION) {
+        if ((complex_modulus(residuals.data[0]) + complex_modulus(delta)) < PRECISION) {
             break;
         }
     }
