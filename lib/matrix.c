@@ -737,6 +737,38 @@ void matrix_init_over(const Matrix A, const double value) {
     }
 }
 
+// Remember to free the returned matrix after calling this function!
+Matrix matrix_jacobian(const multivariable_fn fn, const Vector x) {
+    Vector y = fn(x);
+    Matrix J = matrix_alloc(y.len, x.len);
+    if ((!vector_is_valid(y)) || (!matrix_is_valid(J))) {
+        vector_dealloc(&y);
+        matrix_dealloc(&J);
+        return (Matrix){0};
+    }
+    const double increment = ITERATION_PRECISION;
+    // Computes the Jacobian matrix J
+    for (size_t j = 0; j < J.cols; j++) {
+        // Increment x_j in order to calculate derivative
+        x.data[j] += increment;
+        Vector yj = fn(x);
+        if (!vector_is_valid(yj)) {
+            x.data[j] -= increment;  // Undo increment
+            vector_dealloc(&y);
+            matrix_dealloc(&J);
+            return (Matrix){0};
+        }
+        for (size_t i = 0; i < J.rows; i++) {
+            const double diff = (yj.data[i] - y.data[i]) / increment;
+            matrix_set(J, i, j, diff);
+        }
+        x.data[j] -= increment;  // Undo increment
+        vector_dealloc(&yj);
+    }
+    vector_dealloc(&y);
+    return J;
+}
+
 void vector_from_matrix_column_over(const Vector vector, const Matrix A, const size_t col) {
     if ((vector.len != A.rows) || (col >= A.cols)) {
         return;  // Invalid operation

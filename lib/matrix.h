@@ -38,6 +38,8 @@ typedef struct {
     size_t cols;
 } Matrix;
 
+typedef Vector (*multivariable_fn)(const Vector);
+
 Matrix matrix_alloc(const size_t rows, const size_t cols);
 void matrix_dealloc(Matrix *const matrix);
 bool matrix_is_valid(const Matrix A);
@@ -85,6 +87,7 @@ bool matrix_is_lower_triangular(const Matrix A);
 bool matrix_is_symmetric(const Matrix A);
 bool matrix_is_skew_symmetric(const Matrix A);
 bool matrix_is_null_space(const Matrix A, const Vector vec);
+Matrix matrix_jacobian(const multivariable_fn fn, const Vector x);
 
 // 'over' functions override the contents of their arguments,
 // avoiding the need to allocate more memory for the results

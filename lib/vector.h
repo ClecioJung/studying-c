@@ -51,9 +51,10 @@ Vector vector_cross_product(const Vector a, const Vector b);
 double vector_norm(const Vector x);
 double vector_max(const Vector x);
 double vector_min(const Vector x);
+double vector_max_abs(const Vector x);
 Vector vector_sum(const Vector a, const Vector b);
 Vector vector_sub(const Vector a, const Vector b);
-double vector_max_diff(Vector x, Vector previous_x);
+double vector_max_diff(const Vector x, const Vector previous_x);
 bool vector_are_equal(const Vector a, const Vector b);
 bool vector_is_null(const Vector vec);
 bool vector_are_orthogonal(const Vector a, const Vector b);
@@ -63,6 +64,8 @@ bool vector_are_orthogonal(const Vector a, const Vector b);
 void vector_init_over(const Vector vector, const double value);
 void vector_copy_over(const Vector vector, const Vector vec_to_copy);
 void vector_scale_over(const double scalar, const Vector vector);
+void vector_sum_over(const Vector a, const Vector b);
+void vector_sub_over(const Vector a, const Vector b);
 
 #endif  // __VECTOR_H
 

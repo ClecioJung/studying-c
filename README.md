@@ -57,6 +57,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Evaluation with [Horner's method](https://en.wikipedia.org/wiki/Horner%27s_method);
     - Division by a binomial using [Ruffini's rule](https://en.wikipedia.org/wiki/Ruffini%27s_rule);
     - Computation of [polynomial root bounds](https://en.wikipedia.org/wiki/Geometrical_properties_of_polynomial_roots#Bounds_on_all_roots);
+    - [Polynomial root finding](https://en.wikipedia.org/wiki/Root-finding_algorithms);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
     - Sum and subtraction of matrices;
     - Multiplication of matrices by scalars;
@@ -79,6 +80,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Lowest eigenvalue computation (and its eigenvector) using the [inverse power method](https://en.wikipedia.org/wiki/Inverse_iteration);
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
     - [Pseudo-inverse matrix](https://en.wikipedia.org/wiki/Generalized_inverse);
+    - [Jacobian matrix](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant);
 - Implemented algorithm for solving [systems of linear equations](https://en.wikipedia.org/wiki/System_of_linear_equations):
     - [Gaussian elimination](https://en.wikipedia.org/wiki/Gaussian_elimination);
     - Gauss-Jordan elimination;
@@ -90,6 +92,9 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Fake-position method](https://en.wikipedia.org/wiki/Regula_falsi);
     - [Newton-Raphson method](https://en.wikipedia.org/wiki/Newton%27s_method);
     - [Secant method](https://en.wikipedia.org/wiki/Secant_method);
+    - [Muller's method](https://en.wikipedia.org/wiki/Muller%27s_method);
+    - Newton-Raphson method for multivariable systems;
+    - [Broyden's method for multivariable systems](https://en.wikipedia.org/wiki/Broyden%27s_method);
 - Implemented algorithms for [curve-fitting](https://en.wikipedia.org/wiki/Curve_fitting):
     - [Lagrange interpolation](https://en.wikipedia.org/wiki/Lagrange_polynomial);
     - [Linear regression](https://en.wikipedia.org/wiki/Linear_regression);

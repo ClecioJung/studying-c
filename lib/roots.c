@@ -29,7 +29,10 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "linear-systems.h"
+#include "matrix.h"
 #include "scalar.h"
+#include "vector.h"
 
 #define MAX_ITERATIONS 10000
 #define PRECISION 1e-10
@@ -107,6 +110,104 @@ double muller_method(const root_fn fn, const double initial) {
             break;
         }
     }
+    return x;
+}
+
+// Remember to free the returned vector after calling this function!
+Vector multivariable_newton_method(const multivariable_root_fn fn, const Vector initial) {
+    Vector x = vector_copy(initial);
+    Matrix J = matrix_alloc(x.len, x.len);
+    if ((!vector_is_valid(x)) || (!matrix_is_valid(J))) {
+        vector_dealloc(&x);
+        matrix_dealloc(&J);
+        return (Vector){0};
+    }
+    const double increment = PRECISION;
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        Vector y = fn(x);
+        if (!vector_is_valid(y)) {
+            vector_dealloc(&x);
+            matrix_dealloc(&J);
+            return (Vector){0};
+        }
+        // Computes the Jacobian matrix J
+        for (size_t j = 0; j < J.cols; j++) {
+            // Increment x_j in order to calculate derivative
+            x.data[j] += increment;
+            Vector yj = fn(x);
+            if (!vector_is_valid(yj)) {
+                vector_dealloc(&y);
+                vector_dealloc(&x);
+                matrix_dealloc(&J);
+                return (Vector){0};
+            }
+            for (size_t i = 0; i < J.rows; i++) {
+                const double diff = (yj.data[i] - y.data[i]) / increment;
+                matrix_set(J, i, j, diff);
+            }
+            x.data[j] -= increment;  // Undo increment
+            vector_dealloc(&yj);
+        }
+        // Saves delta_x in y
+        gaussian_elimination_over(J, y);
+        vector_sub_over(x, y);
+        const double delta_norm = vector_max_abs(y);
+        vector_dealloc(&y);
+        if (delta_norm < PRECISION) {
+            break;
+        }
+    }
+    matrix_dealloc(&J);
+    return x;
+}
+
+// Remember to free the returned vector after calling this function!
+Vector multivariable_broyden_method(const multivariable_root_fn fn, const Vector initial) {
+    Vector x = vector_copy(initial);
+    Matrix J = matrix_jacobian(fn, x);
+    Matrix Jinv = matrix_inverse(J);
+    matrix_dealloc(&J);
+    if ((!vector_is_valid(x)) || (!matrix_is_valid(Jinv))) {
+        vector_dealloc(&x);
+        matrix_dealloc(&Jinv);
+        return (Vector){0};
+    }
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        Vector y = fn(x);
+        Vector delta_x = matrix_mul_vector(Jinv, y);
+        if ((!vector_is_valid(y)) || (!vector_is_valid(delta_x))) {
+            vector_dealloc(&delta_x);
+            vector_dealloc(&y);
+            vector_dealloc(&x);
+            matrix_dealloc(&Jinv);
+            return (Vector){0};
+        }
+        vector_sub_over(x, delta_x);
+        const double delta_norm = vector_max_abs(delta_x);
+        {  // Uses Sherman–Morrison formula to compute the Jacobian inverse for the next iteration
+            Vector J_times_y = matrix_mul_vector(Jinv, y);
+            Vector dx_less_Jy = vector_sub(delta_x, J_times_y);
+            if ((!vector_is_valid(J_times_y)) && (!vector_is_valid(dx_less_Jy))) {
+                vector_dealloc(&dx_less_Jy);
+                vector_dealloc(&J_times_y);
+                vector_dealloc(&delta_x);
+                vector_dealloc(&x);
+                matrix_dealloc(&Jinv);
+                return (Vector){0};
+            }
+            const double num = vector_dot_product(dx_less_Jy, delta_x);
+            const double den = vector_dot_product(delta_x, J_times_y);
+            matrix_scale_over((1.0 + num / den), Jinv);
+            vector_dealloc(&J_times_y);
+            vector_dealloc(&dx_less_Jy);
+        }
+        vector_dealloc(&y);
+        vector_dealloc(&delta_x);
+        if (delta_norm < PRECISION) {
+            break;
+        }
+    }
+    matrix_dealloc(&Jinv);
     return x;
 }
 

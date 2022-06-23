@@ -186,6 +186,14 @@ double vector_min(const Vector x) {
     return value;
 }
 
+double vector_max_abs(const Vector x) {
+    double error = 0.0;
+    for (size_t i = 0; i < x.len; i++) {
+        error = maximum(fabs(x.data[i]), error);
+    }
+    return error;
+}
+
 // Remember to free the returned vector after calling this function!
 Vector vector_sum(const Vector a, const Vector b) {
     if (a.len != b.len) {
@@ -271,6 +279,24 @@ void vector_copy_over(const Vector vector, const Vector to_copy) {
 void vector_scale_over(const double scalar, const Vector vector) {
     for (size_t i = 0; i < vector.len; i++) {
         vector.data[i] *= scalar;
+    }
+}
+
+void vector_sum_over(const Vector a, const Vector b) {
+    if (a.len != b.len) {
+        return;  // Invalid operation
+    }
+    for (size_t i = 0; i < a.len; i++) {
+        a.data[i] += b.data[i];
+    }
+}
+
+void vector_sub_over(const Vector a, const Vector b) {
+    if (a.len != b.len) {
+        return;  // Invalid operation
+    }
+    for (size_t i = 0; i < a.len; i++) {
+        a.data[i] -= b.data[i];
     }
 }
 

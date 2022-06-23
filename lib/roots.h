@@ -27,13 +27,21 @@
 #ifndef __ROOTS_H
 #define __ROOTS_H
 
-typedef double (*root_fn)(const double);
+#include "vector.h"
 
+typedef double (*root_fn)(const double);
+typedef Vector (*multivariable_root_fn)(const Vector);
+
+// Single variable non-linear root finding methods
 double bisection_method(const root_fn fn, double start, double end);
 double fakepos_method(const root_fn fn, double start, double end);
 double newton_raphson_method(const root_fn fn, const root_fn dfn, const double initial);
 double secant_method(const root_fn fn, const double start, const double end);
 double muller_method(const root_fn fn, const double initial);
+
+// Multivariable non-linear root finding methods
+Vector multivariable_newton_method(const multivariable_root_fn fn, const Vector initial);
+Vector multivariable_broyden_method(const multivariable_root_fn fn, const Vector initial);
 
 #endif  // __ROOTS_H
 
