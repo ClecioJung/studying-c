@@ -88,6 +88,7 @@ bool matrix_is_symmetric(const Matrix A);
 bool matrix_is_skew_symmetric(const Matrix A);
 bool matrix_is_null_space(const Matrix A, const Vector vec);
 Matrix matrix_jacobian(const multivariable_fn fn, const Vector x);
+Matrix matrix_vandermonde(const Vector x, const size_t cols);
 
 // 'over' functions override the contents of their arguments,
 // avoiding the need to allocate more memory for the results

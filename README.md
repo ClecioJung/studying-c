@@ -81,6 +81,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Inverse matrix](https://en.wikipedia.org/wiki/Invertible_matrix);
     - [Pseudo-inverse matrix](https://en.wikipedia.org/wiki/Generalized_inverse);
     - [Jacobian matrix](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant);
+    - [Vandermonde matrix](https://en.wikipedia.org/wiki/Vandermonde_matrix);
 - Implemented algorithm for solving [systems of linear equations](https://en.wikipedia.org/wiki/System_of_linear_equations):
     - [Gaussian elimination](https://en.wikipedia.org/wiki/Gaussian_elimination);
     - Gauss-Jordan elimination;
@@ -96,7 +97,9 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Newton-Raphson method for multivariable systems;
     - [Broyden's method for multivariable systems](https://en.wikipedia.org/wiki/Broyden%27s_method);
 - Implemented algorithms for [curve-fitting](https://en.wikipedia.org/wiki/Curve_fitting):
+    - [Polynomial interpolation](https://en.wikipedia.org/wiki/Polynomial_interpolation);
     - [Lagrange interpolation](https://en.wikipedia.org/wiki/Lagrange_polynomial);
+    - [Gregory-Newton intepolation](https://en.wikipedia.org/wiki/Newton_polynomial);
     - [Linear regression](https://en.wikipedia.org/wiki/Linear_regression);
     - [Polynomail regression](https://en.wikipedia.org/wiki/Polynomial_regression);
 - Implemented algorithms for [numerical integration](https://en.wikipedia.org/wiki/Numerical_integration):

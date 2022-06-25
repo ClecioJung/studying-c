@@ -769,6 +769,20 @@ Matrix matrix_jacobian(const multivariable_fn fn, const Vector x) {
     return J;
 }
 
+// Remember to free the returned matrix after calling this function!
+Matrix matrix_vandermonde(const Vector x, const size_t cols) {
+    Matrix V = matrix_alloc(x.len, cols);
+    if (!matrix_is_valid(V)) {
+        return (Matrix){0};
+    }
+    for (size_t i = 0; i < V.rows; i++) {
+        for (size_t j = 0; j < V.cols; j++) {
+            matrix_set(V, i, j, power(x.data[i], j));
+        }
+    }
+    return V;
+}
+
 void vector_from_matrix_column_over(const Vector vector, const Matrix A, const size_t col) {
     if ((vector.len != A.rows) || (col >= A.cols)) {
         return;  // Invalid operation

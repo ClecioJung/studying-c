@@ -29,9 +29,15 @@
 
 #include "vector.h"
 
+double polynomial_interpolation(const Vector x, const Vector y, const double value);
 double lagrange_interpolation(const Vector x, const Vector y, const double value);
+double gregory_newton_interpolation(const Vector x, const Vector y, const double value);
 double linear_regression(const Vector x, const Vector y, double *const a, double *const b);
 Vector polynomial_regression(const Vector x, const Vector y, const size_t order);
+
+Vector polynomial_interpolation_vector(const Vector x, const Vector y, const Vector values);
+Vector lagrange_interpolation_vector(const Vector x, const Vector y, const Vector values);
+Vector gregory_newton_interpolation_vector(const Vector x, const Vector y, const Vector values);
 
 #endif  // __CURVE_FITTING_H
 
