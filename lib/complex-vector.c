@@ -33,6 +33,7 @@
 
 #include "complex.h"
 #include "scalar.h"
+#include "vector.h"
 
 #define MAX_ITERATIONS 10000
 #define COMPARATION_PRECISION 1e-8
@@ -94,6 +95,28 @@ void complex_vector_print(const Complex_Vector vector) {
         }
         printf("\n");
     }
+}
+
+// Remember to free the returned vector after calling this function!
+Vector complex_vector_get_real_part(const Complex_Vector vector) {
+    Vector real_vector = vector_alloc(vector.len);
+    if (vector_is_valid(real_vector)) {
+        for (size_t i = 0; i < real_vector.len; i++) {
+            real_vector.data[i] = vector.data[i].real;
+        }
+    }
+    return real_vector;
+}
+
+// Remember to free the returned vector after calling this function!
+Vector complex_vector_get_imag_part(const Complex_Vector vector) {
+    Vector imag_vector = vector_alloc(vector.len);
+    if (vector_is_valid(imag_vector)) {
+        for (size_t i = 0; i < imag_vector.len; i++) {
+            imag_vector.data[i] = vector.data[i].imag;
+        }
+    }
+    return imag_vector;
 }
 
 void complex_vector_init_over(const Complex_Vector vector, const Complex value) {

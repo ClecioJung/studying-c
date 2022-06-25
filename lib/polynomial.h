@@ -49,6 +49,8 @@ Complex polynomial_complex_evaluation(const Vector polynomial, const Complex c);
 Complex polynomial_complex_first_diff(const Vector polynomial, const Complex c);
 Complex polynomial_complex_diff(const Vector polynomial, const uint16_t order, const Complex c);
 Complex_Vector polynomial_complex_ruffini_residuals(const Vector p, const Complex x);
+Vector polynomial_legendre(const size_t order);
+Vector polynomial_legendre_roots(const size_t order);
 
 double polynomial_cauchy_upper_bound(const Vector polynomial);
 double polynomial_cauchy_lower_bound(const Vector polynomial);
@@ -62,11 +64,7 @@ void polynomial_root_bounds(const Vector polynomial, double *const min, double *
 
 uint16_t polynomial_root_multiplicity(const Vector p, const Complex root);
 Complex_Vector polynomial_find_roots(const Vector polynomial);
-
-// excluir
-Complex polynomial_root_guess_over(const Vector polynomial, const size_t length);
-void polynomial_residuals_over(const Vector p, const Complex x, size_t length, Complex_Vector residuals);
-double polynomial_limit(const Vector p, size_t length);
+Vector polynomial_find_real_roots(const Vector polynomial);
 
 #endif  // __POLYNOMIAL_H
 

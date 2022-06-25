@@ -31,6 +31,7 @@
 #include <stdlib.h>
 
 #include "complex.h"
+#include "vector.h"
 
 typedef struct {
     Complex *data;
@@ -44,6 +45,8 @@ void complex_vector_set(const Complex_Vector vector, const size_t index, const C
 Complex complex_vector_get(const Complex_Vector vector, const size_t index);
 Complex_Vector complex_vector_init(const size_t len, const Complex value);
 void complex_vector_print(const Complex_Vector vector);
+Vector complex_vector_get_real_part(const Complex_Vector vector);
+Vector complex_vector_get_imag_part(const Complex_Vector vector);
 
 // 'over' functions override the contents of their arguments,
 // avoiding the need to allocate more memory for the results
