@@ -51,6 +51,8 @@ Complex polynomial_complex_diff(const Vector polynomial, const uint16_t order, c
 Complex_Vector polynomial_complex_ruffini_residuals(const Vector p, const Complex x);
 Vector polynomial_legendre(const size_t order);
 Vector polynomial_legendre_roots(const size_t order);
+Vector polynomial_chebyshev_first_kind(const size_t order);
+Vector polynomial_chebyshev_second_kind(const size_t order);
 
 double polynomial_cauchy_upper_bound(const Vector polynomial);
 double polynomial_cauchy_lower_bound(const Vector polynomial);

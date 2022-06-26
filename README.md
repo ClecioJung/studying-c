@@ -59,6 +59,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - Computation of [polynomial root bounds](https://en.wikipedia.org/wiki/Geometrical_properties_of_polynomial_roots#Bounds_on_all_roots);
     - [Polynomial root finding](https://en.wikipedia.org/wiki/Root-finding_algorithms);
     - [Legendre polynomials](https://en.wikipedia.org/wiki/Legendre_polynomials);
+    - [Chebyshev polynomials](https://en.wikipedia.org/wiki/Chebyshev_polynomials);
 - Implemented operations with [matrices](https://en.wikipedia.org/wiki/Matrix_(mathematics)):
     - Sum and subtraction of matrices;
     - Multiplication of matrices by scalars;

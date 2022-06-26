@@ -321,17 +321,13 @@ Vector polynomial_legendre(const size_t order) {
     p[0].data[0] = 1.0;
     p[1].data[0] = 0.0;
     p[1].data[1] = 1.0;
-    // P(n) = ((2n-1)/n)*x*P(n) - ((n-1)/n)*P(n-1)
+    // P(n) = ((2n-1)/n)*x*P(n-1) - ((n-1)/n)*P(n-2)
     for (size_t k = 2; k <= order; k++) {
-        for (size_t i = 0; i <= k; i++) {
-            if (i == 0) {
-                const double b = (((double)(k - 1)) / ((double)k));
-                p[k % num_of_p].data[i] = -b * p[(k + 1) % num_of_p].data[i];
-            } else {
-                const double a = (((double)(2 * k - 1) / ((double)k)));
-                const double b = (((double)(k - 1)) / ((double)k));
-                p[k % num_of_p].data[i] = a * p[(k + 2) % num_of_p].data[i - 1] - b * p[(k + 1) % num_of_p].data[i];
-            }
+        const double a = (((double)(2 * k - 1) / ((double)k)));
+        const double b = (((double)(k - 1)) / ((double)k));
+        p[k % num_of_p].data[0] = -b * p[(k + 1) % num_of_p].data[0];
+        for (size_t i = 1; i <= k; i++) {
+            p[k % num_of_p].data[i] = a * p[(k + 2) % num_of_p].data[i - 1] - b * p[(k + 1) % num_of_p].data[i];
         }
     }
     vector_dealloc(&p[(order + 1) % num_of_p]);
@@ -347,6 +343,78 @@ Vector polynomial_legendre_roots(const size_t order) {
     Vector roots = polynomial_find_real_roots(p);
     vector_dealloc(&p);
     return roots;
+}
+
+// Remember to free the returned vector after calling this function!
+Vector polynomial_chebyshev_first_kind(const size_t order) {
+    if (order == 0) {
+        Vector p0 = vector_alloc(1);
+        if (vector_is_valid(p0)) {
+            p0.data[0] = 1.0;
+        }
+        return p0;
+    } else if (order == 1) {
+        Vector p1 = vector_alloc(2);
+        if (vector_is_valid(p1)) {
+            p1.data[0] = 0.0;
+            p1.data[1] = 1.0;
+        }
+        return p1;
+    }
+    const size_t num_of_p = 3;
+    Vector p[num_of_p];
+    for (size_t k = 0; k < num_of_p; k++) {
+        p[k] = vector_init(order + 1, 0.0);
+    }
+    p[0].data[0] = 1.0;
+    p[1].data[0] = 0.0;
+    p[1].data[1] = 1.0;
+    // T(n) = 2*x*T(n-1) - T(n-2)
+    for (size_t k = 2; k <= order; k++) {
+        p[k % num_of_p].data[0] = -p[(k + 1) % num_of_p].data[0];
+        for (size_t i = 1; i <= k; i++) {
+            p[k % num_of_p].data[i] = 2.0 * p[(k + 2) % num_of_p].data[i - 1] - p[(k + 1) % num_of_p].data[i];
+        }
+    }
+    vector_dealloc(&p[(order + 1) % num_of_p]);
+    vector_dealloc(&p[(order + 2) % num_of_p]);
+    return p[order % num_of_p];
+}
+
+// Remember to free the returned vector after calling this function!
+Vector polynomial_chebyshev_second_kind(const size_t order) {
+    if (order == 0) {
+        Vector p0 = vector_alloc(1);
+        if (vector_is_valid(p0)) {
+            p0.data[0] = 1.0;
+        }
+        return p0;
+    } else if (order == 1) {
+        Vector p1 = vector_alloc(2);
+        if (vector_is_valid(p1)) {
+            p1.data[0] = 0.0;
+            p1.data[1] = 2.0;
+        }
+        return p1;
+    }
+    const size_t num_of_p = 3;
+    Vector p[num_of_p];
+    for (size_t k = 0; k < num_of_p; k++) {
+        p[k] = vector_init(order + 1, 0.0);
+    }
+    p[0].data[0] = 1.0;
+    p[1].data[0] = 0.0;
+    p[1].data[1] = 2.0;
+    // U(n) = 2*x*U(n-1) - U(n-2)
+    for (size_t k = 2; k <= order; k++) {
+        p[k % num_of_p].data[0] = -p[(k + 1) % num_of_p].data[0];
+        for (size_t i = 1; i <= k; i++) {
+            p[k % num_of_p].data[i] = 2.0 * p[(k + 2) % num_of_p].data[i - 1] - p[(k + 1) % num_of_p].data[i];
+        }
+    }
+    vector_dealloc(&p[(order + 1) % num_of_p]);
+    vector_dealloc(&p[(order + 2) % num_of_p]);
+    return p[order % num_of_p];
 }
 
 // Cauchy's upper bound
