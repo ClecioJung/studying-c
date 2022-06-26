@@ -45,6 +45,7 @@ Vector forward_substitution(const Matrix A, const Vector b);
 System_Type gaussian_elimination(const Matrix A, const Vector b, Vector *const x);
 System_Type gauss_jordan(const Matrix A, const Vector b, Vector *const x);
 System_Type lu_solving(const Matrix A, const Vector b, Vector *const x);
+System_Type tridiagonal_solving(const Vector t, const Vector r, const Vector d, const Vector b, Vector *const x);
 System_Type jacobi_method(const Matrix A, const Vector b, Vector *const x);
 System_Type gauss_seidel(const Matrix A, const Vector b, Vector *const x);
 bool columns_condition(const Matrix A);
@@ -59,6 +60,7 @@ void forward_substitution_over(const Matrix A, const Vector b);
 System_Type gaussian_elimination_over(const Matrix A, const Vector b);
 System_Type gauss_jordan_over(const Matrix A, const Vector b);
 System_Type lu_solving_over(const Matrix A, const Vector b);
+System_Type tridiagonal_solving_over(const Vector t, const Vector r, const Vector d, const Vector b);
 
 #endif  // __LINEAR_SYSTEMS_H
 

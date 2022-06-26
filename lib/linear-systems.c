@@ -114,6 +114,24 @@ System_Type lu_solving(const Matrix A, const Vector b, Vector *const x) {
 }
 
 // Remember to free the returned vector after calling this function!
+System_Type tridiagonal_solving(const Vector t, const Vector r, const Vector d, const Vector b, Vector *const x) {
+    if (x == NULL) {
+        return Error;
+    }
+    System_Type type = Error;
+    Vector r_copy = vector_copy(r);
+    *x = vector_copy(b);
+    if (vector_is_valid(r_copy) && vector_is_valid(*x)) {
+        type = tridiagonal_solving_over(t, r_copy, d, *x);
+    }
+    if (type != Solvable) {
+        vector_dealloc(x);
+    }
+    vector_dealloc(&r_copy);
+    return type;
+}
+
+// Remember to free the returned vector after calling this function!
 System_Type jacobi_method(const Matrix A, const Vector b, Vector *const x) {
     if (x == NULL) {
         return Error;
@@ -444,6 +462,31 @@ System_Type lu_solving_over(const Matrix A, const Vector b) {
     }
     forward_substitution_over(A, b);
     back_substitution_over(A, b);
+    return Solvable;
+}
+
+// WARNING! This function changes the contents of the vectors r and b (t and d are not changed)!
+// The vector solution is stored in b
+System_Type tridiagonal_solving_over(const Vector t, const Vector r, const Vector d, const Vector b) {
+    // r is the main diagonal of the tridiagonal matrix A
+    // t is the lower diagonal of the tridiagonal matrix A
+    // d is the upper diagonal of the tridiagonal matrix A
+    // The values t.data[0] and d.data[d.len-1] are unused for this computations
+    if ((t.len != r.len) || (t.len != d.len) || (t.len != b.len)) {
+        return Invalid;
+    }
+    // Forward elimination
+    for (size_t i = 1; i < t.len; i++) {
+        const double m = t.data[i] / r.data[i - 1];
+        r.data[i] -= m * d.data[i - 1];
+        b.data[i] -= m * b.data[i - 1];
+        // d remains unchanged in this process
+    }
+    // back substitution
+    b.data[t.len - 1] /= r.data[t.len - 1];
+    for (size_t i = (t.len - 2); i < t.len; i--) {
+        b.data[i] = (b.data[i] - d.data[i] * b.data[i + 1]) / r.data[i];
+    }
     return Solvable;
 }
 

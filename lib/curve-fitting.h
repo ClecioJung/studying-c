@@ -29,6 +29,21 @@
 
 #include "vector.h"
 
+typedef struct {
+    double *x;
+    double *a;
+    double *b;
+    double *c;
+    double *d;
+    size_t len;
+} Spline;
+
+typedef enum {
+    Spline_Clamped = 0,
+    Spline_Quadratic,
+    Spline_Natural,
+} Spline_Type;
+
 double polynomial_interpolation(const Vector x, const Vector y, const double value);
 double lagrange_interpolation(const Vector x, const Vector y, const double value);
 double gregory_newton_interpolation(const Vector x, const Vector y, const double value);
@@ -39,6 +54,12 @@ double r_squared(const Vector x, const Vector y, const Vector polynomial);
 Vector polynomial_interpolation_vector(const Vector x, const Vector y, const Vector values);
 Vector lagrange_interpolation_vector(const Vector x, const Vector y, const Vector values);
 Vector gregory_newton_interpolation_vector(const Vector x, const Vector y, const Vector values);
+
+Spline spline_alloc(const size_t len);
+void spline_dealloc(Spline *const spline);
+Spline spline_interpolation(const Vector x, const Vector y, const Spline_Type spline_type, const double S_start, const double S_end);
+void spline_print(const Spline spline);
+double spline_evaluation(const Spline spline, const double value);
 
 #endif  // __CURVE_FITTING_H
 

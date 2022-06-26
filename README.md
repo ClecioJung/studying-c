@@ -90,6 +90,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Solving linear equations using LU decomposition](https://en.wikipedia.org/wiki/LU_decomposition#Solving_linear_equations);
     - [Jacobi method](https://en.wikipedia.org/wiki/Jacobi_method);
     - [Gauss-Seidel method](https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method);
+    - Algorithm for solving [tridiagonal systems](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm);
 - Implemented algorithms for [finding roots of equations](https://en.wikipedia.org/wiki/Root-finding_algorithms):
     - [Bisection method](https://en.wikipedia.org/wiki/Bisection_method);
     - [Fake-position method](https://en.wikipedia.org/wiki/Regula_falsi);
@@ -105,6 +106,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Linear regression](https://en.wikipedia.org/wiki/Linear_regression);
     - [Polynomail regression](https://en.wikipedia.org/wiki/Polynomial_regression);
     - Computation of [Coefficient of determination](https://en.wikipedia.org/wiki/Coefficient_of_determination) for the polynomial regression;
+    - [Cubic spline interpolation](https://en.wikipedia.org/wiki/Spline_interpolation);
 - Implemented algorithms for [numerical integration](https://en.wikipedia.org/wiki/Numerical_integration):
     - [Trapezoidal rule](https://en.wikipedia.org/wiki/Trapezoidal_rule);
     - [Simpson's rule](https://en.wikipedia.org/wiki/Simpson%27s_rule);

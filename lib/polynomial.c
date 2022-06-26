@@ -47,7 +47,7 @@ void polynomial_print(const Vector polynomial, const char *const name, char x) {
     if ((name != NULL) && (*name != '\0')) {
         printf("%s(%c) = ", name, x);
     }
-    size_t printed_terms = 0;
+    uint16_t printed_terms = 0;
     for (size_t i = (polynomial.len - 1); i < polynomial.len; i--) {
         if (are_close(polynomial.data[i], 0.0, PRECISION)) {
             continue;
