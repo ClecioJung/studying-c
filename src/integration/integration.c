@@ -38,6 +38,7 @@ int main(void) {
         {"trapezoidal rule", trapezoidal_rule},
         {"Simpson rule", simpson_rule},
         {"Simpson rule 3/8", simpson_rule_38},
+        {"Gauss Legendre quadrature", gauss_legendre_quadrature},
     };
     for (size_t i = 0; i < sizeof(algorithms) / sizeof(algorithms[0]); i++) {
         if (test_algorithm(algorithms[i]) != EXIT_SUCCESS) {

@@ -34,6 +34,7 @@ typedef double (*integration_fn)(const double);
 double trapezoidal_rule(const integration_fn fn, const double start, const double end, const size_t segments);
 double simpson_rule(const integration_fn fn, const double start, const double end, const size_t segments);
 double simpson_rule_38(const integration_fn fn, const double start, const double end, size_t segments);
+double gauss_legendre_quadrature(const integration_fn fn, const double start, const double end, const size_t segments);
 
 #endif  // __INTEGRATION_H
 

@@ -107,6 +107,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Trapezoidal rule](https://en.wikipedia.org/wiki/Trapezoidal_rule);
     - [Simpson's rule](https://en.wikipedia.org/wiki/Simpson%27s_rule);
     - [Simpson's 3/8 rule](https://en.wikipedia.org/wiki/Simpson%27s_rule#Simpson's_3/8_rule);
+    - [Gauss-Legendre quadrature](https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature);
 - Implemented algorithms for solving [Ordinary Differential Equations (ODE)](https://en.wikipedia.org/wiki/Ordinary_differential_equation):
     - [Euler method](https://en.wikipedia.org/wiki/Euler_method);
     - [Heun's method](https://en.wikipedia.org/wiki/Heun%27s_method);
