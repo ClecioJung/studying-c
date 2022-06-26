@@ -127,8 +127,8 @@ double linear_regression(const Vector x, const Vector y, double *const a, double
     }
     *a = (x.len * sum_xy - sum_x * sum_y) / (x.len * sum_x_squared - sum_x * sum_x);
     *b = (sum_y * sum_x_squared - sum_xy * sum_x) / (x.len * sum_x_squared - sum_x * sum_x);
-    const double r = (x.len * sum_xy - sum_x * sum_y) / (square_root(x.len * sum_x_squared - sum_x * sum_x) * square_root(x.len * sum_y_squared - sum_y * sum_y));
-    return r;
+    const double r2 = power((x.len * sum_xy - sum_x * sum_y), 2) / ((x.len * sum_x_squared - sum_x * sum_x) * (x.len * sum_y_squared - sum_y * sum_y));
+    return r2;
 }
 
 // Remember to free the returned vector after calling this function!
@@ -157,13 +157,24 @@ Vector polynomial_regression(const Vector x, const Vector y, const size_t order)
             b.data[i] += y.data[l] * power(x.data[l], i);
         }
     }
-    // If the system doesn't have a single unique solution,
-    // the coefficients vector will be deallocated automatically by the function gaussian_elimination()
-    Vector coefficients;
-    gaussian_elimination(A, b, &coefficients);
+    gaussian_elimination_over(A, b);
     matrix_dealloc(&A);
-    vector_dealloc(&b);
-    return coefficients;
+    return b;
+}
+
+double r_squared(const Vector x, const Vector y, const Vector polynomial) {
+    if (x.len != y.len) {
+        return NAN;  // Invalid operation
+    }
+    const double y_mean = vector_mean(y);
+    double ssr = 0.0;  // Residual sum of squares
+    double sst = 0.0;  // Total sum of squares
+    for (size_t i = 0; i < x.len; i++) {
+        const double y_estimated = polynomial_horner_evaluation(polynomial, x.data[i]);
+        ssr += power((y.data[i] - y_estimated), 2);
+        sst += power((y.data[i] - y_mean), 2);
+    }
+    return (1.0 - (ssr / sst));
 }
 
 // Remember to free the returned vector after calling this function!

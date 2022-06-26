@@ -24,6 +24,8 @@ int main(void) {
     printf("Polynomial regression resulted in:\n");
     Vector pol = polynomial_regression(x, y, 2);
     vector_print(pol);
+    const double r2 = r_squared(x, y, pol);
+    printf("The coefficient of determination is (r^2): %lg\n", r2);
     for (size_t i = 0; i < x.len; i++) {
         const double result = polynomial_evaluation(pol, x.data[i]);
         if (are_close(result, y.data[i], PRECISION)) {

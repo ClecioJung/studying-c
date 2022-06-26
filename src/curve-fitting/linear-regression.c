@@ -17,10 +17,10 @@ int main(void) {
     y.data[2] = 9.0;
     double a, b;
     printf("Linear regression resulted in:\n");
-    double r = linear_regression(x, y, &a, &b);
+    double r2 = linear_regression(x, y, &a, &b);
     printf("a: %lg\n", a);
     printf("b: %lg\n", b);
-    printf("correlation coefficient (r): %lg\n", r);
+    printf("The coefficient of determination is (r^2): %lg\n", r2);
     for (size_t i = 0; i < x.len; i++) {
         const double result = a * x.data[i] + b;
         if (are_close(result, y.data[i], PRECISION)) {

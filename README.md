@@ -103,6 +103,7 @@ This is a set of simple C codes developed to study algorithms and concepts of co
     - [Gregory-Newton intepolation](https://en.wikipedia.org/wiki/Newton_polynomial);
     - [Linear regression](https://en.wikipedia.org/wiki/Linear_regression);
     - [Polynomail regression](https://en.wikipedia.org/wiki/Polynomial_regression);
+    - Computation of [Coefficient of determination](https://en.wikipedia.org/wiki/Coefficient_of_determination) for the polynomial regression;
 - Implemented algorithms for [numerical integration](https://en.wikipedia.org/wiki/Numerical_integration):
     - [Trapezoidal rule](https://en.wikipedia.org/wiki/Trapezoidal_rule);
     - [Simpson's rule](https://en.wikipedia.org/wiki/Simpson%27s_rule);

@@ -52,6 +52,7 @@ double vector_norm(const Vector x);
 double vector_max(const Vector x);
 double vector_min(const Vector x);
 double vector_max_abs(const Vector x);
+double vector_mean(const Vector x);
 Vector vector_sum(const Vector a, const Vector b);
 Vector vector_sub(const Vector a, const Vector b);
 double vector_max_diff(const Vector x, const Vector previous_x);

@@ -194,6 +194,14 @@ double vector_max_abs(const Vector x) {
     return error;
 }
 
+double vector_mean(const Vector x) {
+    double sum = 0.0;
+    for (size_t i = 0; i < x.len; i++) {
+        sum += x.data[i];
+    }
+    return (sum / x.len);
+}
+
 // Remember to free the returned vector after calling this function!
 Vector vector_sum(const Vector a, const Vector b) {
     if (a.len != b.len) {
