@@ -44,6 +44,7 @@ double vector_get(const Vector vector, const size_t index);
 Vector vector_random(const size_t len, const double min, const double max);
 Vector vector_init(const size_t len, const double value);
 Vector vector_copy(const Vector vector);
+Vector vector_new(const size_t len, ...);
 void vector_print(const Vector vector);
 Vector vector_scale(const double scalar, const Vector vector);
 double vector_dot_product(const Vector a, const Vector b);

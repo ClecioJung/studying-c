@@ -9,11 +9,8 @@
 
 int main(void) {
     const double expected_result = 5.0;
-    Vector a = vector_alloc(3);
     printf("Vector a:\n");
-    a.data[0] = 4.0;
-    a.data[1] = 3.0;
-    a.data[2] = 0.0;
+    Vector a = vector_new(3, 0.0, 3.0, 4.0);
     vector_print(a);
     const double result = vector_norm(a);
     if (are_close(result, expected_result, PRECISION)) {

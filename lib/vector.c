@@ -27,6 +27,7 @@
 #include "vector.h"
 
 #include <math.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -118,6 +119,22 @@ Vector vector_copy(const Vector vector) {
         vector_copy_over(new_vec, vector);
     }
     return new_vec;
+}
+
+// Remember to free the returned vector after calling this function!
+// Incorrect calls to this function will not result in compilation errors.
+// Variable arguments are unsafe by design.
+Vector vector_new(const size_t len, ...) {
+    Vector vector = vector_alloc(len);
+    if (vector_is_valid(vector)) {
+        va_list valist;
+        va_start(valist, len);
+        for (size_t i = 0; i < len; i++) {
+            vector.data[i] = (double)va_arg(valist, double);
+        }
+        va_end(valist);
+    }
+    return vector;
 }
 
 void vector_print(const Vector vector) {
