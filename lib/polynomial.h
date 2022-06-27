@@ -43,11 +43,11 @@ double polynomial_horner_evaluation(const Vector polynomial, const double x);
 double polynomial_ruffini_division(const Vector polynomial, const double r, Vector *const result);
 Vector polynomial_quadratic_division(const Vector polynomial, const double a, const double b, Vector *const result);
 double polynomial_first_diff(const Vector polynomial, const double x);
-double polynomial_diff(const Vector polynomial, uint16_t order, const double x);
+double polynomial_diff(const Vector polynomial, size_t order, const double x);
 Vector polynomial_ruffini_residuals(const Vector p, const double x);
 Complex polynomial_complex_evaluation(const Vector polynomial, const Complex c);
 Complex polynomial_complex_first_diff(const Vector polynomial, const Complex c);
-Complex polynomial_complex_diff(const Vector polynomial, const uint16_t order, const Complex c);
+Complex polynomial_complex_diff(const Vector polynomial, const size_t order, const Complex c);
 Complex_Vector polynomial_complex_ruffini_residuals(const Vector p, const Complex x);
 Vector polynomial_legendre(const size_t order);
 Vector polynomial_legendre_roots(const size_t order);
@@ -64,9 +64,10 @@ double polynomial_kojima_upper_bound(const Vector polynomial);
 double polynomial_kojima_lower_bound(const Vector polynomial);
 void polynomial_root_bounds(const Vector polynomial, double *const min, double *const max);
 
-uint16_t polynomial_root_multiplicity(const Vector p, const Complex root);
+size_t polynomial_root_multiplicity(const Vector p, const Complex root);
 Complex_Vector polynomial_find_roots(const Vector polynomial);
 Vector polynomial_find_real_roots(const Vector polynomial);
+Vector polynomial_find_real_distinct_roots(const Vector polynomial);
 
 #endif  // __POLYNOMIAL_H
 

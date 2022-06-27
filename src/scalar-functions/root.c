@@ -8,7 +8,7 @@
 
 typedef struct {
     const double input;
-    const uint16_t n;
+    const size_t n;
     const double expected;
 } Test_Values;
 
@@ -30,9 +30,9 @@ int main(void) {
     for (size_t i = 0; i < sizeof(values) / sizeof(values[0]); i++) {
         const double result = root(values[i].input, values[i].n);
         if (are_close(result, values[i].expected, PRECISION)) {
-            printf("root(%lg, %d) = %lg\n", values[i].input, values[i].n, result);
+            printf("root(%lg, %ld) = %lg\n", values[i].input, values[i].n, result);
         } else {
-            fprintf(stderr, "Error: imprecise result. root(%lg, %d) = %lg\n", values[i].input, values[i].n, result);
+            fprintf(stderr, "Error: imprecise result. root(%lg, %ld) = %lg\n", values[i].input, values[i].n, result);
             return EXIT_FAILURE;
         }
     }

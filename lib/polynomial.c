@@ -47,7 +47,7 @@ void polynomial_print(const Vector polynomial, const char *const name, char x) {
     if ((name != NULL) && (*name != '\0')) {
         printf("%s(%c) = ", name, x);
     }
-    uint16_t printed_terms = 0;
+    size_t printed_terms = 0;
     for (size_t i = (polynomial.len - 1); i < polynomial.len; i--) {
         if (are_close(polynomial.data[i], 0.0, PRECISION)) {
             continue;
@@ -203,7 +203,7 @@ double polynomial_first_diff(const Vector polynomial, const double x) {
 }
 
 // Polynomial differentiation using Ruffini's rule
-double polynomial_diff(const Vector polynomial, const uint16_t order, const double x) {
+double polynomial_diff(const Vector polynomial, const size_t order, const double x) {
     if (polynomial.len <= order) {
         return 0.0;
     }
@@ -263,7 +263,7 @@ Complex polynomial_complex_first_diff(const Vector polynomial, const Complex c) 
 }
 
 // Polynomial differentiation using Ruffini's rule
-Complex polynomial_complex_diff(const Vector polynomial, const uint16_t order, const Complex c) {
+Complex polynomial_complex_diff(const Vector polynomial, const size_t order, const Complex c) {
     if (polynomial.len <= order) {
         return complex_init(0.0, 0.0);
     }
@@ -340,7 +340,7 @@ Vector polynomial_legendre_roots(const size_t order) {
     if (!vector_is_valid(p)) {
         return (Vector){0};
     }
-    Vector roots = polynomial_find_real_roots(p);
+    Vector roots = polynomial_find_real_distinct_roots(p);
     vector_dealloc(&p);
     return roots;
 }
@@ -588,11 +588,11 @@ double polynomial_limit(const Vector p, size_t length) {
         limit1 = 0.1;
     }
     // Computes the second limit
-    uint16_t decimals = 0;
+    int64_t decimals = 0;
     for (size_t i = (p.len - length); i < p.len; i++) {
         double coef = p.data[i];
         double dif = 1.0;
-        int16_t cont = -1;
+        int64_t cont = -1;
         while (dif > 1e-8) {
             dif = fabs(coef - round(coef));
             coef = 10.0 * coef;
@@ -618,14 +618,14 @@ void polynomial_residuals_over(const Vector p, const Complex x, size_t length, C
 }
 
 // Find root multiplicity
-uint16_t polynomial_root_multiplicity(const Vector p, const Complex root) {
+size_t polynomial_root_multiplicity(const Vector p, const Complex root) {
     Complex_Vector residuals = complex_vector_alloc(p.len);
     if (!complex_vector_is_valid(residuals)) {
         return 0;
     }
     polynomial_residuals_over(p, root, p.len, residuals);
     const double limit = polynomial_limit(p, p.len);
-    uint16_t multiplicity = 1;
+    size_t multiplicity = 1;
     double remainders = complex_modulus(residuals.data[0]) + complex_modulus(residuals.data[1]);
     while (remainders < limit) {
         multiplicity++;
@@ -838,44 +838,41 @@ Complex polynomial_root_guess_over(const Vector polynomial, const size_t length)
 }
 
 // This function only uses the first length coefficients of the polynomial in calculations
-Complex polynomial_find_root_over(const Vector p, uint16_t *const multiplicity, size_t length, Complex_Vector residuals) {
+size_t polynomial_find_root_over(const Vector p, Complex *const root, size_t length, Complex_Vector residuals) {
+    if (root == NULL) {
+        return 0;  // Invalid operation
+    }
     const double limit = polynomial_limit(p, length);
-    Complex root = polynomial_root_guess_over(p, length);
-    uint16_t m;
+    size_t multiplicity;
     for (size_t k = 0; k < MAX_ITERATIONS; k++) {
         // Find root multiplicity
-        m = 1;
-        polynomial_residuals_over(p, root, length, residuals);
+        multiplicity = 1;
+        polynomial_residuals_over(p, *root, length, residuals);
         double remainders = complex_modulus(residuals.data[0]) + complex_modulus(residuals.data[1]);
         while (remainders < limit) {
-            m++;
-            remainders += complex_modulus(residuals.data[m]);
+            multiplicity++;
+            remainders += complex_modulus(residuals.data[multiplicity]);
         }
-        // Use Newton method for root finding - Birge-Vieta method
-        const Complex delta = complex_div(residuals.data[m - 1], complex_mul_scalar(m, residuals.data[m]));
-        root = complex_sub(root, delta);
-        if ((complex_modulus(residuals.data[0]) + complex_modulus(delta)) < PRECISION) {
-            break;
-        }
-    }
-    if (multiplicity != NULL) {
-        *multiplicity = m;
-    }
-    return root;
-}
-
-Complex polynomial_root_refinement_over(const Vector p, const Complex guess, const uint16_t multiplicity, Complex_Vector residuals) {
-    Complex root = guess;
-    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-        polynomial_residuals_over(p, root, p.len, residuals);
         // Use Newton method for root finding - Birge-Vieta method
         const Complex delta = complex_div(residuals.data[multiplicity - 1], complex_mul_scalar(multiplicity, residuals.data[multiplicity]));
-        root = complex_sub(root, delta);
+        *root = complex_sub(*root, delta);
         if ((complex_modulus(residuals.data[0]) + complex_modulus(delta)) < PRECISION) {
             break;
         }
     }
-    return root;
+    return multiplicity;
+}
+
+void polynomial_root_refinement_over(const Vector p, Complex *const root, const size_t multiplicity, Complex_Vector residuals) {
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        polynomial_residuals_over(p, *root, p.len, residuals);
+        // Use Newton method for root finding - Birge-Vieta method
+        const Complex delta = complex_div(residuals.data[multiplicity - 1], complex_mul_scalar(multiplicity, residuals.data[multiplicity]));
+        *root = complex_sub(*root, delta);
+        if ((complex_modulus(residuals.data[0]) + complex_modulus(delta)) < PRECISION) {
+            break;
+        }
+    }
 }
 
 // Remember to free the returned vector after calling this function!
@@ -910,10 +907,10 @@ Complex_Vector polynomial_find_roots(const Vector polynomial) {
     }
     // Find remaining roots
     while (root_index < roots.len) {
-        uint16_t multiplicity;
         const size_t length = (p.len - root_index);
-        Complex root = polynomial_find_root_over(p, &multiplicity, length, residuals);
-        root = polynomial_root_refinement_over(polynomial, root, multiplicity, residuals);
+        Complex root = polynomial_root_guess_over(p, length);
+        size_t multiplicity = polynomial_find_root_over(p, &root, length, residuals);
+        polynomial_root_refinement_over(polynomial, &root, multiplicity, residuals);
         while ((multiplicity--) && (root_index < roots.len)) {
             if (complex_is_real(root)) {
                 //  Computes the division of the polynomial p by (x-root) using Ruffini's rule
@@ -989,47 +986,45 @@ double polynomial_real_root_guess_over(const Vector polynomial, const size_t len
 }
 
 // This function only uses the first length coefficients of the polynomial in calculations
-double polynomial_find_real_root_over(const Vector p, uint16_t *const multiplicity, size_t length, Vector residuals) {
+size_t polynomial_find_real_root_over(const Vector p, double *const root, size_t length, Vector residuals) {
+    if (root == NULL) {
+        return 0;  // Invalid operation
+    }
     const double limit = polynomial_limit(p, length);
-    double root = polynomial_real_root_guess_over(p, length);
-    uint16_t m;
+    size_t multiplicity;
     for (size_t k = 0; k < MAX_ITERATIONS; k++) {
         // Find root multiplicity
-        m = 1;
-        polynomial_real_residuals_over(p, root, length, residuals);
+        multiplicity = 1;
+        polynomial_real_residuals_over(p, *root, length, residuals);
         double remainders = fabs(residuals.data[0]) + fabs(residuals.data[1]);
         while (remainders < limit) {
-            m++;
-            remainders += fabs(residuals.data[m]);
+            multiplicity++;
+            remainders += fabs(residuals.data[multiplicity]);
         }
-        // Use Newton method for root finding - Birge-Vieta method
-        const double delta = residuals.data[m - 1] / (((double)m) * residuals.data[m]);
-        root -= delta;
-        if ((fabs(residuals.data[0]) + fabs(delta)) < PRECISION) {
-            break;
-        }
-    }
-    if (multiplicity != NULL) {
-        *multiplicity = m;
-    }
-    return root;
-}
-
-double polynomial_real_root_refinement_over(const Vector p, const double guess, const uint16_t multiplicity, Vector residuals) {
-    double root = guess;
-    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
-        polynomial_real_residuals_over(p, root, p.len, residuals);
         // Use Newton method for root finding - Birge-Vieta method
         const double delta = residuals.data[multiplicity - 1] / (((double)multiplicity) * residuals.data[multiplicity]);
-        root -= delta;
+        *root -= delta;
         if ((fabs(residuals.data[0]) + fabs(delta)) < PRECISION) {
             break;
         }
     }
-    return root;
+    return multiplicity;
+}
+
+void polynomial_real_root_refinement_over(const Vector p, double *const root, const size_t multiplicity, Vector residuals) {
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        polynomial_real_residuals_over(p, *root, p.len, residuals);
+        // Use Newton method for root finding - Birge-Vieta method
+        const double delta = residuals.data[multiplicity - 1] / (((double)multiplicity) * residuals.data[multiplicity]);
+        *root -= delta;
+        if ((fabs(residuals.data[0]) + fabs(delta)) < PRECISION) {
+            break;
+        }
+    }
 }
 
 // Remember to free the returned vector after calling this function!
+// This function only works for polynomials which all roots are real
 Vector polynomial_find_real_roots(const Vector polynomial) {
     if (polynomial.len <= 1) {
         return (Vector){0};  // Invalid operation
@@ -1061,10 +1056,10 @@ Vector polynomial_find_real_roots(const Vector polynomial) {
     }
     // Find remaining roots
     while (root_index < roots.len) {
-        uint16_t multiplicity;
         const size_t length = (p.len - root_index);
-        double root = polynomial_find_real_root_over(p, &multiplicity, length, residuals);
-        root = polynomial_real_root_refinement_over(polynomial, root, multiplicity, residuals);
+        double root = polynomial_real_root_guess_over(p, length);
+        size_t multiplicity = polynomial_find_real_root_over(p, &root, length, residuals);
+        polynomial_real_root_refinement_over(polynomial, &root, multiplicity, residuals);
         while ((multiplicity--) && (root_index < roots.len)) {
             //  Computes the division of the polynomial p by (x-root) using Ruffini's rule
             polynomial_div_over(p, root, length);
@@ -1074,6 +1069,83 @@ Vector polynomial_find_real_roots(const Vector polynomial) {
         }
     }
     vector_dealloc(&residuals);
+    vector_dealloc(&p);
+    quicksort(roots);
+    return roots;
+}
+
+// This function only uses the first length coefficients of the polynomial in calculations
+double polynomial_first_diff_over(const Vector p, const double x, double *const y, size_t length) {
+    double first_div_remainder = 0.0;
+    double second_div_remainder = 0.0;
+    for (size_t i = p.len - 1; ((i < p.len) && (i > (p.len - length))); i--) {
+        first_div_remainder = p.data[i] + x * first_div_remainder;
+        second_div_remainder = first_div_remainder + x * second_div_remainder;
+    }
+    if (y != NULL) {
+        first_div_remainder = p.data[p.len - length] + x * first_div_remainder;
+        *y = first_div_remainder;
+    }
+    return second_div_remainder;
+}
+
+// This function only uses the first length coefficients of the polynomial in calculations
+void polynomial_find_real_root_newton_over(const Vector p, double *const root, size_t length) {
+    for (size_t k = 0; k < MAX_ITERATIONS; k++) {
+        double y;
+        const double diff = polynomial_first_diff_over(p, *root, &y, length);
+        // Use Newton method for root finding - Birge-Vieta method
+        const double delta = y / diff;
+        *root -= delta;
+        if ((fabs(y) + fabs(delta)) < PRECISION) {
+            break;
+        }
+    }
+}
+
+// Remember to free the returned vector after calling this function!
+// This function only works for polynomials which all roots are real
+// and non-repetitive (distinct)
+Vector polynomial_find_real_distinct_roots(const Vector polynomial) {
+    if (polynomial.len <= 1) {
+        return (Vector){0};  // Invalid operation
+    }
+    Vector p = vector_alloc(polynomial.len);
+    Vector roots = vector_alloc(polynomial.len - 1);
+    if ((!vector_is_valid(p)) || (!vector_is_valid(roots))) {
+        vector_dealloc(&p);
+        vector_dealloc(&roots);
+        return (Vector){0};
+    }
+    // Normalization of the coefficients of the polynomial
+    p.data[polynomial.len - 1] = 1.0;
+    for (size_t i = 0; (i + 1) < polynomial.len; i++) {
+        p.data[i] = polynomial.data[i] / polynomial.data[polynomial.len - 1];
+    }
+    /*
+    OBS: In order to avoid realocating memory over and over again, we store
+         the result of the polynomial division of p by (x - root) in p as well.
+         The length of the p polynomial is (p.len - i).
+    */
+    // Check for null roots
+    size_t root_index = 0;
+    while (are_close(p.data[root_index], 0.0, PRECISION)) {
+        roots.data[root_index] = p.data[root_index];
+        root_index++;
+    }
+    // Find remaining roots
+    while (root_index < roots.len) {
+        const size_t length = (p.len - root_index);
+        double root = polynomial_real_root_guess_over(p, length);
+        polynomial_find_real_root_newton_over(p, &root, length);
+        // Root refinement
+        polynomial_find_real_root_newton_over(polynomial, &root, polynomial.len);
+        //  Computes the division of the polynomial p by (x-root) using Ruffini's rule
+        polynomial_div_over(p, root, length);
+        // Add the root found to the result vector
+        roots.data[root_index] = root;
+        root_index++;
+    }
     vector_dealloc(&p);
     quicksort(roots);
     return roots;

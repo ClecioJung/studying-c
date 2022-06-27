@@ -251,12 +251,12 @@ Spline spline_alloc(const size_t len) {
     Spline spline = (Spline){0};
     if (len != 0) {
         spline.x = (double *)malloc((len + 1) * sizeof(double));
-        spline.a = (double *)malloc(len * sizeof(double));
-        spline.b = (double *)malloc(len * sizeof(double));
-        spline.c = (double *)malloc(len * sizeof(double));
-        spline.d = (double *)malloc(len * sizeof(double));
-        if ((spline.x == NULL) || (spline.a == NULL) || (spline.b == NULL) || (spline.c == NULL) || (spline.d == NULL)) {
-            spline_dealloc(&spline);
+        spline.coefficients = (double(*)[SPLINE_ORDER + 1]) malloc(len * sizeof(*spline.coefficients));
+        if ((spline.x == NULL) || (spline.coefficients == NULL)) {
+            free(spline.x);
+            free(spline.coefficients);
+            spline.x = NULL;
+            spline.coefficients = NULL;
         } else {
             spline.len = len;
         }
@@ -269,15 +269,9 @@ void spline_dealloc(Spline *const spline) {
         return;
     }
     free(spline->x);
-    free(spline->a);
-    free(spline->b);
-    free(spline->c);
-    free(spline->d);
+    free(spline->coefficients);
     spline->x = NULL;
-    spline->a = NULL;
-    spline->b = NULL;
-    spline->c = NULL;
-    spline->d = NULL;
+    spline->coefficients = NULL;
     spline->len = 0;
 }
 
@@ -345,14 +339,17 @@ Spline spline_interpolation(const Vector x, const Vector y, const Spline_Type sp
             break;
     }
     tridiagonal_solving_over(t, r, d, S);
-    vector_print(S);
     for (size_t i = 0; (i + 1) < x.len; i++) {
-        const double h = x.data[i + 1] - x.data[i];
-        spline.a[i] = (S.data[i + 1] - S.data[i]) / (6.0 * h);
-        spline.b[i] = S.data[i] / 2.0;
-        spline.c[i] = (y.data[i + 1] - y.data[i]) / h - (S.data[i + 1] + 2.0 * S.data[i]) * h / 6.0;
-        spline.d[i] = y.data[i];
         spline.x[i] = x.data[i];
+        const double h = x.data[i + 1] - x.data[i];
+        // coefficient a
+        spline.coefficients[i][3] = (S.data[i + 1] - S.data[i]) / (6.0 * h);
+        // coefficient b
+        spline.coefficients[i][2] = S.data[i] / 2.0;
+        // coefficient c
+        spline.coefficients[i][1] = (y.data[i + 1] - y.data[i]) / h - (S.data[i + 1] + 2.0 * S.data[i]) * h / 6.0;
+        // coefficient d
+        spline.coefficients[i][0] = y.data[i];
     }
     spline.x[x.len - 1] = x.data[x.len - 1];
     vector_dealloc(&t);
@@ -362,76 +359,43 @@ Spline spline_interpolation(const Vector x, const Vector y, const Spline_Type sp
     return spline;
 }
 
-void cubic_spline_print(const double a, const double b, const double c, const double d, const double x) {
-    uint16_t printed_terms = 0;
-    if (!are_close(a, 0.0, PRECISION)) {
-        if (a < 0) {
-            printf(" - ");
-        } else if (printed_terms > 0) {
-            printf(" + ");
-        } else {
-            printf(" ");
-        }
-        printf("%lg*", fabs(a));
-        if (!are_close(x, 0.0, PRECISION)) {
-            printf("(x %c %lg)^3", ((x < 0) ? '+' : '-'), fabs(x));
-        } else {
-            printf("x^3");
-        }
-        printed_terms++;
-    }
-    if (!are_close(b, 0.0, PRECISION)) {
-        if (b < 0) {
-            printf(" - ");
-        } else if (printed_terms > 0) {
-            printf(" + ");
-        } else {
-            printf(" ");
-        }
-        printf("%lg*", fabs(b));
-        if (!are_close(x, 0.0, PRECISION)) {
-            printf("(x %c %lg)^2", ((x < 0) ? '+' : '-'), fabs(x));
-        } else {
-            printf("x^2");
-        }
-        printed_terms++;
-    }
-    if (!are_close(c, 0.0, PRECISION)) {
-        if (c < 0) {
-            printf(" - ");
-        } else if (printed_terms > 0) {
-            printf(" + ");
-        } else {
-            printf(" ");
-        }
-        printf("%lg*", fabs(c));
-        if (!are_close(x, 0.0, PRECISION)) {
-            printf("(x %c %lg)", ((x < 0) ? '+' : '-'), fabs(x));
-        } else {
-            printf("x");
-        }
-        printed_terms++;
-    }
-    if (!are_close(d, 0.0, PRECISION)) {
-        if (d < 0) {
-            printf(" - ");
-        } else if (printed_terms > 0) {
-            printf(" + ");
-        } else {
-            printf(" ");
-        }
-        printf("%lg\n", fabs(d));
-        printed_terms++;
-    }
-    if (printed_terms == 0) {
-        printf("0");
-    }
-}
-
 void spline_print(const Spline spline) {
     for (size_t i = 0; i < spline.len; i++) {
-        printf("[%03zu] x in (%lg - %lg):", i, spline.x[i], spline.x[i + 1]);
-        cubic_spline_print(spline.a[i], spline.b[i], spline.c[i], spline.d[i], spline.x[i]);
+        const double x = spline.x[i];
+        printf("[%03zu] x in (%lg - %lg):", i, x, spline.x[i + 1]);
+        size_t printed_terms = 0;
+        for (size_t j = SPLINE_ORDER; j <= SPLINE_ORDER; j--) {
+            const double coef = spline.coefficients[i][j];
+            if (are_close(coef, 0.0, PRECISION)) {
+                continue;
+            }
+            if (coef < 0) {
+                printf(" - ");
+            } else if (printed_terms > 0) {
+                printf(" + ");
+            } else {
+                printf(" ");
+            }
+            printf("%lg", fabs(coef));
+            if (j != 0) {
+                if (!are_close(coef, 0.0, PRECISION)) {
+                    printf("*");
+                }
+                if (!are_close(x, 0.0, PRECISION)) {
+                    printf("(x %c %lg)", ((x < 0) ? '+' : '-'), fabs(x));
+                } else {
+                    printf("x");
+                }
+                if (j != 1) {
+                    printf("^%ld", j);
+                }
+                printed_terms++;
+            }
+        }
+        if (printed_terms == 0) {
+            printf("0");
+        }
+        printf("\n");
     }
 }
 
@@ -465,10 +429,13 @@ double spline_evaluation(const Spline spline, const double value) {
     if (index >= spline.len) {
         return NAN;  // Invalid range
     }
-    return (spline.a[index] * power(value - spline.x[index], 3) +
-            spline.b[index] * power(value - spline.x[index], 2) +
-            spline.c[index] * (value - spline.x[index]) +
-            spline.d[index]);
+    // Polynomial evaluation using Horner's method
+    double y = 0.0;
+    const double x = value - spline.x[index];
+    for (size_t j = SPLINE_ORDER; j <= SPLINE_ORDER; j--) {
+        y = spline.coefficients[index][j] + y * x;
+    }
+    return y;
 }
 
 //------------------------------------------------------------------------------

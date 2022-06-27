@@ -37,10 +37,10 @@ int main(void) {
     polynomial_print(p, "p", 'x');
     Complex_Vector roots = polynomial_find_roots(p);
     for (size_t i = 0; i < roots.len; i++) {
-        const uint16_t multiplicity = polynomial_root_multiplicity(p, roots.data[i]);
+        const size_t multiplicity = polynomial_root_multiplicity(p, roots.data[i]);
         printf("The multiplicity of the root ");
         complex_print(roots.data[i]);
-        printf(" is %d!\n", multiplicity);
+        printf(" is %ld!\n", multiplicity);
     }
     complex_vector_dealloc(&roots);
     vector_dealloc(&p);

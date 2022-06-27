@@ -29,12 +29,11 @@
 
 #include "vector.h"
 
+#define SPLINE_ORDER 3
+
 typedef struct {
     double *x;
-    double *a;
-    double *b;
-    double *c;
-    double *d;
+    double (*coefficients)[SPLINE_ORDER + 1];
     size_t len;
 } Spline;
 
